@@ -1,0 +1,20 @@
+{
+  "scriptFile": "..\\bin\\NCS.CDS.Diversity.dll",
+  "entryPoint": "NCS.CDS.Diversity.PatchDiversityHttpTrigger.Run",
+
+  "bindings": [
+    {
+      "authLevel": "function",
+      "name": "req",
+      "type": "httpTrigger",
+      "direction": "in",
+      "methods": [ "patch" ] 
+    },
+    {
+      "name": "$return",
+      "type": "http",
+      "direction": "out"
+    }
+  ],
+  "disabled": false
+}

@@ -1,0 +1,20 @@
+{
+  "scriptFile": "..\\bin\\NCS.CDS.Diversity.dll",
+  "entryPoint": "NCS.CDS.Diversity.PostDiversityHttpTrigger.Run",
+
+  "bindings": [
+    {
+      "authLevel": "function",
+      "name": "req",
+      "type": "httpTrigger",
+      "direction": "in",
+      "methods": [ "post" ] 
+    },
+    {
+      "name": "$return",
+      "type": "http",
+      "direction": "out"
+    }
+  ],
+  "disabled": false
+}
