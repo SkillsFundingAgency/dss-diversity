@@ -9,7 +9,7 @@ namespace NCS.CDS.Diversity.PostDiversityHttpTrigger
     public static class PostDiversityHttpTrigger
     {
         [FunctionName("Post")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Diversity")]HttpRequestMessage req, TraceWriter log)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId:guid}/DiversityDetails")]HttpRequestMessage req, TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
 

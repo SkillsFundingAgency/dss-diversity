@@ -11,7 +11,7 @@ namespace NCS.CDS.Diversity.PatchDiversityHttpTrigger
     public static class PatchDiversityHttpTrigger
     {
         [FunctionName("Patch")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Diversity/{diversityId:guid}")]HttpRequestMessage req, TraceWriter log, string diversityId)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId:guid}/DiversityDetails/{diversityId:guid}")]HttpRequestMessage req, TraceWriter log, string diversityId)
         {
             log.Info("C# HTTP trigger function processed a request.");
 

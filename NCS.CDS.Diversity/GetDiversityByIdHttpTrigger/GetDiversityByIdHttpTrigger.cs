@@ -12,7 +12,7 @@ namespace NCS.CDS.Diversity.GetDiversityByIdHttpTrigger
     public static class GetDiversityByIdHttpTrigger
     {
         [FunctionName("GetById")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Diversity/{diversityId:guid}")]HttpRequestMessage req, TraceWriter log, string diversityId)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId:guid}/DiversityDetails/{diversityId:guid}")]HttpRequestMessage req, TraceWriter log, string diversityId)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
