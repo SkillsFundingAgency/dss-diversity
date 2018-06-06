@@ -1,14 +1,14 @@
 {
-  "scriptFile": "..\\bin\\NCS.CDS.Diversity.dll",
-  "entryPoint": "NCS.CDS.Diversity.DeleteDiversityHttpTrigger.Run",
+  "scriptFile": "..\\bin\\NCS.DSS.Diversity.dll",
+  "entryPoint": "NCS.DSS.Diversity.PostDiversityHttpTrigger.Run",
 
   "bindings": [
     {
       "authLevel": "function",
       "name": "req",
       "type": "httpTrigger",
-      "direction": "in", 
-      "methods": [ "delete" ]
+      "direction": "in",
+      "methods": [ "post" ] 
     },
     {
       "name": "$return",

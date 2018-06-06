@@ -6,15 +6,15 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Newtonsoft.Json;
 
-namespace NCS.CDS.Diversity.DeleteDiversityHttpTrigger
+namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger
 {
-    public static class DeleteDiversityHttpTrigger
+    public static class PatchDiversityHttpTrigger
     {
-        [FunctionName("Delete")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId:guid}/DiversityDetails/{diversityId:guid}")]HttpRequestMessage req, TraceWriter log, string diversityId)
+        [FunctionName("Patch")]
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId:guid}/DiversityDetails/{diversityId:guid}")]HttpRequestMessage req, TraceWriter log, string diversityId)
         {
             log.Info("C# HTTP trigger function processed a request.");
-            
+
             if (!Guid.TryParse(diversityId, out var diversityGuid))
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest)

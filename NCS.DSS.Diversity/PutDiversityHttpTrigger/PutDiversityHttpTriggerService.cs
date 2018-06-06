@@ -1,4 +1,4 @@
-﻿namespace NCS.CDS.Diversity.PutDiversityHttpTrigger
+﻿namespace NCS.DSS.Diversity.PutDiversityHttpTrigger
 {
     public class PutDiversityHttpTriggerService
     {

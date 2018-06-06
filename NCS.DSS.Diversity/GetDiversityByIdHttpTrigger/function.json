@@ -1,6 +1,6 @@
 {
-  "scriptFile": "..\\bin\\NCS.CDS.Diversity.dll",
-  "entryPoint": "NCS.CDS.Diversity.GetDiversityHttpTrigger.Run",
+  "scriptFile": "..\\bin\\NCS.DSS.Diversity.dll",
+  "entryPoint": "NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Run",
 
   "bindings": [
     {

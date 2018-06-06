@@ -4,7 +4,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 
-namespace NCS.CDS.Diversity.PostDiversityHttpTrigger
+namespace NCS.DSS.Diversity.PostDiversityHttpTrigger
 {
     public static class PostDiversityHttpTrigger
     {

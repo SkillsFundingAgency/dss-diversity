@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace NCS.CDS.Diversity.Models
+namespace NCS.DSS.Diversity.Models
 {
     public class Diversity
     {

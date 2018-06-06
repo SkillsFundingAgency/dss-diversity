@@ -1,4 +1,4 @@
-﻿namespace NCS.CDS.Diversity.PatchDiversityHttpTrigger
+﻿namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger
 {
     public class PatchDiversityHttpTriggerService
     {

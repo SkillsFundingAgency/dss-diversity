@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
-namespace NCS.CDS.Diversity.GetDiversityHttpTrigger
+namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger
 {
-    public class GetDiversityHttpTriggerService
+    public class GetDiversityByIdHttpTriggerService
     {
-        public async Task<List<Models.Diversity>> GetDiversities()
+
+        public async Task<Models.Diversity> GetDiversity(Guid diversityId)
         {
-            var result = CreateTempDiversities();
+            var diversities = CreateTempDiversities();
+            var result = diversities.FirstOrDefault(a => a.DiversityId == diversityId);
             return await Task.FromResult(result);
         }
 

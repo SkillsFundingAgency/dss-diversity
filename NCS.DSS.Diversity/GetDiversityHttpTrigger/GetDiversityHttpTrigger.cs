@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace NCS.CDS.Diversity.GetDiversityHttpTrigger
+namespace NCS.DSS.Diversity.GetDiversityHttpTrigger
 {
     public static class GetDiversityHttpTrigger
     {

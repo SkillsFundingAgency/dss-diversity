@@ -6,12 +6,12 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Newtonsoft.Json;
 
-namespace NCS.CDS.Diversity.PatchDiversityHttpTrigger
+namespace NCS.DSS.Diversity.PutDiversityHttpTrigger
 {
-    public static class PatchDiversityHttpTrigger
+    public static class PutDiversityHttpTrigger
     {
-        [FunctionName("Patch")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId:guid}/DiversityDetails/{diversityId:guid}")]HttpRequestMessage req, TraceWriter log, string diversityId)
+        [FunctionName("Put")]
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Customers/{customerId:guid}/DiversityDetails/{diversityId:guid}")]HttpRequestMessage req, TraceWriter log, string diversityId)
         {
             log.Info("C# HTTP trigger function processed a request.");
 

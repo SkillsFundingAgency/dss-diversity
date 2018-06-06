@@ -1,21 +1,20 @@
 using System;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Newtonsoft.Json;
 
-namespace NCS.CDS.Diversity.GetDiversityByIdHttpTrigger
+namespace NCS.DSS.Diversity.DeleteDiversityHttpTrigger
 {
-    public static class GetDiversityByIdHttpTrigger
+    public static class DeleteDiversityHttpTrigger
     {
-        [FunctionName("GetById")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId:guid}/DiversityDetails/{diversityId:guid}")]HttpRequestMessage req, TraceWriter log, string diversityId)
+        [FunctionName("Delete")]
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId:guid}/DiversityDetails/{diversityId:guid}")]HttpRequestMessage req, TraceWriter log, string diversityId)
         {
             log.Info("C# HTTP trigger function processed a request.");
-
+            
             if (!Guid.TryParse(diversityId, out var diversityGuid))
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest)
@@ -24,12 +23,10 @@ namespace NCS.CDS.Diversity.GetDiversityByIdHttpTrigger
                         System.Text.Encoding.UTF8, "application/json")
                 };
             }
-            var service = new GetDiversityByIdHttpTriggerService();
-            var values = await service.GetDiversity(diversityGuid);
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(JsonConvert.SerializeObject(values),
+                Content = new StringContent(JsonConvert.SerializeObject(diversityGuid),
                     System.Text.Encoding.UTF8, "application/json")
             };
         }
