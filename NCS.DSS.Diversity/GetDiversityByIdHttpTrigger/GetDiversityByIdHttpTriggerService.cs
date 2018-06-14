@@ -30,7 +30,6 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger
                    ConsentToCollectEthnicity = false,
                    SecondaryLLDDHeathProblemId = 3,
                    EthnicityId = Guid.NewGuid(),
-                   DateCollected = DateTime.UtcNow,
                    LastModifiedDate = DateTime.UtcNow,
                    LastModifiedBy = Guid.Empty
                },
@@ -45,7 +44,6 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger
                     DateAndTimeEthnicityCollected = DateTime.UtcNow,
                     SecondaryLLDDHeathProblemId = 3,
                     EthnicityId = Guid.NewGuid(),
-                    DateCollected = DateTime.UtcNow,
                     LastModifiedDate = DateTime.UtcNow,
                     LastModifiedBy = Guid.Empty
                 },
@@ -61,7 +59,6 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger
                     DateAndTimeEthnicityCollected = DateTime.UtcNow,
                     SecondaryLLDDHeathProblemId = 3,
                     EthnicityId = Guid.NewGuid(),
-                    DateCollected = DateTime.UtcNow,
                     LastModifiedDate = DateTime.UtcNow,
                     LastModifiedBy = Guid.Empty
                 }

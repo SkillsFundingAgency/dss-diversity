@@ -10,8 +10,9 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger
 {
     public static class GetDiversityHttpTrigger
     {
+        [Disable]
         [FunctionName("Get")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId:guid}/DiversityDetails")]HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/DiversityDetails")]HttpRequestMessage req, TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
 

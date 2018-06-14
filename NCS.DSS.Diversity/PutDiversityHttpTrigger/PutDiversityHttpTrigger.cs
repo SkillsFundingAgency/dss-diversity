@@ -10,8 +10,9 @@ namespace NCS.DSS.Diversity.PutDiversityHttpTrigger
 {
     public static class PutDiversityHttpTrigger
     {
+        [Disable]
         [FunctionName("Put")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Customers/{customerId:guid}/DiversityDetails/{diversityId:guid}")]HttpRequestMessage req, TraceWriter log, string diversityId)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Customers/{customerId}/DiversityDetails/{diversityId}")]HttpRequestMessage req, TraceWriter log, string diversityId)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
