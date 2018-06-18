@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using NCS.DSS.Diversity.ReferenceData;
 
 namespace NCS.DSS.Diversity.Models
 {
@@ -18,15 +19,15 @@ namespace NCS.DSS.Diversity.Models
 
         [Required]
         [Display(Description = "LLDD Health Problem Declaration reference data.")]
-        public int LLDDHealthProblemDeclarationId { get; set; }
+        public LLDDHealthProblemDeclaration LLDDHealthProblemDeclaration { get; set; }
 
         [Required]
         [Display(Description = "Primary LLDD Heath Problem reference data.")]
-        public int PrimaryLLDDHeathProblemId { get; set; }
+        public PrimaryLLDDHeathProblem PrimaryLLDDHeathProblem { get; set; }
 
         [Required]
         [Display(Description = "Secondary LLDD Heath Problem reference data.")]
-        public int SecondaryLLDDHeathProblemId { get; set; }
+        public SecondaryLLDDHeathProblem SecondaryLLDDHeathProblem { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time the LLDD Heath consent was collected from the customer.")]
@@ -37,7 +38,7 @@ namespace NCS.DSS.Diversity.Models
 
         [Required]
         [Display(Description = "Ethnicity reference data.")]
-        public Guid EthnicityId { get; set; }
+        public Ethnicity Ethnicity { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time ethnicity data was collected from the customer")]

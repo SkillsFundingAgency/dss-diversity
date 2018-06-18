@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NCS.DSS.Diversity.ReferenceData;
 
 namespace NCS.DSS.Diversity.GetDiversityHttpTrigger
 {
@@ -22,11 +23,11 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger
                    CustomerId = Guid.NewGuid(),
                    ConsentToCollectLLDDHealth = true,
                    DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow,
-                   LLDDHealthProblemDeclarationId = 1,
-                   PrimaryLLDDHeathProblemId = 2,
+                   LLDDHealthProblemDeclaration = LLDDHealthProblemDeclaration.CustomerConsidersThemselvesToHaveALearningDifficultyAndOrHealthProblem,
+                   PrimaryLLDDHeathProblem = PrimaryLLDDHeathProblem.AspergersSyndrome,
                    ConsentToCollectEthnicity = false,
-                   SecondaryLLDDHeathProblemId = 3,
-                   EthnicityId = Guid.NewGuid(),
+                   SecondaryLLDDHeathProblem = SecondaryLLDDHeathProblem.AutismSpectrumDisorder,
+                   Ethnicity = Ethnicity.African,
                    LastModifiedDate = DateTime.UtcNow,
                    LastModifiedBy = Guid.Empty
                },
@@ -35,12 +36,12 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger
                     DiversityId = Guid.Parse("2f9e4ece-95d9-444b-8833-b433f5fd2190"),
                     CustomerId = Guid.NewGuid(),
                     ConsentToCollectLLDDHealth = false,
-                    LLDDHealthProblemDeclarationId = 1,
-                    PrimaryLLDDHeathProblemId = 2,
+                    LLDDHealthProblemDeclaration = LLDDHealthProblemDeclaration.CustomerDoesNotConsiderThemselvesToHaveALearningDifficultyAndOrHealthProblem,
+                    PrimaryLLDDHeathProblem = PrimaryLLDDHeathProblem.AutismSpectrumDisorder,
                     ConsentToCollectEthnicity = true,
                     DateAndTimeEthnicityCollected = DateTime.UtcNow,
-                    SecondaryLLDDHeathProblemId = 3,
-                    EthnicityId = Guid.NewGuid(),
+                    SecondaryLLDDHeathProblem = SecondaryLLDDHeathProblem.Dyscalculia,
+                    Ethnicity = Ethnicity.Chinese,
                     LastModifiedDate = DateTime.UtcNow,
                     LastModifiedBy = Guid.Empty
                 },
@@ -50,12 +51,12 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger
                     CustomerId = Guid.NewGuid(),
                     ConsentToCollectLLDDHealth = true,
                     DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow,
-                    LLDDHealthProblemDeclarationId = 1,
-                    PrimaryLLDDHeathProblemId = 2,
+                    LLDDHealthProblemDeclaration = LLDDHealthProblemDeclaration.NotProvidedByTheCustomer,
+                    PrimaryLLDDHeathProblem = PrimaryLLDDHeathProblem.NotProvided,
                     ConsentToCollectEthnicity = true,
                     DateAndTimeEthnicityCollected = DateTime.UtcNow,
-                    SecondaryLLDDHeathProblemId = 3,
-                    EthnicityId = Guid.NewGuid(),
+                    SecondaryLLDDHeathProblem = SecondaryLLDDHeathProblem.TemporaryDisabilityAfterIllnessOrAccident,
+                    Ethnicity = Ethnicity.GypsyIrishTraveller,
                     LastModifiedDate = DateTime.UtcNow,
                     LastModifiedBy = Guid.Empty
                 }
