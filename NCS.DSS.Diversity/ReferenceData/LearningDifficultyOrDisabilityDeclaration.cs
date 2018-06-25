@@ -2,7 +2,7 @@
 
 namespace NCS.DSS.Diversity.ReferenceData
 {
-    public enum LLDDHealthProblemDeclaration
+    public enum LearningDifficultyOrDisabilityDeclaration
     {
         [Description("Customer considers themselves to have a learning difficulty and/or health problem")]
         CustomerConsidersThemselvesToHaveALearningDifficultyAndOrHealthProblem = 1,

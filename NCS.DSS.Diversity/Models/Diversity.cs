@@ -22,19 +22,19 @@ namespace NCS.DSS.Diversity.Models
         public bool ConsentToCollectLLDDHealth { get; set; }
 
         [Required]
-        [Display(Description = "LLDD Health Problem Declaration reference data.")]
+        [Display(Description = "Learning Difficulty Or Disability Health Problem Declaration reference data.")]
         [Example(Description = "1")]
-        public LLDDHealthProblemDeclaration LLDDHealthProblemDeclaration { get; set; }
+        public LearningDifficultyOrDisabilityDeclaration LearningDifficultyOrDisabilityDeclaration { get; set; }
 
         [Required]
-        [Display(Description = "Primary LLDD Heath Problem reference data.")]
+        [Display(Description = "Primary Learning Difficulty Or Disability Heath Problem reference data.")]
         [Example(Description = "4")]
-        public PrimaryLLDDHeathProblem PrimaryLLDDHeathProblem { get; set; }
+        public PrimaryLearningDifficultyOrDisability PrimaryLearningDifficultyOrDisability { get; set; }
 
         [Required]
-        [Display(Description = "Secondary LLDD Heath Problem reference data.")]
+        [Display(Description = "Secondary Learning Difficulty Or Disability Heath Problem reference data.")]
         [Example(Description = "5")]
-        public SecondaryLLDDHeathProblem SecondaryLLDDHeathProblem { get; set; }
+        public SecondaryLearningDifficultyOrDisability SecondaryLearningDifficultyOrDisability { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time the LLDD Heath consent was collected from the customer.")]

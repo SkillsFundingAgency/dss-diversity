@@ -2,7 +2,7 @@
 
 namespace NCS.DSS.Diversity.ReferenceData
 {
-    public enum PrimaryLLDDHeathProblem
+    public enum SecondaryLearningDifficultyOrDisability
     {
         [Description("Visual impairment")]
         VisualImpairment = 4,
