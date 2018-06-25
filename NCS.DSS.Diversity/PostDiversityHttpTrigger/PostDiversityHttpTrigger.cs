@@ -13,6 +13,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger
     public static class PostDiversityHttpTrigger
     {
         [FunctionName("Post")]
+        [ResponseType(typeof(Models.Diversity))]
         [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Diversity Created", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Diversity does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
