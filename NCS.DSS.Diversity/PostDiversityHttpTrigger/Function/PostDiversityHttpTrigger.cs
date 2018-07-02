@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -7,8 +8,11 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using NCS.DSS.Diversity.Annotations;
+using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
+using NCS.DSS.Diversity.Validation;
+using Newtonsoft.Json;
 
-namespace NCS.DSS.Diversity.PostDiversityHttpTrigger
+namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 {
     public static class PostDiversityHttpTrigger
     {
@@ -28,8 +32,21 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger
             // Get request body
             var diversity = await req.Content.ReadAsAsync<Models.Diversity>();
 
+            // validate the request
+            var validate = new Validate();
+            var errors = validate.ValidateResource(diversity);
+
+            if (errors != null && errors.Any())
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(errors),
+                        System.Text.Encoding.UTF8, "application/json")
+                };
+            }
+
             var diversityService = new PostDiversityHttpTriggerService();
-            var diversityId = diversityService.Create(diversity);
+            var diversityId = await diversityService.CreateAsync(diversity);
 
             return diversityId == null
                 ? new HttpResponseMessage(HttpStatusCode.BadRequest)
