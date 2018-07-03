@@ -16,7 +16,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
             diversity.DiversityId = diversityId;
 
             var documentDbProvider = new DocumentDBProvider();
-            var created = await documentDbProvider.CreatDiversityDetailAsync(diversity);
+            var created = await documentDbProvider.CreateDiversityDetailAsync(diversity);
 
             return created.StatusCode == HttpStatusCode.Created ? diversityId : (Guid?)null;
 
