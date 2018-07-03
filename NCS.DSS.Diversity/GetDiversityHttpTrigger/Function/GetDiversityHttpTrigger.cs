@@ -8,8 +8,10 @@ using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 using NCS.DSS.Diversity.Annotations;
+using NCS.DSS.Diversity.Cosmos.Helper;
+using NCS.DSS.Diversity.GetDiversityHttpTrigger.Service;
 
-namespace NCS.DSS.Diversity.GetDiversityHttpTrigger
+namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
 {
     public static class GetDiversityHttpTrigger
     {
@@ -33,21 +35,35 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger
                 };
             }
 
+            var resourceHelper = new ResourceHelper();
+            var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
+
+            if (!doesCustomerExist)
+            {
+                return new HttpResponseMessage(HttpStatusCode.NoContent)
+                {
+                    Content = new StringContent("Unable to find a customer with Id of : " +
+                                                JsonConvert.SerializeObject(customerGuid),
+                        System.Text.Encoding.UTF8, "application/json")
+                };
+            }
+
             var service = new GetDiversityHttpTriggerService();
-            var diversityId = await service.GetDiversityId(customerGuid);
+            var diversityId = await service.GetDiversityDetailIdAsync(customerGuid);
 
             if (diversityId == null)
             {
                 return new HttpResponseMessage(HttpStatusCode.NoContent)
                 {
-                    Content = new StringContent(JsonConvert.SerializeObject(customerGuid),
+                    Content = new StringContent("Unable to find diversity detail for customer with Id of : " +
+                                                JsonConvert.SerializeObject(customerGuid),
                         System.Text.Encoding.UTF8, "application/json")
                 };
             }
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(JsonConvert.SerializeObject(diversityId),
+                Content = new StringContent("Diversity detail with the Id of : " + JsonConvert.SerializeObject(diversityId),
                     System.Text.Encoding.UTF8, "application/json")
             };
         }

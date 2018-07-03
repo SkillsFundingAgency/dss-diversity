@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Documents.Linq;
 using NCS.DSS.Diversity.Cosmos.Client;
 using NCS.DSS.Diversity.Cosmos.Helper;
 
@@ -35,23 +35,28 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
             return customerExists;
         }
 
-        public List<Models.Diversity> GetDiversityDetailsForCustomer(Guid customerId)
+        public async Task<Guid?> GetDiversityDetailIdForCustomerAsync(Guid customerId)
         {
             var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
 
             var client = _databaseClient.CreateDocumentClient();
 
-            if (client == null)
+            var diversityDetailQuery = client
+                ?.CreateDocumentQuery<Models.Diversity>(collectionUri, new FeedOptions {MaxItemCount = 1})
+                .Where(x => x.CustomerId == customerId)
+                .AsDocumentQuery();
+
+            if (diversityDetailQuery == null)
                 return null;
 
-            var queryDiversityDetails = client.CreateDocumentQuery<Models.Diversity>(collectionUri)
-                .Where(so => so.CustomerId == customerId).ToList();
+            var diversityDetails = await diversityDetailQuery.ExecuteNextAsync<Models.Diversity>();
 
-            return queryDiversityDetails.Any() ? queryDiversityDetails : null;
+            var diversityDetail = diversityDetails?.FirstOrDefault();
 
+            return diversityDetail?.DiversityId;
         }
 
-        public async Task<ResourceResponse<Document>> CreatDiversityDetailAsync(Models.Diversity diversity)
+        public async Task<ResourceResponse<Document>> CreateDiversityDetailAsync(Models.Diversity diversity)
         {
 
             var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
