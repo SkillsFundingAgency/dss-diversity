@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
@@ -8,6 +9,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using NCS.DSS.Diversity.Annotations;
+using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.Validation;
 using Newtonsoft.Json;
@@ -29,6 +31,15 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
         {
             log.Info("C# HTTP trigger function processed a request.");
 
+            if (!Guid.TryParse(customerId, out var customerGuid))
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(customerGuid),
+                        System.Text.Encoding.UTF8, "application/json")
+                };
+            }
+
             // Get request body
             var diversity = await req.Content.ReadAsAsync<Models.Diversity>();
 
@@ -38,9 +49,23 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
             if (errors != null && errors.Any())
             {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                return new HttpResponseMessage((HttpStatusCode)422)
                 {
-                    Content = new StringContent(JsonConvert.SerializeObject(errors),
+                    Content = new StringContent("Validation error(s) : " +
+                                                JsonConvert.SerializeObject(errors),
+                        System.Text.Encoding.UTF8, "application/json")
+                };
+            }
+
+            var resourceHelper = new ResourceHelper();
+            var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
+
+            if (!doesCustomerExist)
+            {
+                return new HttpResponseMessage(HttpStatusCode.NoContent)
+                {
+                    Content = new StringContent("Unable to find a customer with Id of : " +
+                                                JsonConvert.SerializeObject(customerGuid),
                         System.Text.Encoding.UTF8, "application/json")
                 };
             }

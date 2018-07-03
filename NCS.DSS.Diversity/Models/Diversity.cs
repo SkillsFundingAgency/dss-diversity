@@ -10,7 +10,7 @@ namespace NCS.DSS.Diversity.Models
         [Display(Description = "Unique identifier for a diversity record")]
         [Example(Description = "b8592ff8-af97-49ad-9fb2-e5c3c717fd85")]
         [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
-        public Guid DiversityId { get; set; }
+        public Guid? DiversityId { get; set; }
 
         [Required]
         [Display(Description = "Unique identifier of a customer.")]

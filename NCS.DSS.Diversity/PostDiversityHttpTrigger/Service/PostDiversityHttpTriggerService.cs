@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using NCS.DSS.Diversity.Cosmos;
+using NCS.DSS.Diversity.Cosmos.Provider;
 
 namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
 {
@@ -12,18 +12,14 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
             if (diversity == null)
                 return null;
 
-            var databaseClient = new DatabaseClient();
-
-            var collectionLink = databaseClient.CreateCollectionLink();
-
             var diversityId = Guid.NewGuid();
             diversity.DiversityId = diversityId;
 
-            var client =  databaseClient.CreateDocumentClient();
-
-            var created = await client.CreateDocumentAsync(collectionLink, diversity);
+            var documentDbProvider = new DocumentDBProvider();
+            var created = await documentDbProvider.CreatDiversityDetailAsync(diversity);
 
             return created.StatusCode == HttpStatusCode.Created ? diversityId : (Guid?)null;
+
         }
     }
 }
