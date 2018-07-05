@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using NCS.DSS.Diversity.Annotations;
 using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.GetDiversityHttpTrigger.Service;
+using NCS.DSS.Diversity.Ioc;
 
 namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
 {
@@ -22,7 +23,10 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to return the diversity details for a given customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/DiversityDetails")]HttpRequestMessage req, TraceWriter log, string customerId)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/DiversityDetails")]
+            HttpRequestMessage req, TraceWriter log, string customerId,
+            [Inject]IResourceHelper resourceHelper,
+            [Inject]IGetDiversityHttpTriggerService getDiversityService)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
@@ -35,28 +39,24 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
                 };
             }
 
-            var resourceHelper = new ResourceHelper();
             var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
                 return new HttpResponseMessage(HttpStatusCode.NoContent)
                 {
-                    Content = new StringContent("Unable to find a customer with Id of : " +
-                                                JsonConvert.SerializeObject(customerGuid),
+                    Content = new StringContent("Unable to find a customer with Id of : " + JsonConvert.SerializeObject(customerGuid),
                         System.Text.Encoding.UTF8, "application/json")
                 };
             }
 
-            var service = new GetDiversityHttpTriggerService();
-            var diversityId = await service.GetDiversityDetailIdAsync(customerGuid);
+            var diversityId = await getDiversityService.GetDiversityDetailIdAsync(customerGuid);
 
             if (diversityId == null)
             {
                 return new HttpResponseMessage(HttpStatusCode.NoContent)
                 {
-                    Content = new StringContent("Unable to find diversity detail for customer with Id of : " +
-                                                JsonConvert.SerializeObject(customerGuid),
+                    Content = new StringContent("Unable to find diversity detail for customer with Id of : " + JsonConvert.SerializeObject(customerGuid),
                         System.Text.Encoding.UTF8, "application/json")
                 };
             }

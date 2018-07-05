@@ -10,6 +10,8 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using NCS.DSS.Diversity.Annotations;
 using NCS.DSS.Diversity.Cosmos.Helper;
+using NCS.DSS.Diversity.Helpers;
+using NCS.DSS.Diversity.Ioc;
 using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.Validation;
 using Newtonsoft.Json;
@@ -20,14 +22,19 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
     {
         [FunctionName("Post")]
         [ResponseType(typeof(Models.Diversity))]
-        [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Diversity Created", ShowSchema = true)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Diversity does not exist", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
+        [Response(HttpStatusCode = (int) HttpStatusCode.Created, Description = "Diversity Created", ShowSchema = true)]
+        [Response(HttpStatusCode = (int) HttpStatusCode.NoContent, Description = "Diversity does not exist", ShowSchema = false)]
+        [Response(HttpStatusCode = (int) HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
+        [Response(HttpStatusCode = (int) HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
+        [Response(HttpStatusCode = (int) HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Diversity validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new diversity record for a given customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/DiversityDetails")]HttpRequestMessage req, TraceWriter log, string customerId)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/DiversityDetails")]
+            HttpRequestMessage req, TraceWriter log, string customerId,
+            [Inject]IResourceHelper resourceHelper,
+            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
+            [Inject]IValidate validate,
+            [Inject]IPostDiversityHttpTriggerService postDiversityService)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
@@ -41,15 +48,23 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             }
 
             // Get request body
-            var diversity = await req.Content.ReadAsAsync<Models.Diversity>();
+            var diversity = await httpRequestMessageHelper.GetDiversityFromRequest(req);
+
+            if (diversity == null)
+            {
+                return new HttpResponseMessage((HttpStatusCode)422)
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(req),
+                        System.Text.Encoding.UTF8, "application/json")
+                };
+            }
 
             // validate the request
-            var validate = new Validate();
             var errors = validate.ValidateResource(diversity);
 
             if (errors != null && errors.Any())
             {
-                return new HttpResponseMessage((HttpStatusCode)422)
+                return new HttpResponseMessage((HttpStatusCode) 422)
                 {
                     Content = new StringContent("Validation error(s) : " +
                                                 JsonConvert.SerializeObject(errors),
@@ -57,7 +72,6 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                 };
             }
 
-            var resourceHelper = new ResourceHelper();
             var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
@@ -70,8 +84,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                 };
             }
 
-            var diversityService = new PostDiversityHttpTriggerService();
-            var diversityId = await diversityService.CreateAsync(diversity);
+            var diversityId = await postDiversityService.CreateAsync(diversity);
 
             return diversityId == null
                 ? new HttpResponseMessage(HttpStatusCode.BadRequest)

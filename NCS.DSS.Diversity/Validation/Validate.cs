@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NCS.DSS.Diversity.Validation
 {
-    public class Validate
+    public class Validate : IValidate
     {
-        public List<ValidationResult> ValidateResource<T>(T resource)
+        public List<ValidationResult> ValidateResource(Models.Diversity diversity)
         {
-            var context = new ValidationContext(resource, null, null);
+            var context = new ValidationContext(diversity, null, null);
             var results = new List<ValidationResult>();
 
-            var isValid = Validator.TryValidateObject(resource, context, results, true);
+            var isValid = Validator.TryValidateObject(diversity, context, results, true);
 
             return isValid ? null : results;
         }
