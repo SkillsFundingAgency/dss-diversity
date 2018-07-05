@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs.Extensions;
 using Microsoft.Azure.WebJobs.Host;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.GetDiversityHttpTrigger.Service;
 using NSubstitute;
@@ -13,7 +12,7 @@ using Assert = NUnit.Framework.Assert;
 
 namespace NCS.DSS.Diversity.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class GetDiversityHttpTriggerTests
     {
         private const string ValidCustomerId = "1e1a555c-9633-4e12-ab28-09ed60d51cb3";

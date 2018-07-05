@@ -15,9 +15,7 @@ using NUnit.Framework;
 
 namespace NCS.DSS.Diversity.Tests
 {
-    /// <summary>
-    /// Summary description for PostDiversityHttpTriggerTests
-    /// </summary>
+
     [TestFixture]
     public class PostDiversityHttpTriggerTests
     {
@@ -75,7 +73,6 @@ namespace NCS.DSS.Diversity.Tests
         }
 
         [Test]
-        // NEED TO DO NOW
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenDiversityRequestIsInvalid()
         {
             var validationResults = new List<ValidationResult> {new ValidationResult("Customer Id is Required") };
