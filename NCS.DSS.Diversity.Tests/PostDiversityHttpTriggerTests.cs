@@ -32,7 +32,7 @@ namespace NCS.DSS.Diversity.Tests
         [SetUp]
         public void Setup()
         {
-            _diversity = new Models.Diversity();
+            _diversity = Substitute.For<Models.Diversity>();
 
             _request = new HttpRequestMessage()
             {
