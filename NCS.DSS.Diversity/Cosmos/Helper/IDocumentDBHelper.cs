@@ -6,5 +6,6 @@ namespace NCS.DSS.Diversity.Cosmos.Helper
     {
         Uri CreateDocumentCollectionUri();
         Uri CreateDocumentUri(Guid diversityDetailId);
+        Uri CreateCustomerDocumentCollectionUri();
     }
 }

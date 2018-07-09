@@ -22,17 +22,15 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
 
         public bool DoesCustomerResourceExist(Guid customerId)
         {
-            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+            var collectionUri = _documentDbHelper.CreateCustomerDocumentCollectionUri();
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = _databaseClient.CreateCustomerDocumentClient();
 
             if (client == null)
                 return false;
 
-            var query = client.CreateDocumentQuery<Models.Diversity>(collectionUri, new FeedOptions { MaxItemCount = 1 });
-            var customerExists = query.Where(x => x.CustomerId == customerId).AsEnumerable().Any();
-
-            return customerExists;
+            var customerQuery = client.CreateDocumentQuery<Document>(collectionUri, new FeedOptions() { MaxItemCount = 1 });
+            return customerQuery.Where(x => x.Id == customerId.ToString()).Select(x => x.Id).AsEnumerable().Any();
         }
 
         public async Task<Guid?> GetDiversityDetailIdForCustomerAsync(Guid customerId)

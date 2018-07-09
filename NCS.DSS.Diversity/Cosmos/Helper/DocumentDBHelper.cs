@@ -11,6 +11,10 @@ namespace NCS.DSS.Diversity.Cosmos.Helper
         private readonly string _databaseId = ConfigurationManager.AppSettings["DatabaseId"];
         private readonly string _collectionId = ConfigurationManager.AppSettings["CollectionId"];
 
+        private Uri _customerDocumentCollectionUri;
+        private readonly string _customerDatabaseId = ConfigurationManager.AppSettings["CustomerDatabaseId"];
+        private readonly string _customerCollectionId = ConfigurationManager.AppSettings["CustomerCollectionId"];
+
 
         public Uri CreateDocumentCollectionUri()
         {
@@ -23,8 +27,7 @@ namespace NCS.DSS.Diversity.Cosmos.Helper
 
             return _documentCollectionUri;
         }
-
-
+        
         public Uri CreateDocumentUri(Guid diversityDetailId)
         {
             if (_documentUri != null)
@@ -35,5 +38,20 @@ namespace NCS.DSS.Diversity.Cosmos.Helper
             return _documentUri;
 
         }
+
+        #region CustomerDB
+
+        public Uri CreateCustomerDocumentCollectionUri()
+        {
+            if (_customerDocumentCollectionUri != null)
+                return _customerDocumentCollectionUri;
+
+            _customerDocumentCollectionUri = UriFactory.CreateDocumentCollectionUri(
+                _customerDatabaseId, _customerCollectionId);
+
+            return _customerDocumentCollectionUri;
+        }
+
+        #endregion   
     }
 }

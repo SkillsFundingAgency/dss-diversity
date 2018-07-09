@@ -79,9 +79,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PostDiversityHttpTriggerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GetDiversityHttpTriggerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
