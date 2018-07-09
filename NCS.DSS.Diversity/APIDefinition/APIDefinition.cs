@@ -16,6 +16,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using NCS.DSS.Diversity.Annotations;
+using NCS.DSS.Diversity.Ioc;
 
 namespace NCS.DSS.Diversity.APIDefinition
 {
@@ -269,9 +270,9 @@ namespace NCS.DSS.Diversity.APIDefinition
                 if (parameter.ParameterType == typeof(HttpRequestMessage)) continue;
                 if (parameter.ParameterType == typeof(TraceWriter)) continue;
                 if (parameter.ParameterType == typeof(Microsoft.Extensions.Logging.ILogger)) continue;
+                if (parameter.GetCustomAttributes().Any(attr => attr is InjectAttribute)) continue;
 
                 bool hasUriAttribute = parameter.GetCustomAttributes().Any(attr => attr is FromUriAttribute);
-
 
                 if (route.Contains('{' + parameter.Name))
                 {
