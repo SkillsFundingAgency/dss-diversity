@@ -7,7 +7,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
 {
     public class PostDiversityHttpTriggerService : IPostDiversityHttpTriggerService
     {
-        public async Task<Guid?> CreateAsync(Models.Diversity diversity)
+        public async Task<Models.Diversity> CreateAsync(Models.Diversity diversity)
         {
             if (diversity == null)
                 return null;
@@ -16,9 +16,9 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
             diversity.DiversityId = diversityId;
 
             var documentDbProvider = new DocumentDBProvider();
-            var created = await documentDbProvider.CreateDiversityDetailAsync(diversity);
+            var response = await documentDbProvider.CreateDiversityDetailAsync(diversity);
 
-            return created.StatusCode == HttpStatusCode.Created ? diversityId : (Guid?)null;
+            return response.StatusCode == HttpStatusCode.Created ? (dynamic) response.Resource : null;
 
         }
     }

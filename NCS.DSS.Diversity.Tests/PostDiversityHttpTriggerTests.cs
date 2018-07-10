@@ -106,7 +106,7 @@ namespace NCS.DSS.Diversity.Tests
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
 
-            _postDiversityHttpTriggerService.CreateAsync(Arg.Any<Models.Diversity>()).Returns(Task.FromResult<Guid?>(null).Result);
+            _postDiversityHttpTriggerService.CreateAsync(Arg.Any<Models.Diversity>()).Returns(Task.FromResult<Models.Diversity>(null).Result);
 
             var result = await RunFunction(ValidCustomerId);
 
@@ -122,7 +122,7 @@ namespace NCS.DSS.Diversity.Tests
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
 
-            _postDiversityHttpTriggerService.CreateAsync(Arg.Any<Models.Diversity>()).Returns(Task.FromResult<Guid?>(Guid.NewGuid()).Result);
+            _postDiversityHttpTriggerService.CreateAsync(Arg.Any<Models.Diversity>()).Returns(Task.FromResult<Models.Diversity>(_diversity).Result);
 
             var result = await RunFunction(ValidCustomerId);
 

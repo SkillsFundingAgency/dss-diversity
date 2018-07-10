@@ -39,59 +39,38 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             log.Info("C# HTTP trigger function processed a request.");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
+                return HttpResponseMessageHelper.BadRequest(customerGuid);
+
+
+            Models.Diversity diversityRequest;
+
+            try
             {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent(JsonConvert.SerializeObject(customerGuid),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
+                diversityRequest = await httpRequestMessageHelper.GetDiversityFromRequest(req);
+            }
+            catch (JsonSerializationException ex)
+            {
+                return HttpResponseMessageHelper.UnprocessableEntity(ex);
             }
 
-            // Get request body
-            var diversity = await httpRequestMessageHelper.GetDiversityFromRequest(req);
+            if (diversityRequest == null)
+                return HttpResponseMessageHelper.UnprocessableEntity(req);
 
-            if (diversity == null)
-            {
-                return new HttpResponseMessage((HttpStatusCode)422)
-                {
-                    Content = new StringContent(JsonConvert.SerializeObject(req),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
-            }
-
-            // validate the request
-            var errors = validate.ValidateResource(diversity);
+            var errors = validate.ValidateResource(diversityRequest);
 
             if (errors != null && errors.Any())
-            {
-                return new HttpResponseMessage((HttpStatusCode) 422)
-                {
-                    Content = new StringContent("Validation error(s) : " +
-                                                JsonConvert.SerializeObject(errors),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
-            }
+                return HttpResponseMessageHelper.UnprocessableEntity(errors);
 
             var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-            {
-                return new HttpResponseMessage(HttpStatusCode.NoContent)
-                {
-                    Content = new StringContent("Unable to find a customer with Id of : " +
-                                                JsonConvert.SerializeObject(customerGuid),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
-            }
+                return HttpResponseMessageHelper.NoContent(customerGuid);
 
-            var diversityId = await postDiversityService.CreateAsync(diversity);
+            var diversity = await postDiversityService.CreateAsync(diversityRequest);
 
-            return diversityId == null
-                ? new HttpResponseMessage(HttpStatusCode.BadRequest)
-                : new HttpResponseMessage(HttpStatusCode.Created)
-                {
-                    Content = new StringContent("Created Diversity record with Id of : " + diversityId)
-                };
+            return diversity == null
+                ? HttpResponseMessageHelper.BadRequest(customerGuid)
+                : HttpResponseMessageHelper.Created(diversity);
         }
     }
 }
