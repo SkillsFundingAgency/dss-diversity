@@ -14,9 +14,6 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="NCS.DSS.Diversity">
-      <HintPath>bin\Debug\net461\bin\NCS.DSS.Diversity.dll</HintPath>
-    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
   </ItemGroup>
