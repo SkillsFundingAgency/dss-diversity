@@ -36,7 +36,7 @@ namespace NCS.DSS.Diversity.Tests
 
             _request = new HttpRequestMessage()
             {
-                Content = new HttpMessageContent(new HttpRequestMessage(HttpMethod.Post, new Uri($"http://localhost:7071/api/Customers/7E467BDB-213F-407A-B86A-1954053D3C24/DiversityDetails/"))),
+                Content = new StringContent(string.Empty),
                 RequestUri = new Uri($"http://localhost:7071/api/Customers/7E467BDB-213F-407A-B86A-1954053D3C24/DiversityDetails/")
             };
 
