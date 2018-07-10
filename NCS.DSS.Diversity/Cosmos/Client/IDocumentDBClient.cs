@@ -5,6 +5,5 @@ namespace NCS.DSS.Diversity.Cosmos.Client
     public interface IDocumentDBClient
     {
         DocumentClient CreateDocumentClient();
-        DocumentClient CreateCustomerDocumentClient();
     }
 }
