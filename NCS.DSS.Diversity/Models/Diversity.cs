@@ -15,12 +15,12 @@ namespace NCS.DSS.Diversity.Models
         [Required]
         [Display(Description = "Unique identifier of a customer.")]
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
-        public Guid CustomerId { get; set; }
+        public Guid? CustomerId { get; set; }
 
         [Required]
         [Display(Description = "Indicator to say consent to collect special category LLDD Health data was given by the customer.")]
         [Example(Description = "false")]
-        public bool ConsentToCollectLLDDHealth { get; set; }
+        public bool? ConsentToCollectLLDDHealth { get; set; }
 
         [Required]
         [Display(Description = "Learning Difficulty Or Disability Health Problem Declaration reference data.")]
