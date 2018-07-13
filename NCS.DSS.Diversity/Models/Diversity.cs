@@ -40,11 +40,11 @@ namespace NCS.DSS.Diversity.Models
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time the LLDD Heath consent was collected from the customer.")]
         [Example(Description = "2018-06-21T17:45:00")]
-        public DateTime DateAndTimeLLDDHealthConsentCollected { get; set; }
+        public DateTime? DateAndTimeLLDDHealthConsentCollected { get; set; }
 
         [Display(Description = "Indicator to say consent to collect special category ethnicity data was given by the customer.")]
         [Example(Description = "true")]
-        public bool ConsentToCollectEthnicity { get; set; }
+        public bool? ConsentToCollectEthnicity { get; set; }
 
         [Required]
         [Display(Description = "Ethnicity reference data.")]
@@ -54,15 +54,15 @@ namespace NCS.DSS.Diversity.Models
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time ethnicity data was collected from the customer")]
         [Example(Description = "2018-06-21T14:45:00")]
-        public DateTime DateAndTimeEthnicityCollected { get; set; }
+        public DateTime? DateAndTimeEthnicityCollected { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time of the last modification to the record.")]
         [Example(Description = "2018-06-21T12:17:00")]
-        public DateTime LastModifiedDate { get; set; }
+        public DateTime? LastModifiedDate { get; set; }
 
         [Display(Description = "Identifier of the touchpoint who made the last change to the record")]
         [Example(Description = "d1307d77-af23-4cb4-b600-a60e04f8c3df")]
-        public Guid LastModifiedBy { get; set; }
+        public Guid? LastModifiedBy { get; set; }
     } 
 }
