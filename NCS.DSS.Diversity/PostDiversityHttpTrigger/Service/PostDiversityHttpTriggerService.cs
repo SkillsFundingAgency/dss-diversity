@@ -15,6 +15,9 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
             var diversityId = Guid.NewGuid();
             diversity.DiversityId = diversityId;
 
+            if (!diversity.LastModifiedDate.HasValue)
+                diversity.LastModifiedDate = DateTime.Now;
+
             var documentDbProvider = new DocumentDBProvider();
             var response = await documentDbProvider.CreateDiversityDetailAsync(diversity);
 
