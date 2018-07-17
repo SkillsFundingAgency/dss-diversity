@@ -25,23 +25,22 @@ namespace NCS.DSS.Diversity.Models
         [Required]
         [Display(Description = "Learning Difficulty Or Disability Health Problem Declaration reference data.")]
         [Example(Description = "1")]
-        public LearningDifficultyOrDisabilityDeclaration LearningDifficultyOrDisabilityDeclaration { get; set; }
+        public LearningDifficultyOrDisabilityDeclaration? LearningDifficultyOrDisabilityDeclaration { get; set; }
 
-        [Required]
         [Display(Description = "Primary Learning Difficulty Or Disability Heath Problem reference data.")]
         [Example(Description = "4")]
-        public PrimaryLearningDifficultyOrDisability PrimaryLearningDifficultyOrDisability { get; set; }
+        public PrimaryLearningDifficultyOrDisability? PrimaryLearningDifficultyOrDisability { get; set; }
 
-        [Required]
         [Display(Description = "Secondary Learning Difficulty Or Disability Heath Problem reference data.")]
         [Example(Description = "5")]
-        public SecondaryLearningDifficultyOrDisability SecondaryLearningDifficultyOrDisability { get; set; }
+        public SecondaryLearningDifficultyOrDisability? SecondaryLearningDifficultyOrDisability { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time the LLDD Heath consent was collected from the customer.")]
         [Example(Description = "2018-06-21T17:45:00")]
         public DateTime? DateAndTimeLLDDHealthConsentCollected { get; set; }
 
+        [Required]
         [Display(Description = "Indicator to say consent to collect special category ethnicity data was given by the customer.")]
         [Example(Description = "true")]
         public bool? ConsentToCollectEthnicity { get; set; }
@@ -49,7 +48,7 @@ namespace NCS.DSS.Diversity.Models
         [Required]
         [Display(Description = "Ethnicity reference data.")]
         [Example(Description = "31")]
-        public Ethnicity Ethnicity { get; set; }
+        public Ethnicity? Ethnicity { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time ethnicity data was collected from the customer")]
