@@ -4,8 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Azure.WebJobs.Extensions;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.Helpers;
 using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
@@ -21,7 +20,7 @@ namespace NCS.DSS.Diversity.Tests
     {
         private const string ValidCustomerId = "1e1a555c-9633-4e12-ab28-09ed60d51cb3";
         private const string InValidCustomerId = "1111111-2222-3333-4444-555555555555";
-        private TraceWriter _log;
+        private ILogger _log;
         private HttpRequestMessage _request;
         private IResourceHelper _resourceHelper;
         private IPostDiversityHttpTriggerService _postDiversityHttpTriggerService;
@@ -40,7 +39,7 @@ namespace NCS.DSS.Diversity.Tests
                 RequestUri = new Uri($"http://localhost:7071/api/Customers/7E467BDB-213F-407A-B86A-1954053D3C24/DiversityDetails/")
             };
 
-            _log = new TraceMonitor();
+            _log = Substitute.For<ILogger>();
             _resourceHelper = Substitute.For<IResourceHelper>();
             _postDiversityHttpTriggerService = Substitute.For<IPostDiversityHttpTriggerService>();
             _validate = Substitute.For<IValidate>();
