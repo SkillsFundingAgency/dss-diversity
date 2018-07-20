@@ -9,7 +9,9 @@ using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.Helpers;
 using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.Validation;
+using Newtonsoft.Json;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace NCS.DSS.Diversity.Tests
@@ -74,8 +76,7 @@ namespace NCS.DSS.Diversity.Tests
         [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenDiversityRequestIsInvalid()
         {
-            var validationResults = new List<ValidationResult> {new ValidationResult("Customer Id is Required") };
-            _validate.ValidateResource(Arg.Any<Models.Diversity>()).Returns(validationResults);
+            _httpRequestMessageHelper.GetDiversityFromRequest(_request).Throws(new JsonException());
 
             var result = await RunFunction(ValidCustomerId);
 
@@ -121,7 +122,7 @@ namespace NCS.DSS.Diversity.Tests
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
 
-            _postDiversityHttpTriggerService.CreateAsync(Arg.Any<Models.Diversity>()).Returns(Task.FromResult<Models.Diversity>(_diversity).Result);
+            _postDiversityHttpTriggerService.CreateAsync(Arg.Any<Models.Diversity>()).Returns(Task.FromResult(_diversity).Result);
 
             var result = await RunFunction(ValidCustomerId);
 

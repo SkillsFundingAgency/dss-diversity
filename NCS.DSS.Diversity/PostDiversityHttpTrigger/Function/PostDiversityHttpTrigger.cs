@@ -46,7 +46,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             {
                 diversityRequest = await httpRequestMessageHelper.GetDiversityFromRequest(req);
             }
-            catch (JsonSerializationException ex)
+            catch (JsonException ex)
             {
                 return HttpResponseMessageHelper.UnprocessableEntity(ex);
             }
