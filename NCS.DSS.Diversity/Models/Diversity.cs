@@ -5,7 +5,7 @@ using NCS.DSS.Diversity.ReferenceData;
 
 namespace NCS.DSS.Diversity.Models
 {
-    public class Diversity
+    public class Diversity : IDiversity
     {
         [Display(Description = "Unique identifier for a diversity record")]
         [Example(Description = "b8592ff8-af97-49ad-9fb2-e5c3c717fd85")]
@@ -63,5 +63,20 @@ namespace NCS.DSS.Diversity.Models
         [Display(Description = "Identifier of the touchpoint who made the last change to the record")]
         [Example(Description = "d1307d77-af23-4cb4-b600-a60e04f8c3df")]
         public Guid? LastModifiedBy { get; set; }
+
+        public void SetDefaultValues()
+        {
+            var diversityId = Guid.NewGuid();
+            DiversityId = diversityId;
+
+            if (!LastModifiedDate.HasValue)
+                LastModifiedDate = DateTime.Now;
+
+            if (PrimaryLearningDifficultyOrDisability == null)
+                PrimaryLearningDifficultyOrDisability = ReferenceData.PrimaryLearningDifficultyOrDisability.NotProvided;
+
+            if (SecondaryLearningDifficultyOrDisability == null)
+                SecondaryLearningDifficultyOrDisability = ReferenceData.SecondaryLearningDifficultyOrDisability.NotProvided;
+        }
     } 
 }

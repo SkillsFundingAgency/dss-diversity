@@ -12,11 +12,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
             if (diversity == null)
                 return null;
 
-            var diversityId = Guid.NewGuid();
-            diversity.DiversityId = diversityId;
-
-            if (!diversity.LastModifiedDate.HasValue)
-                diversity.LastModifiedDate = DateTime.Now;
+            diversity.SetDefaultValues();
 
             var documentDbProvider = new DocumentDBProvider();
             var response = await documentDbProvider.CreateDiversityDetailAsync(diversity);
