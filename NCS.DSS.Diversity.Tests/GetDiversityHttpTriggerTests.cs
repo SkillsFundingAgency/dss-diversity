@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.GetDiversityHttpTrigger.Service;
+using NCS.DSS.Diversity.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
@@ -20,6 +21,7 @@ namespace NCS.DSS.Diversity.Tests
         private ILogger _log;
         private HttpRequestMessage _request;
         private IResourceHelper _resourceHelper;
+        private IHttpRequestMessageHelper _httpRequestMessageHelper;
         private IGetDiversityHttpTriggerService _getDiversityHttpTriggerService;
 
         [SetUp]
@@ -33,7 +35,22 @@ namespace NCS.DSS.Diversity.Tests
 
             _log = Substitute.For<ILogger>();
             _resourceHelper = Substitute.For<IResourceHelper>();
+            _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
             _getDiversityHttpTriggerService = Substitute.For<IGetDiversityHttpTriggerService>();
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
+        }
+
+        [Test]
+        public async Task GetDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
+        {
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns((Guid?)null);
+
+            // Act
+            var result = await RunFunction(ValidCustomerId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
         [Test]
@@ -94,7 +111,7 @@ namespace NCS.DSS.Diversity.Tests
         private async Task<HttpResponseMessage> RunFunction(string customerId)
         {
             return await GetDiversityHttpTrigger.Function.GetDiversityHttpTrigger.Run(
-                _request, _log, customerId, _resourceHelper, _getDiversityHttpTriggerService).ConfigureAwait(false);
+                _request, _log, customerId, _resourceHelper, _httpRequestMessageHelper, _getDiversityHttpTriggerService).ConfigureAwait(false);
         }
     }
 }

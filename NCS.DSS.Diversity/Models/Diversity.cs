@@ -70,7 +70,7 @@ namespace NCS.DSS.Diversity.Models
             DiversityId = diversityId;
 
             if (!LastModifiedDate.HasValue)
-                LastModifiedDate = DateTime.Now;
+                LastModifiedDate = DateTime.UtcNow;
 
             if (PrimaryLearningDifficultyOrDisability == null)
                 PrimaryLearningDifficultyOrDisability = ReferenceData.PrimaryLearningDifficultyOrDisability.NotProvided;

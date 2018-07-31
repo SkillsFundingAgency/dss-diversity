@@ -46,6 +46,21 @@ namespace NCS.DSS.Diversity.Tests
             _postDiversityHttpTriggerService = Substitute.For<IPostDiversityHttpTriggerService>();
             _validate = Substitute.For<IValidate>();
             _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
+
+        }
+
+        [Test]
+        public async Task PostDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
+        {
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns((Guid?)null);
+
+            // Act
+            var result = await RunFunction(ValidCustomerId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
         [Test]
