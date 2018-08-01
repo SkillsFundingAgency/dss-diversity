@@ -9,6 +9,12 @@ namespace NCS.DSS.Diversity.Helpers
     {
         public async Task<Models.Diversity> GetDiversityFromRequest(HttpRequestMessage req)
         {
+            if (req == null)
+                return default(Models.Diversity);
+
+            if (req.Content?.Headers?.ContentType != null)
+                req.Content.Headers.ContentType.MediaType = "application/json";
+
             return await req.Content.ReadAsAsync<Models.Diversity>();
         }
 
