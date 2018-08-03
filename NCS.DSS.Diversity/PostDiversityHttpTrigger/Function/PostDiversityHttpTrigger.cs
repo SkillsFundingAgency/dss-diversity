@@ -77,7 +77,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
             return diversity == null
                 ? HttpResponseMessageHelper.BadRequest(customerGuid)
-                : HttpResponseMessageHelper.Created(diversity);
+                : HttpResponseMessageHelper.Created(JsonHelper.SerializeObject(diversity));
         }
     }
 }

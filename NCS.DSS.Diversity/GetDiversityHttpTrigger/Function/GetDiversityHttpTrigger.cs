@@ -49,7 +49,7 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
 
             return diversityId == null ?
                 HttpResponseMessageHelper.NoContent(customerGuid) : 
-                HttpResponseMessageHelper.Ok(diversityId);
+                HttpResponseMessageHelper.Ok(diversityId.Value);
         }
     }
 }
