@@ -32,7 +32,7 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger
                    SecondaryLearningDifficultyOrDisability = SecondaryLearningDifficultyOrDisability.AutismSpectrumDisorder,
                    Ethnicity = Ethnicity.African,
                    LastModifiedDate = DateTime.UtcNow,
-                   LastModifiedBy = Guid.Empty
+                   LastModifiedBy = String.Empty
                },
                 new Models.Diversity
                 {
@@ -46,7 +46,7 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger
                     SecondaryLearningDifficultyOrDisability = SecondaryLearningDifficultyOrDisability.Dyscalculia,
                     Ethnicity = Ethnicity.Chinese,
                     LastModifiedDate = DateTime.UtcNow,
-                    LastModifiedBy = Guid.Empty
+                    LastModifiedBy = String.Empty
                 },
                 new Models.Diversity
                 {
@@ -61,7 +61,7 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger
                     SecondaryLearningDifficultyOrDisability = SecondaryLearningDifficultyOrDisability.TemporaryDisabilityAfterIllnessOrAccident,
                     Ethnicity = Ethnicity.GypsyIrishTraveller,
                     LastModifiedDate = DateTime.UtcNow,
-                    LastModifiedBy = Guid.Empty
+                    LastModifiedBy = String.Empty
                 }
             };
 
