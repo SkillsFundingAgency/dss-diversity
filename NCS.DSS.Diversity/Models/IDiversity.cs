@@ -14,7 +14,7 @@ namespace NCS.DSS.Diversity.Models
         Ethnicity? Ethnicity { get; set; }
         DateTime? DateAndTimeEthnicityCollected { get; set; }
         DateTime? LastModifiedDate { get; set; }
-        Guid? LastModifiedBy { get; set; }
+        string LastModifiedBy { get; set; }
 
         void SetDefaultValues();
     }
