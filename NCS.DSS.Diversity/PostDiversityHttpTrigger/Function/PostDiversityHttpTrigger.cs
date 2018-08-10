@@ -61,7 +61,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             if (diversityRequest == null)
                 return HttpResponseMessageHelper.UnprocessableEntity(req);
 
-            diversityRequest.LastModifiedBy = touchpointId;
+            diversityRequest.SetIds(customerGuid, touchpointId);
 
             var errors = validate.ValidateResource(diversityRequest);
 
