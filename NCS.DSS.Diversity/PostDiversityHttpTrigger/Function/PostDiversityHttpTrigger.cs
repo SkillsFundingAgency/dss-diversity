@@ -51,7 +51,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
             try
             {
-                diversityRequest = await httpRequestMessageHelper.GetDiversityFromRequest(req);
+                diversityRequest = await httpRequestMessageHelper.GetDiversityFromRequest<Models.Diversity>(req);
             }
             catch (JsonException ex)
             {
