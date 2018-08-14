@@ -6,7 +6,7 @@ namespace NCS.DSS.Diversity.Helpers
 {
     public interface IHttpRequestMessageHelper
     {
-        Task<Models.Diversity> GetDiversityFromRequest(HttpRequestMessage req);
+        Task<T> GetDiversityFromRequest<T>(HttpRequestMessage req);
         string GetTouchpointId(HttpRequestMessage req);
     }
 }

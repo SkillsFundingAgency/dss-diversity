@@ -54,6 +54,26 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
             return diversityDetail?.DiversityId;
         }
 
+        public async Task<Models.Diversity> GetDiversityDetailForCustomerAsync(Guid customerId, Guid diversityId)
+        {
+            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+
+            var client = _databaseClient.CreateDocumentClient();
+
+            var diversityDetailQuery = client
+                ?.CreateDocumentQuery<Models.Diversity>(collectionUri, new FeedOptions { MaxItemCount = 1 })
+                .Where(x => x.CustomerId == customerId &&
+                            x.DiversityId == diversityId)
+                .AsDocumentQuery();
+
+            if (diversityDetailQuery == null)
+                return null;
+
+            var diversityDetails = await diversityDetailQuery.ExecuteNextAsync<Models.Diversity>();
+
+            return diversityDetails?.FirstOrDefault();
+        }
+
         public async Task<ResourceResponse<Document>> CreateDiversityDetailAsync(Models.Diversity diversity)
         {
 

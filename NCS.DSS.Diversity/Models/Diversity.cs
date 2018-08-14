@@ -61,7 +61,8 @@ namespace NCS.DSS.Diversity.Models
 
         [StringLength(10, MinimumLength = 10)]
         [Display(Description = "Identifier of the touchpoint who made the last change to the record")]
-        [Example(Description = "0000000001")] public string LastModifiedBy { get; set; }
+        [Example(Description = "0000000001")]
+        public string LastModifiedBy { get; set; }
 
         public void SetDefaultValues()
         {
@@ -80,6 +81,42 @@ namespace NCS.DSS.Diversity.Models
             DiversityId = Guid.NewGuid();
             CustomerId = customerId;
             LastModifiedBy = touchpointId;
+        }
+
+        public void Patch(DiversityPatch diversityPatch)
+        {
+            if (diversityPatch == null)
+                return;
+
+            if(diversityPatch.ConsentToCollectLLDDHealth.HasValue)
+                ConsentToCollectLLDDHealth = diversityPatch.ConsentToCollectLLDDHealth;
+
+            if(diversityPatch.LearningDifficultyOrDisabilityDeclaration.HasValue)
+                LearningDifficultyOrDisabilityDeclaration = diversityPatch.LearningDifficultyOrDisabilityDeclaration;
+
+            if(diversityPatch.PrimaryLearningDifficultyOrDisability.HasValue)
+                PrimaryLearningDifficultyOrDisability = diversityPatch.PrimaryLearningDifficultyOrDisability;
+
+            if (diversityPatch.SecondaryLearningDifficultyOrDisability.HasValue)
+                SecondaryLearningDifficultyOrDisability = diversityPatch.SecondaryLearningDifficultyOrDisability;
+
+            if(diversityPatch.DateAndTimeLLDDHealthConsentCollected.HasValue)
+                DateAndTimeLLDDHealthConsentCollected = diversityPatch.DateAndTimeLLDDHealthConsentCollected;
+
+            if(diversityPatch.ConsentToCollectEthnicity.HasValue)
+                ConsentToCollectEthnicity = diversityPatch.ConsentToCollectEthnicity;
+
+            if(diversityPatch.Ethnicity.HasValue)
+                Ethnicity = diversityPatch.Ethnicity;
+
+            if(diversityPatch.DateAndTimeEthnicityCollected.HasValue)
+                DateAndTimeEthnicityCollected = diversityPatch.DateAndTimeEthnicityCollected;
+
+            if (diversityPatch.LastModifiedDate.HasValue)
+                LastModifiedDate = diversityPatch.LastModifiedDate;
+
+            if(!string.IsNullOrWhiteSpace(diversityPatch.LastModifiedBy))
+                LastModifiedBy = diversityPatch.LastModifiedBy;
         }
     } 
 }

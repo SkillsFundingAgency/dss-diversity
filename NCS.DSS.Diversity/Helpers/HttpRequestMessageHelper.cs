@@ -8,15 +8,15 @@ namespace NCS.DSS.Diversity.Helpers
 {
     public class HttpRequestMessageHelper : IHttpRequestMessageHelper
     {
-        public async Task<Models.Diversity> GetDiversityFromRequest(HttpRequestMessage req)
+        public async Task<T> GetDiversityFromRequest<T>(HttpRequestMessage req)
         {
             if (req == null)
-                return default(Models.Diversity);
+                return default(T);
 
             if (req.Content?.Headers != null)
                 req.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-            return await req.Content.ReadAsAsync<Models.Diversity>();
+            return await req.Content.ReadAsAsync<T>();
         }
 
         public string GetTouchpointId(HttpRequestMessage req)

@@ -9,6 +9,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
     {
         bool DoesCustomerResourceExist(Guid customerId);
         Task<Guid?> GetDiversityDetailIdForCustomerAsync(Guid customerId);
+        Task<Models.Diversity> GetDiversityDetailForCustomerAsync(Guid customerId, Guid diversityId);
         Task<ResourceResponse<Document>> CreateDiversityDetailAsync(Models.Diversity diversity);
         Task<ResourceResponse<Document>> UpdateDiversityDetailAsync(Models.Diversity diversity);
     }

@@ -47,7 +47,7 @@ namespace NCS.DSS.Diversity.Tests
             _validate = Substitute.For<IValidate>();
             _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
             _httpRequestMessageHelper.GetTouchpointId(_request).Returns("0000000001");
-
+            _httpRequestMessageHelper.GetDiversityFromRequest<Models.Diversity>(_request).Returns(Task.FromResult(_diversity).Result);
         }
 
         [Test]
@@ -76,8 +76,6 @@ namespace NCS.DSS.Diversity.Tests
         [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenDiversityHasFailedValidation()
         {
-            _httpRequestMessageHelper.GetDiversityFromRequest(_request).Returns(Task.FromResult(_diversity).Result);
-
             var validationResults = new List<ValidationResult> { new ValidationResult("Customer Id is Required") };
             _validate.ValidateResource(Arg.Any<Models.Diversity>()).Returns(validationResults);
 
@@ -91,7 +89,7 @@ namespace NCS.DSS.Diversity.Tests
         [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenDiversityRequestIsInvalid()
         {
-            _httpRequestMessageHelper.GetDiversityFromRequest(_request).Throws(new JsonException());
+            _httpRequestMessageHelper.GetDiversityFromRequest<Models.Diversity>(_request).Throws(new JsonException());
 
             var result = await RunFunction(ValidCustomerId);
 
@@ -103,8 +101,6 @@ namespace NCS.DSS.Diversity.Tests
         [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
         {
-            _httpRequestMessageHelper.GetDiversityFromRequest(_request).Returns(Task.FromResult(_diversity).Result);
-
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(false);
 
             var result = await RunFunction(ValidCustomerId);
@@ -117,8 +113,6 @@ namespace NCS.DSS.Diversity.Tests
         [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToCreateDiversityDetailRecord()
         {
-            _httpRequestMessageHelper.GetDiversityFromRequest(_request).Returns(Task.FromResult(_diversity).Result);
-
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
 
             _postDiversityHttpTriggerService.CreateAsync(Arg.Any<Models.Diversity>()).Returns(Task.FromResult<Models.Diversity>(null).Result);
@@ -133,8 +127,6 @@ namespace NCS.DSS.Diversity.Tests
         [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeCreated_WhenRequestIsValid()
         {
-            _httpRequestMessageHelper.GetDiversityFromRequest(_request).Returns(Task.FromResult(_diversity).Result);
-
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
 
             _postDiversityHttpTriggerService.CreateAsync(Arg.Any<Models.Diversity>()).Returns(Task.FromResult(_diversity).Result);
