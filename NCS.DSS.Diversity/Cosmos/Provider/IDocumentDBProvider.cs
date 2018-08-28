@@ -8,6 +8,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
     public interface IDocumentDBProvider
     {
         bool DoesCustomerResourceExist(Guid customerId);
+        bool DoesDiversityDetailsExistForCustomer(Guid customerId);
         Task<Guid?> GetDiversityDetailIdForCustomerAsync(Guid customerId);
         Task<Models.Diversity> GetDiversityDetailForCustomerAsync(Guid customerId, Guid diversityId);
         Task<ResourceResponse<Document>> CreateDiversityDetailAsync(Models.Diversity diversity);

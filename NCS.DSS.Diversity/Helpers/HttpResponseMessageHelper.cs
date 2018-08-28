@@ -13,6 +13,11 @@ namespace NCS.DSS.Diversity.Helpers
 
         #region Ok(200)
 
+        public static HttpResponseMessage Ok()
+        {
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
         public static HttpResponseMessage Ok(Guid id)
         {
             return new HttpResponseMessage(HttpStatusCode.OK)
@@ -71,6 +76,15 @@ namespace NCS.DSS.Diversity.Helpers
                 Content = new StringContent(JsonConvert.SerializeObject(id),
                     Encoding.UTF8, "application/json")
             };
+        }
+
+        #endregion
+
+        #region Conflict(409)
+
+        public static HttpResponseMessage Conflict()
+        {
+            return new HttpResponseMessage(HttpStatusCode.Conflict);
         }
 
         #endregion

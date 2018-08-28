@@ -111,6 +111,21 @@ namespace NCS.DSS.Diversity.Tests
         }
 
         [Test]
+        public async Task PostDiversityHttpTrigger_ReturnsStatusCodeConflict_WhenDiversityDetailsForCustomerExists()
+        {
+            _httpRequestMessageHelper.GetDiversityFromRequest<Models.Diversity>(_request).Returns(Task.FromResult(_diversity).Result);
+
+            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
+            _postDiversityHttpTriggerService.DoesDiversityDetailsExistForCustomer(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
+
+            var result = await RunFunction(ValidCustomerId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.Conflict, result.StatusCode);
+        }
+
+        [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToCreateDiversityDetailRecord()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
