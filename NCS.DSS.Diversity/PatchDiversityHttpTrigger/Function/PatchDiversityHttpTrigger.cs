@@ -85,7 +85,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
 
             return updatedDiversity == null ?
                 HttpResponseMessageHelper.BadRequest(customerGuid) :
-                HttpResponseMessageHelper.Ok(JsonHelper.SerializeObject(updatedDiversity));
+                HttpResponseMessageHelper.Ok();
         }
     }
 }

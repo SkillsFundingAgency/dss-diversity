@@ -33,6 +33,19 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
             return customerQuery.Where(x => x.Id == customerId.ToString()).Select(x => x.Id).AsEnumerable().Any();
         }
 
+        public bool DoesDiversityDetailsExistForCustomer(Guid customerId)
+        {
+            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+
+            var client = _databaseClient.CreateDocumentClient();
+
+            if (client == null)
+                return false;
+
+            var diversityDetailsForCustomerQuery = client.CreateDocumentQuery<Models.Diversity>(collectionUri, new FeedOptions { MaxItemCount = 1 });
+            return diversityDetailsForCustomerQuery.Where(x => x.CustomerId == customerId).AsEnumerable().Any();
+        }
+
         public async Task<Guid?> GetDiversityDetailIdForCustomerAsync(Guid customerId)
         {
             var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();

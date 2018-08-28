@@ -27,6 +27,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
         [Response(HttpStatusCode = (int) HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
         [Response(HttpStatusCode = (int) HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int) HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Conflict, Description = "Diversity Details already exists for customer", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Diversity validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new diversity record for a given customer.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/DiversityDetails")] HttpRequestMessage req, ILogger log, string customerId,
@@ -72,6 +73,11 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
             if (!doesCustomerExist)
                 return HttpResponseMessageHelper.NoContent(customerGuid);
+
+            var doesDiversityDetailsExist = postDiversityService.DoesDiversityDetailsExistForCustomer(customerGuid);
+
+            if (doesDiversityDetailsExist)
+                return HttpResponseMessageHelper.Conflict();
 
             var diversity = await postDiversityService.CreateAsync(diversityRequest);
 
