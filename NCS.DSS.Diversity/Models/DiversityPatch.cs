@@ -77,7 +77,7 @@ namespace NCS.DSS.Diversity.Models
         [Example(Description = "true")]
         public bool? ConsentToCollectEthnicity { get; set; }
 
-        [Display(Description = "Ethnicity reference data values  :  " +
+        [Display(Description = "Ethnicity reference data values   :   " +
                                 "31 - English / Welsh / Scottish / Northern Irish / British,   " +
                                 "32 - Irish,   " +
                                 "33 - Gypsy or Irish Traveller,   " +
