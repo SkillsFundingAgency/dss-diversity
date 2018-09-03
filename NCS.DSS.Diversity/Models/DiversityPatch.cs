@@ -11,6 +11,7 @@ namespace NCS.DSS.Diversity.Models
         [Example(Description = "false")]
         public bool? ConsentToCollectLLDDHealth { get; set; }
 
+
         [Display(Description = "Learning Difficulty Or Disability Health Problem Declaration reference data   :   " +
                                 "1 - Customer considers themselves to have a learning difficulty and / or health problem, " +
                                 "2 - Customer does not consider themselves to have a learning difficulty and / or health problem, " +
