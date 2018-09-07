@@ -17,7 +17,7 @@ namespace NCS.DSS.Diversity.Models
         public Guid? CustomerId { get; set; }
 
         [Required]
-        [Display(Description = "Indicator to say consent to collect special category LLDD Health data was given by the customer.")]
+        [Display(Description = "Indicator to say consent to collect special category LLDD Health data was given by the customer")]
         [Example(Description = "false")]
         public bool? ConsentToCollectLLDDHealth { get; set; }
 
@@ -90,7 +90,7 @@ namespace NCS.DSS.Diversity.Models
         public bool? ConsentToCollectEthnicity { get; set; }
 
         [Required]
-        [Display(Description = "Ethnicity reference data values  :  " +
+        [Display(Description = "Ethnicity reference data values   :   " +
                                 "31 - English / Welsh / Scottish / Northern Irish / British,   " +
                                 "32 - Irish,   " +
                                 "33 - Gypsy or Irish Traveller,   " +
