@@ -11,59 +11,56 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
 {
     public class DocumentDBProvider : IDocumentDBProvider
     {
-        private readonly DocumentDBHelper _documentDbHelper;
-        private readonly DocumentDBClient _databaseClient;
-
-        public DocumentDBProvider()
+        public async Task<bool> DoesCustomerResourceExist(Guid customerId)
         {
-            _documentDbHelper = new DocumentDBHelper();
-            _databaseClient = new DocumentDBClient();
-        }
+            var documentUri = DocumentDBHelper.CreateCustomerDocumentUri(customerId);
 
-        public bool DoesCustomerResourceExist(Guid customerId)
-        {
-            var collectionUri = _documentDbHelper.CreateCustomerDocumentCollectionUri();
-
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return false;
+            try
+            {
+                var response = await client.ReadDocumentAsync(documentUri);
+                if (response.Resource != null)
+                    return true;
+            }
+            catch (DocumentClientException)
+            {
+                return false;
+            }
 
-            var customerQuery = client.CreateDocumentQuery<Document>(collectionUri, new FeedOptions() { MaxItemCount = 1 });
-            return customerQuery.Where(x => x.Id == customerId.ToString()).Select(x => x.Id).AsEnumerable().Any();
+            return false;
         }
 
         public async Task<bool> DoesCustomerHaveATerminationDate(Guid customerId)
         {
-            var collectionUri = _documentDbHelper.CreateCustomerDocumentCollectionUri();
+            var documentUri = DocumentDBHelper.CreateCustomerDocumentUri(customerId);
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
-            var customerByIdQuery = client
-                ?.CreateDocumentQuery<Document>(collectionUri, new FeedOptions { MaxItemCount = 1 })
-                .Where(x => x.Id == customerId.ToString())
-                .AsDocumentQuery();
-
-            if (customerByIdQuery == null)
+            if (client == null)
                 return false;
 
-            var customerQuery = await customerByIdQuery.ExecuteNextAsync<Document>();
+            try
+            {
+                var response = await client.ReadDocumentAsync(documentUri);
 
-            var customer = customerQuery?.FirstOrDefault();
+                var dateOfTermination = response.Resource?.GetPropertyValue<DateTime?>("DateOfTermination");
 
-            if (customer == null)
+                return dateOfTermination.HasValue;
+            }
+            catch (DocumentClientException)
+            {
                 return false;
-
-            var dateOfTermination = customer.GetPropertyValue<DateTime?>("DateOfTermination");
-
-            return dateOfTermination.HasValue;
+            }
         }
 
         public bool DoesDiversityDetailsExistForCustomer(Guid customerId)
         {
-            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return false;
@@ -74,9 +71,9 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
 
         public async Task<Guid?> GetDiversityDetailIdForCustomerAsync(Guid customerId)
         {
-            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             var diversityDetailQuery = client
                 ?.CreateDocumentQuery<Models.Diversity>(collectionUri, new FeedOptions {MaxItemCount = 1})
@@ -95,9 +92,9 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
 
         public async Task<Models.Diversity> GetDiversityDetailForCustomerAsync(Guid customerId, Guid diversityId)
         {
-            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             var diversityDetailQuery = client
                 ?.CreateDocumentQuery<Models.Diversity>(collectionUri, new FeedOptions { MaxItemCount = 1 })
@@ -116,9 +113,9 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
         public async Task<ResourceResponse<Document>> CreateDiversityDetailAsync(Models.Diversity diversity)
         {
 
-            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
@@ -131,9 +128,9 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
 
         public async Task<ResourceResponse<Document>> UpdateDiversityDetailAsync(Models.Diversity diversity)
         {
-            var documentUri = _documentDbHelper.CreateDocumentUri(diversity.DiversityId.GetValueOrDefault());
+            var documentUri = DocumentDBHelper.CreateDocumentUri(diversity.DiversityId.GetValueOrDefault());
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
