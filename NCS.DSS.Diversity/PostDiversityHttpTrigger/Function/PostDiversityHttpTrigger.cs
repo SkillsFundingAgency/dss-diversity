@@ -4,14 +4,17 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http.Description;
+using DFC.Common.Standard.Logging;
+using DFC.Functions.DI.Standard.Attributes;
+using DFC.HTTP.Standard;
+using DFC.JSON.Standard;
+using DFC.Swagger.Standard.Annotations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using NCS.DSS.Diversity.Annotations;
 using NCS.DSS.Diversity.Cosmos.Helper;
-using NCS.DSS.Diversity.Helpers;
-using NCS.DSS.Diversity.Ioc;
 using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.Validation;
 using Newtonsoft.Json;
@@ -21,7 +24,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
     public static class PostDiversityHttpTrigger
     {
         [FunctionName("Post")]
-        [ResponseType(typeof(Models.Diversity))]
+        [ProducesResponseType(typeof(Models.Diversity), 201)]
         [Response(HttpStatusCode = (int) HttpStatusCode.Created, Description = "Diversity Created", ShowSchema = true)]
         [Response(HttpStatusCode = (int) HttpStatusCode.NoContent, Description = "Diversity does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int) HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
@@ -30,65 +33,102 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Conflict, Description = "Diversity Details already exists for customer", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Diversity validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new diversity record for a given customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/DiversityDetails")] HttpRequestMessage req, ILogger log, string customerId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/DiversityDetails")] HttpRequest req, ILogger log, string customerId,
             [Inject]IResourceHelper resourceHelper,
-            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
+            [Inject]IPostDiversityHttpTriggerService postDiversityService,
             [Inject]IValidate validate,
-            [Inject]IPostDiversityHttpTriggerService postDiversityService)
+            [Inject]ILoggerHelper loggerHelper,
+            [Inject]IHttpRequestHelper httpRequestHelper,
+            [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
+            [Inject]IJsonHelper jsonHelper)
         {
-            var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
-           if (string.IsNullOrEmpty(touchpointId))
+            loggerHelper.LogMethodEnter(log);
+
+            var correlationId = httpRequestHelper.GetDssCorrelationId(req);
+            if (string.IsNullOrEmpty(correlationId))
+                log.LogInformation("Unable to locate 'DssCorrelationId' in request header");
+
+            if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
-                log.LogInformation("Unable to locate 'TouchpointId' in request header.");
-                return HttpResponseMessageHelper.BadRequest();
+                log.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
+                correlationGuid = Guid.NewGuid();
             }
 
-            log.LogInformation("C# HTTP trigger function processed a request. " + touchpointId);
+            var touchpointId = httpRequestHelper.GetDssTouchpointId(req);
+            if (string.IsNullOrEmpty(touchpointId))
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'TouchpointId' in request header");
+                return httpResponseMessageHelper.BadRequest();
+            }
+
+            loggerHelper.LogInformationMessage(log, correlationGuid,
+                string.Format("Patch Diversity C# HTTP trigger function  processed a request. By Touchpoint: {0}",
+                    touchpointId));
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return HttpResponseMessageHelper.BadRequest(customerGuid);
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", customerId));
+                return httpResponseMessageHelper.BadRequest(customerGuid);
+            }
             
             Models.Diversity diversityRequest;
 
             try
             {
-                diversityRequest = await httpRequestMessageHelper.GetDiversityFromRequest<Models.Diversity>(req);
+                diversityRequest = await httpRequestHelper.GetResourceFromRequest<Models.Diversity>(req);
             }
             catch (JsonException ex)
             {
-                return HttpResponseMessageHelper.UnprocessableEntity(ex);
+                loggerHelper.LogException(log, correlationGuid, "Unable to retrieve body from req", ex);
+                return httpResponseMessageHelper.UnprocessableEntity(req);
             }
 
             if (diversityRequest == null)
-                return HttpResponseMessageHelper.UnprocessableEntity(req);
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, "Diversity patch request is null");
+                return httpResponseMessageHelper.UnprocessableEntity(req);
+            }
 
             diversityRequest.SetIds(customerGuid, touchpointId);
 
+            // validate the request
+            loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
             var errors = validate.ValidateResource(diversityRequest);
 
             if (errors != null && errors.Any())
-                return HttpResponseMessageHelper.UnprocessableEntity(errors);
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, "validation errors with resource");
+                return httpResponseMessageHelper.UnprocessableEntity(errors);
+            }
 
+            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if customer exists {0}", customerGuid));
             var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return HttpResponseMessageHelper.NoContent(customerGuid);
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer does not exist {0}", customerGuid));
+                return httpResponseMessageHelper.NoContent(customerGuid);
+            }
 
+            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if this is a read only customer {0}", customerGuid));
             var isCustomerReadOnly = await resourceHelper.IsCustomerReadOnly(customerGuid);
 
             if (isCustomerReadOnly)
-                return HttpResponseMessageHelper.Forbidden(customerGuid);
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer is read only {0}", customerGuid));
+                return httpResponseMessageHelper.Forbidden(customerGuid);
+            }
 
             var doesDiversityDetailsExist = postDiversityService.DoesDiversityDetailsExistForCustomer(customerGuid);
 
             if (doesDiversityDetailsExist)
-                return HttpResponseMessageHelper.Conflict();
+                return httpResponseMessageHelper.Conflict();
 
             var diversity = await postDiversityService.CreateAsync(diversityRequest);
 
             return diversity == null
-                ? HttpResponseMessageHelper.BadRequest(customerGuid)
-                : HttpResponseMessageHelper.Created(JsonHelper.SerializeObject(diversity));
+                ? httpResponseMessageHelper.BadRequest(customerGuid)
+                : httpResponseMessageHelper.Created(jsonHelper.SerializeObjectAndRenameIdProperty(diversity, "id", "DiversityId"));
         }
     }
 }

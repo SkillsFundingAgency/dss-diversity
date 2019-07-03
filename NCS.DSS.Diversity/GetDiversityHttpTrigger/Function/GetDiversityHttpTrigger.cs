@@ -5,12 +5,15 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
+using DFC.Common.Standard.Logging;
+using DFC.Functions.DI.Standard.Attributes;
+using DFC.HTTP.Standard;
+using DFC.JSON.Standard;
+using DFC.Swagger.Standard.Annotations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using NCS.DSS.Diversity.Annotations;
 using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.GetDiversityHttpTrigger.Service;
-using NCS.DSS.Diversity.Helpers;
-using NCS.DSS.Diversity.Ioc;
 
 namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
 {
@@ -23,33 +26,55 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to return the diversity details for a given customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/DiversityDetails")] HttpRequestMessage req, ILogger log, string customerId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/DiversityDetails")] HttpRequest req, ILogger log, string customerId,
             [Inject]IResourceHelper resourceHelper,
-            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
-            [Inject]IGetDiversityHttpTriggerService getDiversityService)
+            [Inject]IGetDiversityHttpTriggerService getDiversityService,
+            [Inject]ILoggerHelper loggerHelper,
+            [Inject]IHttpRequestHelper httpRequestHelper,
+            [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
+            [Inject]IJsonHelper jsonHelper)
         {
-            var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
-           if (string.IsNullOrEmpty(touchpointId))
+
+            var correlationId = httpRequestHelper.GetDssCorrelationId(req);
+            if (string.IsNullOrEmpty(correlationId))
+                log.LogInformation("Unable to locate 'DssCorrelationId; in request header");
+
+            if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
-                log.LogInformation("Unable to locate 'TouchpointId' in request header.");
-                return HttpResponseMessageHelper.BadRequest();
+                log.LogInformation("Unable to Parse 'DssCorrelationId' to a Guid");
+                correlationGuid = Guid.NewGuid();
             }
 
-            log.LogInformation("C# HTTP trigger function processed a request. " + touchpointId);
+            var touchpointId = httpRequestHelper.GetDssTouchpointId(req);
+            if (string.IsNullOrEmpty(touchpointId))
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'APIM-TouchpointId' in request header");
+                return httpResponseMessageHelper.BadRequest();
+            }
+
+            loggerHelper.LogInformationMessage(log, correlationGuid,
+                "C# HTTP trigger function GetDiversityHttpTrigger processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return HttpResponseMessageHelper.BadRequest(customerGuid);
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", customerId));
+                return httpResponseMessageHelper.BadRequest(customerGuid);
+            }
 
             var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return HttpResponseMessageHelper.NoContent(customerGuid);
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer does not exist {0}", customerGuid));
+                return httpResponseMessageHelper.NoContent(customerGuid);
+            }
 
+            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get diversity for customer {0}", customerGuid));
             var diversityId = await getDiversityService.GetDiversityDetailIdAsync(customerGuid);
 
-            return diversityId == null ?
-                HttpResponseMessageHelper.NoContent(customerGuid) : 
-                HttpResponseMessageHelper.Ok(diversityId.Value);
+            return !diversityId.HasValue ?
+                httpResponseMessageHelper.NoContent(customerGuid) :
+                httpResponseMessageHelper.Ok(diversityId.Value);
         }
     }
 }

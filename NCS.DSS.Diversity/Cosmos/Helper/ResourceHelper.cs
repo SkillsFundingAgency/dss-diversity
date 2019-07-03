@@ -6,20 +6,22 @@ namespace NCS.DSS.Diversity.Cosmos.Helper
 {
     public class ResourceHelper : IResourceHelper
     {
+
+        private readonly IDocumentDBProvider _documentDbProvider;
+        public ResourceHelper(IDocumentDBProvider documentDbProvider)
+        {
+            _documentDbProvider = documentDbProvider;
+        }
+
         public async Task<bool> DoesCustomerExist(Guid customerId)
         {
-            var documentDbProvider = new DocumentDBProvider();
-            var doesCustomerExist = await documentDbProvider.DoesCustomerResourceExist(customerId);
-
-            return doesCustomerExist;
+            return await _documentDbProvider.DoesCustomerResourceExist(customerId);
         }
 
         public async Task<bool> IsCustomerReadOnly(Guid customerId)
         {
-            var documentDbProvider = new DocumentDBProvider();
-            var isCustomerReadOnly = await documentDbProvider.DoesCustomerHaveATerminationDate(customerId);
-
-            return isCustomerReadOnly;
+            return await _documentDbProvider.DoesCustomerHaveATerminationDate(customerId);
         }
+
     }
 }

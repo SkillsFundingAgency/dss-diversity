@@ -8,6 +8,14 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
 {
     public class PatchDiversityHttpTriggerService : IPatchDiversityHttpTriggerService
     {
+
+        private readonly IDocumentDBProvider _documentDbProvider;
+        
+        public PatchDiversityHttpTriggerService(IDocumentDBProvider documentDbProvider)
+        {
+            _documentDbProvider = documentDbProvider;
+        }
+
         public async Task<Models.Diversity> UpdateDiversityAsync(Models.Diversity diversity, DiversityPatch diversityPatch)
         {
             if (diversity == null)
@@ -17,8 +25,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
 
             diversity.Patch(diversityPatch);
 
-            var documentDbProvider = new DocumentDBProvider();
-            var response = await documentDbProvider.UpdateDiversityDetailAsync(diversity);
+            var response = await _documentDbProvider.UpdateDiversityDetailAsync(diversity);
 
             var responseStatusCode = response.StatusCode;
 
@@ -27,10 +34,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
 
         public async Task<Models.Diversity> GetDiversityByIdAsync(Guid customerId, Guid diversityId)
         {
-            var documentDbProvider = new DocumentDBProvider();
-            var diversityDetail = await documentDbProvider.GetDiversityDetailForCustomerAsync(customerId, diversityId);
-
-            return diversityDetail;
+            return await _documentDbProvider.GetDiversityDetailForCustomerAsync(customerId, diversityId);
         }
     }
 }

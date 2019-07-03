@@ -2,10 +2,14 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DFC.Common.Standard.Logging;
+using DFC.HTTP.Standard;
+using DFC.JSON.Standard;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.GetDiversityHttpTrigger.Service;
-using NCS.DSS.Diversity.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
@@ -18,32 +22,39 @@ namespace NCS.DSS.Diversity.Tests
         private const string ValidCustomerId = "1e1a555c-9633-4e12-ab28-09ed60d51cb3";
         private const string InValidCustomerId = "1111111-2222-3333-4444-555555555555";
         private readonly Guid _diversityDetailId = Guid.Parse("aa57e39e-4469-4c79-a9e9-9cb4ef410382");
+        private const string ValidDssCorrelationId = "452d8e8c-2516-4a6b-9fc1-c85e578ac066";
+
         private ILogger _log;
-        private HttpRequestMessage _request;
+        private HttpRequest _request;
         private IResourceHelper _resourceHelper;
-        private IHttpRequestMessageHelper _httpRequestMessageHelper;
+        private ILoggerHelper _loggerHelper;
+        private IHttpRequestHelper _httpRequestHelper;
+        private IHttpResponseMessageHelper _httpResponseMessageHelper;
+        private IJsonHelper _jsonHelper;
         private IGetDiversityHttpTriggerService _getDiversityHttpTriggerService;
 
         [SetUp]
         public void Setup()
         {
-            _request = new HttpRequestMessage()
-            {
-                Content = new StringContent(string.Empty),
-                RequestUri = new Uri($"http://localhost:7071/api/Customers/7E467BDB-213F-407A-B86A-1954053D3C24/DiversityDetails/")
-            };
+            _request = new DefaultHttpRequest(new DefaultHttpContext());
 
             _log = Substitute.For<ILogger>();
             _resourceHelper = Substitute.For<IResourceHelper>();
-            _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
+            _loggerHelper = Substitute.For<ILoggerHelper>();
+            _httpRequestHelper = Substitute.For<IHttpRequestHelper>();
+            _httpResponseMessageHelper = Substitute.For<IHttpResponseMessageHelper>();
+            _jsonHelper = Substitute.For<IJsonHelper>();
             _getDiversityHttpTriggerService = Substitute.For<IGetDiversityHttpTriggerService>();
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns("0000000001");
+
+            _httpRequestHelper.GetDssCorrelationId(_request).Returns(ValidDssCorrelationId);
+            _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
+            SetUpHttpResponseMessageHelper();
         }
 
         [Test]
         public async Task GetDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns((string)null);
+            _httpRequestHelper.GetDssTouchpointId(_request).Returns((string)null);
 
             // Act
             var result = await RunFunction(ValidCustomerId);
@@ -111,7 +122,31 @@ namespace NCS.DSS.Diversity.Tests
         private async Task<HttpResponseMessage> RunFunction(string customerId)
         {
             return await GetDiversityHttpTrigger.Function.GetDiversityHttpTrigger.Run(
-                _request, _log, customerId, _resourceHelper, _httpRequestMessageHelper, _getDiversityHttpTriggerService).ConfigureAwait(false);
+                _request, 
+                _log, 
+                customerId,
+                _resourceHelper,
+                _getDiversityHttpTriggerService,
+                _loggerHelper,
+                _httpRequestHelper,
+                _httpResponseMessageHelper,
+                _jsonHelper).ConfigureAwait(false);
+        }
+
+        private void SetUpHttpResponseMessageHelper()
+        {
+            _httpResponseMessageHelper
+                .BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
+
+            _httpResponseMessageHelper
+                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
+
+            _httpResponseMessageHelper
+                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
+
+            _httpResponseMessageHelper
+                .Ok(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.OK));
+
         }
     }
 }
