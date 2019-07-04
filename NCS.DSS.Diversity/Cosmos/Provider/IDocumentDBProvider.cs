@@ -11,8 +11,9 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
         Task<bool> DoesCustomerHaveATerminationDate(Guid customerId);
         bool DoesDiversityDetailsExistForCustomer(Guid customerId);
         Task<Guid?> GetDiversityDetailIdForCustomerAsync(Guid customerId);
+        Task<string> GetDiversityDetailForCustomerToUpdateAsync(Guid customerId, Guid diversityId);
         Task<Models.Diversity> GetDiversityDetailForCustomerAsync(Guid customerId, Guid diversityId);
         Task<ResourceResponse<Document>> CreateDiversityDetailAsync(Models.Diversity diversity);
-        Task<ResourceResponse<Document>> UpdateDiversityDetailAsync(Models.Diversity diversity);
+        Task<ResourceResponse<Document>> UpdateDiversityDetailAsync(string diversityJson, Guid diversityId);
     }
 }

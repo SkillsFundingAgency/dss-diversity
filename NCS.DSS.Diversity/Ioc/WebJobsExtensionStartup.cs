@@ -36,6 +36,7 @@ namespace NCS.DSS.Diversity.Ioc
             builder.Services.AddTransient<IPostDiversityHttpTriggerService, PostDiversityHttpTriggerService>();
             builder.Services.AddTransient<IPatchDiversityHttpTriggerService, PatchDiversityHttpTriggerService>();
             builder.Services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
+            builder.Services.AddSingleton<IDiversityPatchService, DiversityPatchService>();
 
         }
     }

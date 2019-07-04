@@ -36,8 +36,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             [Inject]IValidate validate,
             [Inject]ILoggerHelper loggerHelper,
             [Inject]IHttpRequestHelper httpRequestHelper,
-            [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
-            [Inject]IJsonHelper jsonHelper)
+            [Inject]IHttpResponseMessageHelper httpResponseMessageHelper)
         {
             loggerHelper.LogMethodEnter(log);
 
@@ -125,14 +124,22 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
                 return httpResponseMessageHelper.Forbidden(customerGuid);
             }
 
-            var diversity = await patchDiversityService.GetDiversityByIdAsync(customerGuid, diversityGuid);
+            var diversity = await patchDiversityService.GetDiversityForCustomerAsync(customerGuid, diversityGuid);
 
             if (diversity == null)
             {
                 return httpResponseMessageHelper.NoContent(customerGuid);
             }
 
-            var updatedDiversity = await patchDiversityService.UpdateDiversityAsync(diversity, diversityPatchRequest);
+            var patchedDiversity = patchDiversityService.PatchResource(diversity, diversityPatchRequest);
+
+            if (patchedDiversity == null)
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to patch Diversity {0}", diversityGuid));
+                return httpResponseMessageHelper.NoContent(diversityGuid);
+            }
+            
+            var updatedDiversity = await patchDiversityService.UpdateCosmosAsync(patchedDiversity, diversityGuid);
 
             return updatedDiversity == null ?
                 httpResponseMessageHelper.BadRequest(customerGuid) :

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using DFC.JSON.Standard.Attributes;
 using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.Diversity.ReferenceData;
 
@@ -64,6 +65,10 @@ namespace NCS.DSS.Diversity.Models
         [Example(Description = "0000000001")]
         public string LastModifiedBy { get; set; }
 
+        [JsonIgnoreOnSerialize]
+        public string CreatedBy { get; set; }
+
+
         public void SetDefaultValues()
         {
             if (!LastModifiedDate.HasValue)
@@ -81,6 +86,7 @@ namespace NCS.DSS.Diversity.Models
             DiversityId = Guid.NewGuid();
             CustomerId = customerId;
             LastModifiedBy = touchpointId;
+            CreatedBy = touchpointId;
         }
 
         public void Patch(DiversityPatch diversityPatch)

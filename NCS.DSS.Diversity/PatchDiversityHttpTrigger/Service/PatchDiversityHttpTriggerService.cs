@@ -9,32 +9,46 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
     public class PatchDiversityHttpTriggerService : IPatchDiversityHttpTriggerService
     {
 
+        private readonly IDiversityPatchService _diversityPatchService;
         private readonly IDocumentDBProvider _documentDbProvider;
         
-        public PatchDiversityHttpTriggerService(IDocumentDBProvider documentDbProvider)
+        public PatchDiversityHttpTriggerService(IDocumentDBProvider documentDbProvider, IDiversityPatchService diversityPatchService)
         {
             _documentDbProvider = documentDbProvider;
+            _diversityPatchService = diversityPatchService;
         }
 
-        public async Task<Models.Diversity> UpdateDiversityAsync(Models.Diversity diversity, DiversityPatch diversityPatch)
+        public string PatchResource(string diversityJson, DiversityPatch diversityPatch)
         {
-            if (diversity == null)
+            if (string.IsNullOrEmpty(diversityJson))
+                return null;
+
+            if (diversityPatch == null)
                 return null;
 
             diversityPatch.SetDefaultValues();
 
-            diversity.Patch(diversityPatch);
+            var updatedDiversity = _diversityPatchService.Patch(diversityJson, diversityPatch);
 
-            var response = await _documentDbProvider.UpdateDiversityDetailAsync(diversity);
+            return updatedDiversity;
+        }
+
+        public async Task<Models.Diversity> UpdateCosmosAsync(string diversityJson, Guid diversityId)
+        {
+            if (string.IsNullOrEmpty(diversityJson))
+                return null;
+
+            var response = await _documentDbProvider.UpdateDiversityDetailAsync(diversityJson, diversityId);
 
             var responseStatusCode = response.StatusCode;
 
-            return responseStatusCode == HttpStatusCode.OK ? diversity : null;
+            return responseStatusCode == HttpStatusCode.OK ? (dynamic) response.Resource : null;
         }
 
-        public async Task<Models.Diversity> GetDiversityByIdAsync(Guid customerId, Guid diversityId)
+        public async Task<string> GetDiversityForCustomerAsync(Guid customerId, Guid diversityId)
         {
-            return await _documentDbProvider.GetDiversityDetailForCustomerAsync(customerId, diversityId);
+            return await _documentDbProvider.GetDiversityDetailForCustomerToUpdateAsync(customerId, diversityId);
         }
+
     }
 }

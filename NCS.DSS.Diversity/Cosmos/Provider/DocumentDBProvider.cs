@@ -6,6 +6,7 @@ using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using NCS.DSS.Diversity.Cosmos.Client;
 using NCS.DSS.Diversity.Cosmos.Helper;
+using Newtonsoft.Json.Linq;
 
 namespace NCS.DSS.Diversity.Cosmos.Provider
 {
@@ -110,6 +111,26 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
             return diversityDetails?.FirstOrDefault();
         }
 
+        public async Task<string> GetDiversityDetailForCustomerToUpdateAsync(Guid customerId, Guid diversityId)
+        {
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
+
+            var client = DocumentDBClient.CreateDocumentClient();
+
+            var diversityDetailQuery = client
+                ?.CreateDocumentQuery<Models.Diversity>(collectionUri, new FeedOptions { MaxItemCount = 1 })
+                .Where(x => x.CustomerId == customerId &&
+                            x.DiversityId == diversityId)
+                .AsDocumentQuery();
+
+            if (diversityDetailQuery == null)
+                return null;
+
+            var diversityDetails = await diversityDetailQuery.ExecuteNextAsync();
+
+            return diversityDetails?.FirstOrDefault()?.ToString();
+        }
+
         public async Task<ResourceResponse<Document>> CreateDiversityDetailAsync(Models.Diversity diversity)
         {
 
@@ -126,16 +147,21 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
 
         }
 
-        public async Task<ResourceResponse<Document>> UpdateDiversityDetailAsync(Models.Diversity diversity)
+        public async Task<ResourceResponse<Document>> UpdateDiversityDetailAsync(string diversityJson, Guid diversityId)
         {
-            var documentUri = DocumentDBHelper.CreateDocumentUri(diversity.DiversityId.GetValueOrDefault());
+            if (string.IsNullOrEmpty(diversityJson))
+                return null;
+
+            var documentUri = DocumentDBHelper.CreateDocumentUri(diversityId);
 
             var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
 
-            var response = await client.ReplaceDocumentAsync(documentUri, diversity);
+            var diversityDocumentJObject = JObject.Parse(diversityJson);
+
+            var response = await client.ReplaceDocumentAsync(documentUri, diversityDocumentJObject);
 
             return response;
         }
