@@ -9,9 +9,9 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
     public class PatchDiversityHttpTriggerService : IPatchDiversityHttpTriggerService
     {
 
-        private readonly IDiversityPatchService _diversityPatchService;
         private readonly IDocumentDBProvider _documentDbProvider;
-        
+        private readonly IDiversityPatchService _diversityPatchService;
+
         public PatchDiversityHttpTriggerService(IDocumentDBProvider documentDbProvider, IDiversityPatchService diversityPatchService)
         {
             _documentDbProvider = documentDbProvider;
@@ -40,7 +40,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
 
             var response = await _documentDbProvider.UpdateDiversityDetailAsync(diversityJson, diversityId);
 
-            var responseStatusCode = response.StatusCode;
+            var responseStatusCode = response?.StatusCode;
 
             return responseStatusCode == HttpStatusCode.OK ? (dynamic) response.Resource : null;
         }
