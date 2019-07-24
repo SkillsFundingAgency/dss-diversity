@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using NCS.DSS.Diversity.Cosmos.Provider;
 using NCS.DSS.Diversity.Models;
+using NCS.DSS.Diversity.ServiceBus;
 
 namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
 {
@@ -11,11 +12,13 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
 
         private readonly IDocumentDBProvider _documentDbProvider;
         private readonly IDiversityPatchService _diversityPatchService;
+        private readonly IServiceBusClient _serviceBusClient;
 
-        public PatchDiversityHttpTriggerService(IDocumentDBProvider documentDbProvider, IDiversityPatchService diversityPatchService)
+        public PatchDiversityHttpTriggerService(IDocumentDBProvider documentDbProvider, IDiversityPatchService diversityPatchService, IServiceBusClient serviceBusClient)
         {
             _documentDbProvider = documentDbProvider;
             _diversityPatchService = diversityPatchService;
+            _serviceBusClient = serviceBusClient;
         }
 
         public string PatchResource(string diversityJson, DiversityPatch diversityPatch)
@@ -49,6 +52,12 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
         {
             return await _documentDbProvider.GetDiversityDetailForCustomerToUpdateAsync(customerId, diversityId);
         }
+
+        public async Task SendToServiceBusQueueAsync(DiversityPatch diversityPatch, Guid customerId, string reqUrl)
+        {
+            await _serviceBusClient.SendPatchMessageAsync(diversityPatch, customerId, reqUrl);
+        }
+
 
     }
 }

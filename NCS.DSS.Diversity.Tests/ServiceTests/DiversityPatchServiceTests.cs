@@ -5,22 +5,21 @@ using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.ReferenceData;
 using Newtonsoft.Json;
 using NSubstitute;
-using NUnit.Framework;
+using Xunit;
 
 namespace NCS.DSS.Diversity.Tests.ServiceTests
 {
-    [TestFixture]
+   
     public class DiversityPatchServiceTests
     {
-        private IJsonHelper _jsonHelper;
-        private IDiversityPatchService _diversityPatchService;
-        private DiversityPatch _diversityPatch;
-        private string _json;
+        private readonly IJsonHelper _jsonHelper;
+        private readonly IDiversityPatchService _diversityPatchService;
+        private readonly DiversityPatch _diversityPatch;
+        private readonly string _json;
 
-
-        [SetUp]
-        public void Setup()
+        public DiversityPatchServiceTests()
         {
+
             _jsonHelper = Substitute.For<JsonHelper>();
             _diversityPatchService = Substitute.For<DiversityPatchService>(_jsonHelper);
             _diversityPatch = Substitute.For<DiversityPatch>();
@@ -28,16 +27,16 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             _json = JsonConvert.SerializeObject(_diversityPatch);
         }
 
-        [Test]
-        public void DiversityPatchServiceTests_ReturnsNull_WhenDiversityPatchIsNull()
+        [Fact]
+        public void DiversityPatchServiceTests_ReturnsNull_WhenDiversityPatchNull()
         {
             var result = _diversityPatchService.Patch(string.Empty, Arg.Any<DiversityPatch>());
 
             // Assert
-            Assert.IsNull(result);
+            Assert.Null(result);
         }
 
-        [Test]
+        [Fact]
         public void DiversityTests_CheckConsentToCollectLLDDHealthIsUpdated_WhenPatchIsCalled()
         {
             var diversityPatch = new DiversityPatch { ConsentToCollectLLDDHealth = false };
@@ -47,11 +46,11 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(false, diversity.ConsentToCollectLLDDHealth);
+            Assert.Equal(false, diversity.ConsentToCollectLLDDHealth);
         }
 
 
-        [Test]
+        [Fact]
         public void DiversityTests_CheckPrimaryLearningDifficultyOrDisabilityIsUpdated_WhenPatchIsCalled()
         {
             var diversityPatch = new Models.DiversityPatch { PrimaryLearningDifficultyOrDisability = PrimaryLearningDifficultyOrDisability.Dyslexia };
@@ -61,10 +60,10 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(PrimaryLearningDifficultyOrDisability.Dyslexia, diversity.PrimaryLearningDifficultyOrDisability);
+            Assert.Equal(PrimaryLearningDifficultyOrDisability.Dyslexia, diversity.PrimaryLearningDifficultyOrDisability);
         }
 
-        [Test]
+        [Fact]
         public void DiversityTests_CheckSecondaryLearningDifficultyOrDisabilityIsUpdated_WhenPatchIsCalled()
         {
             var diversityPatch = new Models.DiversityPatch { SecondaryLearningDifficultyOrDisability = SecondaryLearningDifficultyOrDisability.Dyslexia };
@@ -74,10 +73,10 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(SecondaryLearningDifficultyOrDisability.Dyslexia, diversity.SecondaryLearningDifficultyOrDisability);
+            Assert.Equal(SecondaryLearningDifficultyOrDisability.Dyslexia, diversity.SecondaryLearningDifficultyOrDisability);
         }
 
-        [Test]
+        [Fact]
         public void DiversityTests_CheckDateAndTimeLLDDHealthConsentCollectedIsUpdated_WhenPatchIsCalled()
         {
             var diversityPatch = new Models.DiversityPatch { DateAndTimeLLDDHealthConsentCollected = DateTime.MaxValue };
@@ -87,10 +86,10 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, diversity.DateAndTimeLLDDHealthConsentCollected);
+            Assert.Equal(DateTime.MaxValue, diversity.DateAndTimeLLDDHealthConsentCollected);
         }
 
-        [Test]
+        [Fact]
         public void DiversityTests_CheckConsentToCollectEthnicityIsUpdated_WhenPatchIsCalled()
         {
             var diversityPatch = new Models.DiversityPatch { ConsentToCollectEthnicity = false };
@@ -100,10 +99,10 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(false, diversity.ConsentToCollectEthnicity);
+            Assert.Equal(false, diversity.ConsentToCollectEthnicity);
         }
 
-        [Test]
+        [Fact]
         public void DiversityTests_CheckEthnicityIsUpdated_WhenPatchIsCalled()
         {
             var diversityPatch = new Models.DiversityPatch { Ethnicity = Ethnicity.AnyOtherEthnicGroup };
@@ -113,10 +112,10 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(Ethnicity.AnyOtherEthnicGroup, diversity.Ethnicity);
+            Assert.Equal(Ethnicity.AnyOtherEthnicGroup, diversity.Ethnicity);
         }
 
-        [Test]
+        [Fact]
         public void DiversityTests_CheckDateAndTimeEthnicityCollectedIsUpdated_WhenPatchIsCalled()
         {
             var diversityPatch = new Models.DiversityPatch { DateAndTimeEthnicityCollected = DateTime.MaxValue };
@@ -126,10 +125,10 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, diversity.DateAndTimeEthnicityCollected);
+            Assert.Equal(DateTime.MaxValue, diversity.DateAndTimeEthnicityCollected);
         }
 
-        [Test]
+        [Fact]
         public void DiversityTests_CheckLastModifiedDateIsUpdated_WhenPatchIsCalled()
         {
             var diversityPatch = new Models.DiversityPatch { LastModifiedDate = DateTime.MaxValue };
@@ -139,10 +138,10 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, diversity.LastModifiedDate);
+            Assert.Equal(DateTime.MaxValue, diversity.LastModifiedDate);
         }
 
-        [Test]
+        [Fact]
         public void DiversityTests_CheckLastModifiedByUpdated_WhenPatchIsCalled()
         {
             var diversityPatch = new Models.DiversityPatch { LastModifiedBy = "0000000111" };
@@ -152,7 +151,7 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual("0000000111", diversity.LastModifiedBy);
+            Assert.Equal("0000000111", diversity.LastModifiedBy);
         }
         
     }

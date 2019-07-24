@@ -89,40 +89,5 @@ namespace NCS.DSS.Diversity.Models
             CreatedBy = touchpointId;
         }
 
-        public void Patch(DiversityPatch diversityPatch)
-        {
-            if (diversityPatch == null)
-                return;
-
-            if(diversityPatch.ConsentToCollectLLDDHealth.HasValue)
-                ConsentToCollectLLDDHealth = diversityPatch.ConsentToCollectLLDDHealth;
-
-            if(diversityPatch.LearningDifficultyOrDisabilityDeclaration.HasValue)
-                LearningDifficultyOrDisabilityDeclaration = diversityPatch.LearningDifficultyOrDisabilityDeclaration;
-
-            if(diversityPatch.PrimaryLearningDifficultyOrDisability.HasValue)
-                PrimaryLearningDifficultyOrDisability = diversityPatch.PrimaryLearningDifficultyOrDisability;
-
-            if (diversityPatch.SecondaryLearningDifficultyOrDisability.HasValue)
-                SecondaryLearningDifficultyOrDisability = diversityPatch.SecondaryLearningDifficultyOrDisability;
-
-            if(diversityPatch.DateAndTimeLLDDHealthConsentCollected.HasValue)
-                DateAndTimeLLDDHealthConsentCollected = diversityPatch.DateAndTimeLLDDHealthConsentCollected;
-
-            if(diversityPatch.ConsentToCollectEthnicity.HasValue)
-                ConsentToCollectEthnicity = diversityPatch.ConsentToCollectEthnicity;
-
-            if(diversityPatch.Ethnicity.HasValue)
-                Ethnicity = diversityPatch.Ethnicity;
-
-            if(diversityPatch.DateAndTimeEthnicityCollected.HasValue)
-                DateAndTimeEthnicityCollected = diversityPatch.DateAndTimeEthnicityCollected;
-
-            if (diversityPatch.LastModifiedDate.HasValue)
-                LastModifiedDate = diversityPatch.LastModifiedDate;
-
-            if(!string.IsNullOrWhiteSpace(diversityPatch.LastModifiedBy))
-                LastModifiedBy = diversityPatch.LastModifiedBy;
-        }
     } 
 }

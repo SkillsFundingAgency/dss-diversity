@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using NCS.DSS.Diversity.Cosmos.Provider;
+using NCS.DSS.Diversity.ServiceBus;
 
 namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
 {
@@ -9,10 +10,12 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
     {
 
         private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly IServiceBusClient _serviceBusClient;
 
-        public PostDiversityHttpTriggerService(IDocumentDBProvider documentDbProvider)
+        public PostDiversityHttpTriggerService(IDocumentDBProvider documentDbProvider, IServiceBusClient serviceBusClient)
         {
             _documentDbProvider = documentDbProvider;
+            _serviceBusClient = serviceBusClient;
         }
 
         public bool DoesDiversityDetailsExistForCustomer(Guid customerId)
@@ -32,5 +35,11 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
             return response.StatusCode == HttpStatusCode.Created ? (dynamic) response.Resource : null;
 
         }
+
+        public async Task SendToServiceBusQueueAsync(Models.Diversity diversity, string reqUrl)
+        {
+            await _serviceBusClient.SendPostMessageAsync(diversity, reqUrl);
+        }
+
     }
 }

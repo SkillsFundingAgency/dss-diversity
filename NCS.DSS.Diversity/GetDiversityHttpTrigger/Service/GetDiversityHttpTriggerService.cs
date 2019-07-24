@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NCS.DSS.Diversity.Cosmos.Provider;
 
@@ -13,9 +14,9 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Service
             _documentDbProvider = documentDbProvider;
         }
 
-        public async Task<Guid?> GetDiversityDetailIdAsync(Guid customerId)
+        public async Task<List<Models.Diversity>> GetDiversityDetailForCustomerAsync(Guid customerId)
         {
-            return await _documentDbProvider.GetDiversityDetailIdForCustomerAsync(customerId);
+            return await _documentDbProvider.GetDiversityDetailsForCustomerAsync(customerId);
         }
     }
 }

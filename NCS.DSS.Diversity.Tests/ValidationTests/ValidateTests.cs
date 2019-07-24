@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using NCS.DSS.Diversity.ReferenceData;
 using NCS.DSS.Diversity.Validation;
-using NUnit.Framework;
+using Xunit;
 
 namespace NCS.DSS.Diversity.Tests.ValidationTests
 {
-    [TestFixture]
+   
     public class ValidateTests
     {
         
-        [Test]
+        [Fact]
         public void ValidateTests_ReturnValidationResult_WhenDiversityIsNotSuppliedForPost()
         {
             var diversity = new Models.Diversity();
@@ -21,12 +21,12 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(4, result.Count);
+            Assert.IsType<List<ValidationResult>>(result);
+            Assert.NotNull(result);
+            Assert.Equal(4, result.Count);
         }
 
-        [Test]
+        [Fact]
         public void ValidateTests_ReturnValidationResult_WhenConsentToCollectLLDDHealthIsNotSuppliedForPost()
         {
             var diversity = new Models.Diversity
@@ -41,12 +41,12 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.IsType<List<ValidationResult>>(result);
+            Assert.NotNull(result);
+            Assert.Single(result);
         }
 
-        [Test]
+        [Fact]
         public void ValidateTests_ReturnValidationResult_WhenConsentToCollectEthnicityIsNotSuppliedForPost()
         {
             var diversity = new Models.Diversity
@@ -61,12 +61,12 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.IsType<List<ValidationResult>>(result);
+            Assert.NotNull(result);
+            Assert.Single(result);
         }
 
-        [Test]
+        [Fact]
         public void ValidateTests_ReturnValidationResult_WhenEthnicityIsNotSuppliedForPost()
         {
             var diversity = new Models.Diversity
@@ -81,12 +81,12 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.IsType<List<ValidationResult>>(result);
+            Assert.NotNull(result);
+            Assert.Single(result);
         }
 
-        [Test]
+        [Fact]
         public void ValidateTests_ReturnValidationResult_WhenLearningDifficultyOrDisabilityDeclarationIsNotSuppliedForPost()
         {
             var diversity = new Models.Diversity
@@ -101,12 +101,12 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.IsType<List<ValidationResult>>(result);
+            Assert.NotNull(result);
+            Assert.Single(result);
         }
 
-        [Test]
+        [Fact]
         public void ValidateTests_ReturnValidationResult_WhenDateAndTimeLLDDHealthConsentCollectedIsNotValid()
         {
             var diversity = new Models.Diversity
@@ -124,12 +124,12 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.IsType<List<ValidationResult>>(result);
+            Assert.NotNull(result);
+            Assert.Single(result);
         }
 
-        [Test]
+        [Fact]
         public void ValidateTests_ReturnValidationResult_WhenDateAndTimeEthnicityCollectedIsInTheFuture()
         {
             var diversity = new Models.Diversity
@@ -146,12 +146,12 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.IsType<List<ValidationResult>>(result);
+            Assert.NotNull(result);
+            Assert.Single(result);
         }
 
-        [Test]
+        [Fact]
         public void ValidateTests_ReturnValidationResult_WhenLastModifiedDateIsInTheFuture()
         {
             var diversity = new Models.Diversity
@@ -168,12 +168,12 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.IsType<List<ValidationResult>>(result);
+            Assert.NotNull(result);
+            Assert.Single(result);
         }
 
-        [Test]
+        [Fact]
         public void ValidateTests_ReturnValidationResult_WhenLearningDifficultyOrDisabilityDeclarationIsNotValid()
         {
             var diversity = new Models.Diversity
@@ -189,13 +189,13 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.IsType<List<ValidationResult>>(result);
+            Assert.NotNull(result);
+            Assert.Single(result);
         }
 
 
-        [Test]
+        [Fact]
         public void ValidateTests_ReturnValidationResult_WhenPrimaryLearningDifficultyOrDisabilityIsNotValid()
         {
             var diversity = new Models.Diversity
@@ -212,12 +212,12 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.IsType<List<ValidationResult>>(result);
+            Assert.NotNull(result);
+            Assert.Single(result);
         }
 
-        [Test]
+        [Fact]
         public void ValidateTests_ReturnValidationResult_WhenSecondaryLearningDifficultyOrDisabilityIsNotValid()
         {
             var diversity = new Models.Diversity
@@ -234,12 +234,12 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.IsType<List<ValidationResult>>(result);
+            Assert.NotNull(result);
+            Assert.Single(result);
         }
 
-        [Test]
+        [Fact]
         public void ValidateTests_ReturnValidationResult_WhenEthnicityIsNotValid()
         {
             var diversity = new Models.Diversity
@@ -255,9 +255,9 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.IsType<List<ValidationResult>>(result);
+            Assert.NotNull(result);
+            Assert.Single(result);
         }
     }
 }
