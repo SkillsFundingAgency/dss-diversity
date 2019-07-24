@@ -24,8 +24,14 @@ namespace NCS.DSS.Diversity.Validation
             if (diversityResource == null)
                 return;
 
+            if(diversityResource.ConsentToCollectLLDDHealth.GetValueOrDefault() && !diversityResource.DateAndTimeLLDDHealthConsentCollected.HasValue)
+                results.Add(new ValidationResult("Date And Time LLDD Health Consent Collected must have a value", new[] { "DateAndTimeLLDDHealthConsentCollected" }));
+
             if (diversityResource.DateAndTimeLLDDHealthConsentCollected.HasValue && diversityResource.DateAndTimeLLDDHealthConsentCollected.Value > DateTime.UtcNow)
                 results.Add(new ValidationResult("Date And Time LLDD Health Consent Collected must be less the current date/time", new[] { "DateAndTimeLLDDHealthConsentCollected" }));
+
+            if (diversityResource.ConsentToCollectEthnicity.GetValueOrDefault() && !diversityResource.DateAndTimeEthnicityCollected.HasValue)
+                results.Add(new ValidationResult("Date And Time Ethnicity Collected must have a value", new[] { "DateAndTimeEthnicityCollected" }));
 
             if (diversityResource.DateAndTimeEthnicityCollected.HasValue && diversityResource.DateAndTimeEthnicityCollected.Value > DateTime.UtcNow)
                 results.Add(new ValidationResult("Date And Time Ethnicity Collected must be less the current date/time", new[] { "DateAndTimeEthnicityCollected" }));
