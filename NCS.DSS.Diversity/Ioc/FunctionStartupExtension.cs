@@ -12,6 +12,7 @@ using NCS.DSS.Diversity.GetDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.Ioc;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
+using NCS.DSS.Diversity.ServiceBus;
 using NCS.DSS.Diversity.Validation;
 
 [assembly: FunctionsStartup(typeof(FunctionStartupExtension))]
@@ -30,13 +31,14 @@ namespace NCS.DSS.Diversity.Ioc
             builder.Services.AddSingleton<IJsonHelper, JsonHelper>();
             builder.Services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
             builder.Services.AddSingleton<ICosmosDocumentClient, CosmosDocumentClient>();
+            builder.Services.AddSingleton<IServiceBusClient, ServiceBusClient>();
 
-            builder.Services.AddTransient<IGetDiversityByIdHttpTriggerService, GetDiversityByIdHttpTriggerService>();
-            builder.Services.AddTransient<IGetDiversityHttpTriggerService, GetDiversityHttpTriggerService>();
-            builder.Services.AddTransient<IPostDiversityHttpTriggerService, PostDiversityHttpTriggerService>();
-            builder.Services.AddTransient<IPatchDiversityHttpTriggerService, PatchDiversityHttpTriggerService>();
+            builder.Services.AddSingleton<IGetDiversityByIdHttpTriggerService, GetDiversityByIdHttpTriggerService>();
+            builder.Services.AddSingleton<IGetDiversityHttpTriggerService, GetDiversityHttpTriggerService>();
+            builder.Services.AddSingleton<IPostDiversityHttpTriggerService, PostDiversityHttpTriggerService>();
+            builder.Services.AddSingleton<IPatchDiversityHttpTriggerService, PatchDiversityHttpTriggerService>();
             builder.Services.AddSingleton<IDiversityPatchService, DiversityPatchService>();
-            builder.Services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
+            builder.Services.AddSingleton<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
 
 
         }
