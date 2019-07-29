@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DFC.Common.Standard.GuidHelper;
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
@@ -30,8 +31,9 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IHttpResponseMessageHelper _httpResponseMessageHelper;
         private readonly IJsonHelper _jsonHelper;
+        private readonly IGuidHelper _guidHelper;
 
-        public PatchDiversityHttpTrigger(IResourceHelper resourceHelper, IPatchDiversityHttpTriggerService patchDiversityService, IValidate validate, ILoggerHelper loggerHelper, IHttpRequestHelper httpRequestHelper, IHttpResponseMessageHelper httpResponseMessageHelper, IJsonHelper jsonHelper)
+        public PatchDiversityHttpTrigger(IResourceHelper resourceHelper, IPatchDiversityHttpTriggerService patchDiversityService, IValidate validate, ILoggerHelper loggerHelper, IHttpRequestHelper httpRequestHelper, IHttpResponseMessageHelper httpResponseMessageHelper, IJsonHelper jsonHelper, IGuidHelper guidHelper)
         {
             _resourceHelper = resourceHelper;
             _patchDiversityService = patchDiversityService;
@@ -40,6 +42,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             _httpRequestHelper = httpRequestHelper;
             _httpResponseMessageHelper = httpResponseMessageHelper;
             _jsonHelper = jsonHelper;
+            _guidHelper = guidHelper;
         }
 
 
@@ -54,24 +57,17 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
         [Display(Name = "Patch", Description = "Ability to modify/update an diversity detail record.")]
         public async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/DiversityDetails/{diversityId}")]HttpRequest req, ILogger log, string customerId, string diversityId)
         {
-            _loggerHelper.LogMethodEnter(log);
-
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
-            if (string.IsNullOrEmpty(correlationId))
-            {
-                log.LogInformation("Unable to locate 'DssCorrelationId' in request header");
-            }
 
-            if (!Guid.TryParse(correlationId, out var correlationGuid))
-            {
-                log.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
-                correlationGuid = Guid.NewGuid();
-            }
+            var correlationGuid = _guidHelper.ValidateGuid(correlationId);
+
+            if (correlationGuid == Guid.Empty)
+                correlationGuid = _guidHelper.GenerateGuid();
 
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'TouchpointId' in request header");
+                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'APIM-TouchpointId' in request header");
                 return _httpResponseMessageHelper.BadRequest();
             }
 
@@ -86,17 +82,18 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
                 string.Format("Get PatchDiversityHttpTrigger C# HTTP trigger function  processed a request. By Touchpoint: {0}",
                     touchpointId));
 
-
-            if (!Guid.TryParse(customerId, out var customerGuid))
+            var customerGuid = _guidHelper.ValidateGuid(customerId);
+            if (customerGuid == Guid.Empty)
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", customerId));
-                return _httpResponseMessageHelper.BadRequest(customerGuid);
+                return _httpResponseMessageHelper.BadRequest(customerId);
             }
 
-            if (!Guid.TryParse(diversityId, out var diversityGuid))
+            var diversityGuid = _guidHelper.ValidateGuid(diversityId);
+            if (diversityGuid == Guid.Empty)
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", diversityGuid));
-                return _httpResponseMessageHelper.BadRequest(diversityGuid);
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'diversityId' to a Guid: {0}", diversityId));
+                return _httpResponseMessageHelper.BadRequest(diversityId);
             }
 
             Models.DiversityPatch diversityPatchRequest;

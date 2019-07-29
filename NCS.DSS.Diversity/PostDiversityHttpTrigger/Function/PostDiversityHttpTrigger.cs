@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DFC.Common.Standard.GuidHelper;
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
@@ -30,8 +31,9 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IHttpResponseMessageHelper _httpResponseMessageHelper;
         private readonly IJsonHelper _jsonHelper;
+        private readonly IGuidHelper _guidHelper;
 
-        public PostDiversityHttpTrigger(IResourceHelper resourceHelper, IPostDiversityHttpTriggerService postDiversityService, IValidate validate, ILoggerHelper loggerHelper, IHttpRequestHelper httpRequestHelper, IHttpResponseMessageHelper httpResponseMessageHelper, IJsonHelper jsonHelper)
+        public PostDiversityHttpTrigger(IResourceHelper resourceHelper, IPostDiversityHttpTriggerService postDiversityService, IValidate validate, ILoggerHelper loggerHelper, IHttpRequestHelper httpRequestHelper, IHttpResponseMessageHelper httpResponseMessageHelper, IJsonHelper jsonHelper, IGuidHelper guidHelper)
         {
             _resourceHelper = resourceHelper;
             _postDiversityService = postDiversityService;
@@ -40,6 +42,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             _httpRequestHelper = httpRequestHelper;
             _httpResponseMessageHelper = httpResponseMessageHelper;
             _jsonHelper = jsonHelper;
+            _guidHelper = guidHelper;
         }
 
         [FunctionName("Post")]
@@ -55,22 +58,17 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
         public async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/DiversityDetails")]
             HttpRequest req, ILogger log, string customerId)
         {
-            _loggerHelper.LogMethodEnter(log);
-
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
-            if (string.IsNullOrEmpty(correlationId))
-                log.LogInformation("Unable to locate 'DssCorrelationId' in request header");
 
-            if (!Guid.TryParse(correlationId, out var correlationGuid))
-            {
-                log.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
-                correlationGuid = Guid.NewGuid();
-            }
+            var correlationGuid = _guidHelper.ValidateGuid(correlationId);
+
+            if (correlationGuid == Guid.Empty)
+                correlationGuid = _guidHelper.GenerateGuid();
 
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'TouchpointId' in request header");
+                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'APIM-TouchpointId' in request header");
                 return _httpResponseMessageHelper.BadRequest();
             }
 
@@ -85,12 +83,13 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                 string.Format("Patch Diversity C# HTTP trigger function  processed a request. By Touchpoint: {0}",
                     touchpointId));
 
-            if (!Guid.TryParse(customerId, out var customerGuid))
+            var customerGuid = _guidHelper.ValidateGuid(customerId);
+            if (customerGuid == Guid.Empty)
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", customerId));
-                return _httpResponseMessageHelper.BadRequest(customerGuid);
+                return _httpResponseMessageHelper.BadRequest(customerId);
             }
-            
+
             Models.Diversity diversityRequest;
 
             try

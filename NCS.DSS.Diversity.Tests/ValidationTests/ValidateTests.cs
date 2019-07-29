@@ -33,6 +33,7 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             {
                 LearningDifficultyOrDisabilityDeclaration = LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer,
                 ConsentToCollectEthnicity = true,
+                DateAndTimeEthnicityCollected = DateTime.UtcNow,
                 Ethnicity = Ethnicity.AnyOtherEthnicGroup
             };
 
@@ -52,6 +53,7 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
+                DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow,
                 LearningDifficultyOrDisabilityDeclaration = LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer,
                 Ethnicity = Ethnicity.AnyOtherEthnicGroup
             };
@@ -72,8 +74,10 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
+                DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow,
                 LearningDifficultyOrDisabilityDeclaration = LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer,
                 ConsentToCollectEthnicity = true,
+                DateAndTimeEthnicityCollected = DateTime.UtcNow
             };
 
             var validation = new Validate();
@@ -92,7 +96,9 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
+                DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow,
                 ConsentToCollectEthnicity = true,
+                DateAndTimeEthnicityCollected = DateTime.UtcNow,
                 Ethnicity = Ethnicity.AnyOtherEthnicGroup
             };
 
@@ -114,6 +120,7 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 ConsentToCollectLLDDHealth = true,
                 LearningDifficultyOrDisabilityDeclaration = LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer,
                 ConsentToCollectEthnicity = true,
+                DateAndTimeEthnicityCollected = DateTime.UtcNow,
                 Ethnicity = Ethnicity.AnyOtherEthnicGroup,
                 DateAndTimeLLDDHealthConsentCollected = DateTime.MaxValue
 
@@ -135,6 +142,7 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
+                DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow,
                 LearningDifficultyOrDisabilityDeclaration = LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer,
                 ConsentToCollectEthnicity = true,
                 Ethnicity = Ethnicity.AnyOtherEthnicGroup,
@@ -157,8 +165,10 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
+                DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow,
                 LearningDifficultyOrDisabilityDeclaration = LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer,
                 ConsentToCollectEthnicity = true,
+                DateAndTimeEthnicityCollected = DateTime.UtcNow,
                 Ethnicity = Ethnicity.AnyOtherEthnicGroup,
                 LastModifiedDate = DateTime.MaxValue
             };
@@ -179,8 +189,10 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
+                DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow,
                 LearningDifficultyOrDisabilityDeclaration = (LearningDifficultyOrDisabilityDeclaration)100,
                 ConsentToCollectEthnicity = true,
+                DateAndTimeEthnicityCollected = DateTime.UtcNow,
                 Ethnicity = Ethnicity.AnyOtherEthnicGroup
             };
 
@@ -201,9 +213,11 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
+                DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow,
                 LearningDifficultyOrDisabilityDeclaration = LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer,
                 PrimaryLearningDifficultyOrDisability = (PrimaryLearningDifficultyOrDisability)100,
                 ConsentToCollectEthnicity = true,
+                DateAndTimeEthnicityCollected = DateTime.UtcNow,
                 Ethnicity = Ethnicity.AnyOtherEthnicGroup
             };
 
@@ -213,7 +227,6 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
 
             // Assert
             Assert.IsType<List<ValidationResult>>(result);
-            Assert.NotNull(result);
             Assert.Single(result);
         }
 
@@ -223,9 +236,11 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
+                DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow,
                 LearningDifficultyOrDisabilityDeclaration = LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer,
                 SecondaryLearningDifficultyOrDisability = (SecondaryLearningDifficultyOrDisability)100,
                 ConsentToCollectEthnicity = true,
+                DateAndTimeEthnicityCollected = DateTime.UtcNow,
                 Ethnicity = Ethnicity.AnyOtherEthnicGroup
             };
 
@@ -245,8 +260,10 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
+                DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow,
                 LearningDifficultyOrDisabilityDeclaration = LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer,
                 ConsentToCollectEthnicity = true,
+                DateAndTimeEthnicityCollected = DateTime.UtcNow,
                 Ethnicity = (Ethnicity)100,
             };
 
