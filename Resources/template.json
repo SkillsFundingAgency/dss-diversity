@@ -26,6 +26,12 @@
     "sharedAppServicePlanResourceGroup": {
       "type": "string"
     },
+    "storageAccountName": {
+      "type": "string"
+    },
+    "storageAccountKey": {
+      "type": "string"
+    },
     "templateBaseUrl": {
       "type": "string"
     }
@@ -66,6 +72,12 @@
                 },
                 "cosmosDbKey": {
                   "value": "[parameters('cosmosDbKey')]"
+                },
+                "storageAccountName": {
+                  "value": "[parameters('storageAccountName')]"
+                },
+                "storageAccountKey": {
+                  "value": "[parameters('storageAccountKey')]"
                 }
               }
             },
