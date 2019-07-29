@@ -74,16 +74,12 @@
               "value": "[parameters('cosmosDbCollectionId')]"
             },
             {
+                "name": "CosmosDBConnectionString",
+                "value": "[concat('AccountEndpoint=', parameters('cosmosDbEndpoint'), '/;AccountKey=', parameters('cosmosDbKey'), ';')]"
+            },
+            {
               "name": "DatabaseId",
               "value": "[parameters('cosmosDbDatabaseId')]"
-            },
-            {
-              "name": "Endpoint",
-              "value": "[parameters('cosmosDbEndpoint')]"
-            },
-            {
-              "name": "Key",
-              "value": "[parameters('cosmosDbKey')]"
             },
             {
               "name": "CustomerDatabaseId",
