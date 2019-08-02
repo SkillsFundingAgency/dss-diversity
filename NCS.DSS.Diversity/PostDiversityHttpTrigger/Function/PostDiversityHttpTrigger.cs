@@ -109,6 +109,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             }
 
             diversityRequest.SetIds(customerGuid, touchpointId);
+            diversityRequest.SetDefaultValues();
 
             // validate the request
             _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");

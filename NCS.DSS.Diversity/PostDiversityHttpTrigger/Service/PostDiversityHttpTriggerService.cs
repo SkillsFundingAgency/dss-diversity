@@ -28,12 +28,9 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
             if (diversity == null)
                 return null;
 
-            diversity.SetDefaultValues();
-
             var response = await _documentDbProvider.CreateDiversityDetailAsync(diversity);
 
             return response.StatusCode == HttpStatusCode.Created ? (dynamic) response.Resource : null;
-
         }
 
         public async Task SendToServiceBusQueueAsync(Models.Diversity diversity, string reqUrl)
