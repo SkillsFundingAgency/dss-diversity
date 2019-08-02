@@ -56,6 +56,13 @@ namespace NCS.DSS.Diversity.Models
         {
             if (!LastModifiedDate.HasValue)
                 LastModifiedDate = DateTime.UtcNow;
+            
+            if (!DateAndTimeLLDDHealthConsentCollected.HasValue && ConsentToCollectLLDDHealth.GetValueOrDefault())
+                DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow;
+
+            if (!DateAndTimeEthnicityCollected.HasValue && ConsentToCollectEthnicity.GetValueOrDefault())
+                DateAndTimeEthnicityCollected = DateTime.UtcNow;
+
         }
     }
 }
