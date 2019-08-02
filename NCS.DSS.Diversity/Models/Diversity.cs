@@ -74,6 +74,9 @@ namespace NCS.DSS.Diversity.Models
             if (!LastModifiedDate.HasValue)
                 LastModifiedDate = DateTime.UtcNow;
 
+            if (LearningDifficultyOrDisabilityDeclaration == null)
+                LearningDifficultyOrDisabilityDeclaration = ReferenceData.LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer;
+
             if (PrimaryLearningDifficultyOrDisability == null)
                 PrimaryLearningDifficultyOrDisability = ReferenceData.PrimaryLearningDifficultyOrDisability.NotProvided;
 
