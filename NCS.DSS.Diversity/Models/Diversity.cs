@@ -83,6 +83,9 @@ namespace NCS.DSS.Diversity.Models
             if (SecondaryLearningDifficultyOrDisability == null)
                 SecondaryLearningDifficultyOrDisability = ReferenceData.SecondaryLearningDifficultyOrDisability.NotProvided;
 
+            if (Ethnicity == null)
+                Ethnicity = ReferenceData.Ethnicity.NotProvided;
+
             if(!DateAndTimeLLDDHealthConsentCollected.HasValue && ConsentToCollectLLDDHealth.GetValueOrDefault())
                 DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow;
 
