@@ -108,7 +108,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [Fact]
         public async Task GetDiversityHttpTrigger_ReturnsStatusCodeNoContent_WhenDiversityDetailDoesntExist()
         {
-            _getDiversityHttpTriggerService.GetDiversityDetailForCustomerAsync(Arg.Any<Guid>()).Returns(Task.FromResult<List<Models.Diversity>>(null).Result);
+            _getDiversityHttpTriggerService.GetDiversityDetailForCustomerAsync(CustomerGuid).Returns(Task.FromResult<List<Models.Diversity>>(null).Result);
 
             // Act
             var result = await RunFunction(ValidCustomerId);

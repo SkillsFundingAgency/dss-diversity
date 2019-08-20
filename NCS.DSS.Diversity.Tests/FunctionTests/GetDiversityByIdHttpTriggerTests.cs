@@ -137,8 +137,8 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [Fact]
         public async Task GetDiversityHttpTrigger_ReturnsStatusCodeOk_WhenDiversityDetailExists()
         {
-            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
-            _getDiversityByIdHttpTriggerService.GetDiversityDetailByIdAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_diversity).Result);
+            _resourceHelper.DoesCustomerExist(CustomerGuid).Returns(true);
+            _getDiversityByIdHttpTriggerService.GetDiversityDetailByIdAsync(CustomerGuid, DiversityGuid).Returns(Task.FromResult(_diversity).Result);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidDiversityId);

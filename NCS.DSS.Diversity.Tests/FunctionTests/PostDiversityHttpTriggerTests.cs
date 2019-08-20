@@ -29,6 +29,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         private const string InValidCustomerId = "1111111-2222-3333-4444-555555555555";
         private const string ValidDssCorrelationId = "452d8e8c-2516-4a6b-9fc1-c85e578ac066";
         private static readonly Guid CustomerGuid = Guid.NewGuid();
+        private static readonly Guid DiversityGuid = Guid.NewGuid();
 
         private readonly IPostDiversityHttpTriggerService _postDiversityHttpTriggerService;
         private readonly ILogger _log;
@@ -75,8 +76,8 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             _guidHelper.ValidateGuid(ValidCustomerId).Returns(CustomerGuid);
 
             _httpRequestHelper.GetResourceFromRequest<Models.Diversity>(_request).Returns(Task.FromResult(_diversity).Result);
-            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
-            _postDiversityHttpTriggerService.DoesDiversityDetailsExistForCustomer(Arg.Any<Guid>()).ReturnsForAnyArgs(false);
+            _resourceHelper.DoesCustomerExist(CustomerGuid).Returns(true);
+            _postDiversityHttpTriggerService.DoesDiversityDetailsExistForCustomer(DiversityGuid).Returns(false);
 
             SetUpHttpResponseMessageHelper();
         }
@@ -110,7 +111,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenDiversityHasFailedValidation()
         {
             var validationResults = new List<ValidationResult> { new ValidationResult("Customer Id is Required") };
-            _validate.ValidateResource(Arg.Any<Models.Diversity>()).Returns(validationResults);
+            _validate.ValidateResource(_diversity).Returns(validationResults);
 
             var result = await RunFunction(ValidCustomerId);
 
@@ -134,7 +135,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [Fact]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
         {
-            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(false);
+            _resourceHelper.DoesCustomerExist(CustomerGuid).Returns(false);
 
             var result = await RunFunction(ValidCustomerId);
 
@@ -146,7 +147,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [Fact]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeConflict_WhenDiversityDetailsForCustomerExists()
         {
-            _postDiversityHttpTriggerService.DoesDiversityDetailsExistForCustomer(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
+            _postDiversityHttpTriggerService.DoesDiversityDetailsExistForCustomer(CustomerGuid).Returns(true);
 
             var result = await RunFunction(ValidCustomerId);
 
@@ -158,7 +159,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [Fact]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToCreateDiversityDetailRecord()
         {
-            _postDiversityHttpTriggerService.CreateAsync(Arg.Any<Models.Diversity>()).Returns(Task.FromResult<Models.Diversity>(null).Result);
+            _postDiversityHttpTriggerService.CreateAsync(_diversity).Returns(Task.FromResult<Models.Diversity>(null).Result);
 
             var result = await RunFunction(ValidCustomerId);
 
@@ -170,7 +171,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [Fact]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeCreated_WhenRequestIsValid()
         {
-            _postDiversityHttpTriggerService.CreateAsync(Arg.Any<Models.Diversity>()).Returns(Task.FromResult(_diversity).Result);
+            _postDiversityHttpTriggerService.CreateAsync(_diversity).Returns(Task.FromResult(_diversity).Result);
 
             var result = await RunFunction(ValidCustomerId);
 

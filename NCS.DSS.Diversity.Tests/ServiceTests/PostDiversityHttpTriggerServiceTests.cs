@@ -26,8 +26,9 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
         {
             _documentDbProvider = Substitute.For<IDocumentDBProvider>();
             var serviceBusClient = Substitute.For<IServiceBusClient>();
-            _diversityHttpTriggerService = Substitute.For<PostDiversityHttpTriggerService>(_documentDbProvider, serviceBusClient);
-            _diversity = Substitute.For<Models.Diversity>();
+            _diversityHttpTriggerService =
+                Substitute.For<PostDiversityHttpTriggerService>(_documentDbProvider, serviceBusClient);
+            _diversity = new Models.Diversity();
         }
 
         [Fact]
@@ -65,7 +66,7 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
-            _documentDbProvider.CreateDiversityDetailAsync(Arg.Is(_diversity)).Returns(Task.FromResult(resourceResponse).Result);
+            _documentDbProvider.CreateDiversityDetailAsync(_diversity).Returns(Task.FromResult(resourceResponse).Result);
 
             // Act
             var result = await _diversityHttpTriggerService.CreateAsync(_diversity);

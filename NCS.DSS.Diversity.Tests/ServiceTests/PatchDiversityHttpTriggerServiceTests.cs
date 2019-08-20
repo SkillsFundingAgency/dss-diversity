@@ -88,10 +88,10 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
-            _documentDbProvider.UpdateDiversityDetailAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult(resourceResponse).Result);
+            _documentDbProvider.UpdateDiversityDetailAsync(_json, _diversityId).Returns(Task.FromResult(resourceResponse).Result);
 
             // Act
-            var result = await _DiversityHttpTriggerService.UpdateCosmosAsync(_diversity.ToString(), _diversityId);
+            var result = await _DiversityHttpTriggerService.UpdateCosmosAsync(_json, _diversityId);
 
             // Assert
             Assert.NotNull(result);
@@ -102,22 +102,22 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
         [Fact]
         public async Task PatchDiversityHttpTriggerServiceTests_GetDiversityForCustomerAsync_ReturnsNullWhenResourceHasNotBeenFound()
         {
-            _documentDbProvider.GetDiversityDetailForCustomerToUpdateAsync(Arg.Is(_customerId), Arg.Is(_diversityId)).ReturnsNull();
+            _documentDbProvider.GetDiversityDetailForCustomerToUpdateAsync(_customerId, _diversityId).Returns(Task.FromResult<string>(null).Result);
 
             // Act
-            var result = await _DiversityHttpTriggerService.GetDiversityForCustomerAsync(Arg.Is(_customerId), Arg.Is(_diversityId));
+            var result = await _DiversityHttpTriggerService.GetDiversityForCustomerAsync(_customerId, _diversityId);
 
             // Assert
-            Assert.Empty(result);
+            Assert.Null(result);
         }
 
         [Fact]
         public async Task PatchDiversityHttpTriggerServiceTests_GetDiversityForCustomerAsync_ReturnsResourceWhenResourceHasBeenFound()
         {
-            _documentDbProvider.GetDiversityDetailForCustomerToUpdateAsync(Arg.Is(_customerId), Arg.Is(_diversityId)).Returns(Task.FromResult(_json).Result);
+            _documentDbProvider.GetDiversityDetailForCustomerToUpdateAsync(_customerId, _diversityId).Returns(Task.FromResult(_json).Result);
 
             // Act
-            var result = await _DiversityHttpTriggerService.GetDiversityForCustomerAsync(Arg.Is(_customerId), Arg.Is(_diversityId));
+            var result = await _DiversityHttpTriggerService.GetDiversityForCustomerAsync(_customerId, _diversityId);
 
             // Assert
             Assert.NotNull(result);
