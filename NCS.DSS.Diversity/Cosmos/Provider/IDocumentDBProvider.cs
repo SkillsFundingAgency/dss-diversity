@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
@@ -8,11 +9,12 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
     public interface IDocumentDBProvider
     {
         Task<bool> DoesCustomerResourceExist(Guid customerId);
-        Task<bool> DoesCustomerHaveATerminationDate(Guid customerId);
+        string GetCustomerJson();
         bool DoesDiversityDetailsExistForCustomer(Guid customerId);
-        Task<Guid?> GetDiversityDetailIdForCustomerAsync(Guid customerId);
-        Task<Models.Diversity> GetDiversityDetailForCustomerAsync(Guid customerId, Guid diversityId);
+        Task<Models.Diversity> GetDiversityDetailIdForCustomerAsync(Guid customerId, Guid diversityId);
+        Task<List<Models.Diversity>> GetDiversityDetailsForCustomerAsync(Guid customerId);
+        Task<string> GetDiversityDetailForCustomerToUpdateAsync(Guid customerId, Guid diversityId);
         Task<ResourceResponse<Document>> CreateDiversityDetailAsync(Models.Diversity diversity);
-        Task<ResourceResponse<Document>> UpdateDiversityDetailAsync(Models.Diversity diversity);
+        Task<ResourceResponse<Document>> UpdateDiversityDetailAsync(string diversityJson, Guid diversityId);
     }
 }
