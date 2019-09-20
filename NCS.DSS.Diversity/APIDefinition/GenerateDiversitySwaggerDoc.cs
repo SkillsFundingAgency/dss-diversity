@@ -13,7 +13,7 @@ namespace NCS.DSS.Diversity.APIDefinition
         public const string ApiTitle = "DiversityDetails";
         public const string ApiDefinitionName = "API-Definition";
         public const string ApiDefRoute = ApiTitle + "/" + ApiDefinitionName;
-        public const string ApiDescription = "Basic details of a National Careers Service " + ApiTitle + " Resource";
+        public const string ApiDescription = "New validations rules for new and updated records. Updated to allow retrieval of the full diversity record";
         public const string ApiVersion = "2.0.0";
         private readonly ISwaggerDocumentGenerator _swaggerDocumentGenerator;
 
