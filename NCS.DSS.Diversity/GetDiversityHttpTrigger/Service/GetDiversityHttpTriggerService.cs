@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using NCS.DSS.Diversity.Cosmos.Provider;
 
@@ -7,16 +6,12 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Service
 {
     public class GetDiversityHttpTriggerService : IGetDiversityHttpTriggerService
     {
-        private readonly IDocumentDBProvider _documentDbProvider;
-
-        public GetDiversityHttpTriggerService(IDocumentDBProvider documentDbProvider)
+        public async Task<Guid?> GetDiversityDetailIdAsync(Guid customerId)
         {
-            _documentDbProvider = documentDbProvider;
-        }
+            var documentDbProvider = new DocumentDBProvider();
+            var diversityDetailId = await documentDbProvider.GetDiversityDetailIdForCustomerAsync(customerId);
 
-        public async Task<List<Models.Diversity>> GetDiversityDetailForCustomerAsync(Guid customerId)
-        {
-            return await _documentDbProvider.GetDiversityDetailsForCustomerAsync(customerId);
+            return diversityDetailId;
         }
     }
 }

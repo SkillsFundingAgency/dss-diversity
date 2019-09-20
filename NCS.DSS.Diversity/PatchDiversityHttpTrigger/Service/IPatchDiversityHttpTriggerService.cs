@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using NCS.DSS.Diversity.Models;
 
 namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
 {
     public interface IPatchDiversityHttpTriggerService
     {
-        string PatchResource(string diversityJson, DiversityPatch diversityPatch);
-        Task<Models.Diversity> UpdateCosmosAsync(string diversityJson, Guid diversityId);
-        Task<string> GetDiversityForCustomerAsync(Guid customerId, Guid diversityId);
-        Task SendToServiceBusQueueAsync(DiversityPatch diversityPatch, Guid customerId, string reqUrl);
+        Task<Models.Diversity> UpdateDiversityAsync(Models.Diversity diversity, Models.DiversityPatch diversityPatch);
+        Task<Models.Diversity> GetDiversityByIdAsync(Guid customerId, Guid diversityId);
     }
 }

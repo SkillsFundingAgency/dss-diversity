@@ -1,38 +1,25 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DFC.JSON.Standard;
 using NCS.DSS.Diversity.Cosmos.Provider;
 
 namespace NCS.DSS.Diversity.Cosmos.Helper
 {
     public class ResourceHelper : IResourceHelper
     {
-
-        private readonly IDocumentDBProvider _documentDbProvider;
-        private readonly IJsonHelper _jsonHelper;
-
-        public ResourceHelper(IDocumentDBProvider documentDbProvider, IJsonHelper jsonHelper)
-        {
-            _documentDbProvider = documentDbProvider;
-            _jsonHelper = jsonHelper;
-        }
-
         public async Task<bool> DoesCustomerExist(Guid customerId)
         {
-            return await _documentDbProvider.DoesCustomerResourceExist(customerId);
+            var documentDbProvider = new DocumentDBProvider();
+            var doesCustomerExist = await documentDbProvider.DoesCustomerResourceExist(customerId);
+
+            return doesCustomerExist;
         }
 
-        public bool IsCustomerReadOnly()
+        public async Task<bool> IsCustomerReadOnly(Guid customerId)
         {
-            var customerJson = _documentDbProvider.GetCustomerJson();
+            var documentDbProvider = new DocumentDBProvider();
+            var isCustomerReadOnly = await documentDbProvider.DoesCustomerHaveATerminationDate(customerId);
 
-            if (string.IsNullOrWhiteSpace(customerJson))
-                return false;
-
-            var dateOfTermination = _jsonHelper.GetValue(customerJson, "DateOfTermination");
-
-            return !string.IsNullOrWhiteSpace(dateOfTermination);
+            return isCustomerReadOnly;
         }
-
     }
 }
