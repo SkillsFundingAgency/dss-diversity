@@ -5,7 +5,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5E94528D-1B58-4819-ABB6-125B2CF2649C}</ProjectGuid>
+    <ProjectGuid>{5D432E62-8DEF-407C-BE9D-7E7EC8175596}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NCS.DSS.Diversity.Tests</RootNamespace>
