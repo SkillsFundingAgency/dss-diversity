@@ -7,6 +7,5 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
     {
         bool DoesDiversityDetailsExistForCustomer(Guid customerId);
         Task<Models.Diversity> CreateAsync(Models.Diversity diversity);
-        Task SendToServiceBusQueueAsync(Models.Diversity diversity, string reqUrl);
     }
 }

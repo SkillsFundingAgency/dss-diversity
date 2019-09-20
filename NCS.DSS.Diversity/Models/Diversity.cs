@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using DFC.JSON.Standard.Attributes;
-using DFC.Swagger.Standard.Annotations;
+using NCS.DSS.Diversity.Annotations;
 using NCS.DSS.Diversity.ReferenceData;
 
 namespace NCS.DSS.Diversity.Models
@@ -23,15 +22,60 @@ namespace NCS.DSS.Diversity.Models
         public bool? ConsentToCollectLLDDHealth { get; set; }
 
         [Required]
-        [Display(Description = "Learning Difficulty Or Disability Health Problem Declaration reference data")]
+        [Display(Description = "Learning Difficulty Or Disability Health Problem Declaration reference data   :   " +
+                                "1 - Customer considers themselves to have a learning difficulty and / or health problem, " +
+                                "2 - Customer does not consider themselves to have a learning difficulty and / or health problem, " +
+                                "9 - Not provided by the customer ")]
         [Example(Description = "1")]
         public LearningDifficultyOrDisabilityDeclaration? LearningDifficultyOrDisabilityDeclaration { get; set; }
 
-        [Display(Description = "Primary Learning Difficulty Or Disability Heath Problem reference data")]
+        [Display(Description = "Primary Learning Difficulty Or Disability Heath Problem reference data   :   " +
+                                "4 - Visual impairment,  " +
+                                "5 - Hearing impairment,  " +
+                                "6 - Disability affecting mobility,  " +
+                                "7 - Profound complex disabilities,  " +
+                                "8 - Social and emotional difficulties,  " +
+                                "9 - Mental health difficulty,  " +
+                                "10 - Moderate learning difficulty,  " +
+                                "11 - Severe learning difficulty,  " +
+                                "12 - Dyslexia,  " +
+                                "13 - Dyscalculia,  " +
+                                "14 - Autism spectrum disorder,  " +
+                                "15 - Asperger's syndrome ,  " +
+                                "16 - Temporary disability after illness(for example post - viral) or accident,  " +
+                                "17 - Speech, Language and Communication Needs,  " +
+                                "93 - Other physical disability,  " +
+                                "94 - Other specific learning difficulty(e.g.Dyspraxia),  " +
+                                "95 - Other medical condition(for example epilepsy, asthma, diabetes),  " +
+                                "96 - Other learning difficulty,  " +
+                                "97 - Other disability,  " +
+                                "98 - Prefer not to say,  " +
+                                "99 - Not provided")]
         [Example(Description = "4")]
         public PrimaryLearningDifficultyOrDisability? PrimaryLearningDifficultyOrDisability { get; set; }
 
-        [Display(Description = "Secondary Learning Difficulty Or Disability Heath Problem reference data")]
+        [Display(Description = "Secondary Learning Difficulty Or Disability Heath Problem reference data   :   " +
+                                "4 - Visual impairment,  " +
+                                "5 - Hearing impairment,  " +
+                                "6 - Disability affecting mobility,  " +
+                                "7 - Profound complex disabilities,  " +
+                                "8 - Social and emotional difficulties,  " +
+                                "9 - Mental health difficulty,  " +
+                                "10 - Moderate learning difficulty,  " +
+                                "11 - Severe learning difficulty,  " +
+                                "12 - Dyslexia,  " +
+                                "13 - Dyscalculia,  " +
+                                "14 - Autism spectrum disorder,  " +
+                                "15 - Asperger's syndrome ,  " +
+                                "16 - Temporary disability after illness(for example post - viral) or accident,  " +
+                                "17 - Speech, Language and Communication Needs,  " +
+                                "93 - Other physical disability,  " +
+                                "94 - Other specific learning difficulty(e.g.Dyspraxia),  " +
+                                "95 - Other medical condition(for example epilepsy, asthma, diabetes),  " +
+                                "96 - Other learning difficulty,  " +
+                                "97 - Other disability,  " +
+                                "98 - Prefer not to say,  " +
+                                "99 - Not provided")]
         [Example(Description = "5")]
         public SecondaryLearningDifficultyOrDisability? SecondaryLearningDifficultyOrDisability { get; set; }
 
@@ -46,7 +90,26 @@ namespace NCS.DSS.Diversity.Models
         public bool? ConsentToCollectEthnicity { get; set; }
 
         [Required]
-        [Display(Description = "Ethnicity reference data values")]
+        [Display(Description = "Ethnicity reference data values   :   " +
+                                "31 - English / Welsh / Scottish / Northern Irish / British,   " +
+                                "32 - Irish,   " +
+                                "33 - Gypsy or Irish Traveller,   " +
+                                "34 - Any Other White background,   " +
+                                "35 - White and Black Caribbean,   " +
+                                "36 - White and Black African,   " +
+                                "37 - White and Asian,   " +
+                                "38 - Any Other Mixed / multiple ethnic background,   " +
+                                "39 - Indian,   " +
+                                "40 - Pakistani,   " +
+                                "41 - Bangladeshi,   " +
+                                "42 - Chinese,   " +
+                                "43 - Any other Asian background,   " +
+                                "44 - African,   " +
+                                "45 - Caribbean,   " +
+                                "46 - Any other Black / African / Caribbean background,   " +
+                                "47 - Arab,   " +
+                                "98 - Any other ethnic group,   " +
+                                "99 - Not provided")]
         [Example(Description = "31")]
         public Ethnicity? Ethnicity { get; set; }
 
@@ -65,32 +128,16 @@ namespace NCS.DSS.Diversity.Models
         [Example(Description = "0000000001")]
         public string LastModifiedBy { get; set; }
 
-        [JsonIgnoreOnSerialize]
-        public string CreatedBy { get; set; }
-
-
         public void SetDefaultValues()
         {
             if (!LastModifiedDate.HasValue)
                 LastModifiedDate = DateTime.UtcNow;
-
-            if (LearningDifficultyOrDisabilityDeclaration == null)
-                LearningDifficultyOrDisabilityDeclaration = ReferenceData.LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer;
 
             if (PrimaryLearningDifficultyOrDisability == null)
                 PrimaryLearningDifficultyOrDisability = ReferenceData.PrimaryLearningDifficultyOrDisability.NotProvided;
 
             if (SecondaryLearningDifficultyOrDisability == null)
                 SecondaryLearningDifficultyOrDisability = ReferenceData.SecondaryLearningDifficultyOrDisability.NotProvided;
-
-            if (Ethnicity == null)
-                Ethnicity = ReferenceData.Ethnicity.NotProvided;
-
-            if(!DateAndTimeLLDDHealthConsentCollected.HasValue && ConsentToCollectLLDDHealth.GetValueOrDefault())
-                DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow;
-
-            if(!DateAndTimeEthnicityCollected.HasValue && ConsentToCollectEthnicity.GetValueOrDefault())
-                DateAndTimeEthnicityCollected = DateTime.UtcNow;
         }
 
         public void SetIds(Guid customerId, string touchpointId)
@@ -98,8 +145,42 @@ namespace NCS.DSS.Diversity.Models
             DiversityId = Guid.NewGuid();
             CustomerId = customerId;
             LastModifiedBy = touchpointId;
-            CreatedBy = touchpointId;
         }
 
+        public void Patch(DiversityPatch diversityPatch)
+        {
+            if (diversityPatch == null)
+                return;
+
+            if(diversityPatch.ConsentToCollectLLDDHealth.HasValue)
+                ConsentToCollectLLDDHealth = diversityPatch.ConsentToCollectLLDDHealth;
+
+            if(diversityPatch.LearningDifficultyOrDisabilityDeclaration.HasValue)
+                LearningDifficultyOrDisabilityDeclaration = diversityPatch.LearningDifficultyOrDisabilityDeclaration;
+
+            if(diversityPatch.PrimaryLearningDifficultyOrDisability.HasValue)
+                PrimaryLearningDifficultyOrDisability = diversityPatch.PrimaryLearningDifficultyOrDisability;
+
+            if (diversityPatch.SecondaryLearningDifficultyOrDisability.HasValue)
+                SecondaryLearningDifficultyOrDisability = diversityPatch.SecondaryLearningDifficultyOrDisability;
+
+            if(diversityPatch.DateAndTimeLLDDHealthConsentCollected.HasValue)
+                DateAndTimeLLDDHealthConsentCollected = diversityPatch.DateAndTimeLLDDHealthConsentCollected;
+
+            if(diversityPatch.ConsentToCollectEthnicity.HasValue)
+                ConsentToCollectEthnicity = diversityPatch.ConsentToCollectEthnicity;
+
+            if(diversityPatch.Ethnicity.HasValue)
+                Ethnicity = diversityPatch.Ethnicity;
+
+            if(diversityPatch.DateAndTimeEthnicityCollected.HasValue)
+                DateAndTimeEthnicityCollected = diversityPatch.DateAndTimeEthnicityCollected;
+
+            if (diversityPatch.LastModifiedDate.HasValue)
+                LastModifiedDate = diversityPatch.LastModifiedDate;
+
+            if(!string.IsNullOrWhiteSpace(diversityPatch.LastModifiedBy))
+                LastModifiedBy = diversityPatch.LastModifiedBy;
+        }
     } 
 }
