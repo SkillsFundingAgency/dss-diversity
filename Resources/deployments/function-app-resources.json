@@ -18,36 +18,21 @@
       "type": "string"
     },
     "cosmosDbKey": {
-      "type": "securestring"
+      "type": "string"
     },
     "functionAppName": {
       "type": "string"
-    },
-    "serviceBusConnectionString": {
-        "type": "securestring"
-    },
-    "serviceBusQueueName": {
-        "type": "string"
-    },
-    "storageAccountName": {
-      "type": "string"
-    },
-    "storageAccountKey": {
-      "type": "securestring"
     }
   },
   "variables": {
-    "appInsightsName": "[concat('dss-', toLower(parameters('configEnvironmentName')), '-', split(parameters('functionAppName'), '-')[2], '-ai')]",
-    "storageAccountConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=', parameters('storageAccountKey'), ';EndpointSuffix=core.windows.net')]"
+    "appInsightsName": "[concat('dss-', toLower(parameters('configEnvironmentName')), '-', split(parameters('functionAppName'), '-')[2], '-ai')]"
   },
   "resources": [
     {
       "name": "[parameters('functionAppName')]",
       "type": "Microsoft.Web/sites",
       "apiVersion": "2016-08-01",
-      "dependsOn": [
-        "[variables('appInsightsName')]"
-      ],
+      "dependsOn": [ "[variables('appInsightsName')]" ],
       "location": "[resourceGroup().location]",
       "kind": "functionapp",
       "properties": {
@@ -61,15 +46,11 @@
             },
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",
-              "value": "~2"
+              "value": "~1"
             },
             {
               "name": "MSDEPLOY_RENAME_LOCKED_FILES",
               "value": "1"
-            },
-            {
-              "name": "AzureWebJobsStorage",
-              "value": "[variables('storageAccountConnectionString')]"
             },
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
@@ -80,12 +61,16 @@
               "value": "[parameters('cosmosDbCollectionId')]"
             },
             {
-                "name": "CosmosDBConnectionString",
-                "value": "[concat('AccountEndpoint=', parameters('cosmosDbEndpoint'), '/;AccountKey=', parameters('cosmosDbKey'), ';')]"
-            },
-            {
               "name": "DatabaseId",
               "value": "[parameters('cosmosDbDatabaseId')]"
+            },
+            {
+              "name": "Endpoint",
+              "value": "[parameters('cosmosDbEndpoint')]"
+            },
+            {
+              "name": "Key",
+              "value": "[parameters('cosmosDbKey')]"
             },
             {
               "name": "CustomerDatabaseId",
@@ -94,14 +79,6 @@
             {
               "name": "CustomerCollectionId",
               "value": "customers"
-            },
-            {
-                "name": "ServiceBusConnectionString",
-                "value": "[parameters('serviceBusConnectionString')]"
-            },
-            {
-                "name": "QueueName",
-                "value": "[parameters('serviceBusQueueName')]"
             }
           ]
         }

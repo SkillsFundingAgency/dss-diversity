@@ -1,6 +1,6 @@
 {
   "scriptFile": "..\\bin\\NCS.DSS.Diversity.dll",
-  "entryPoint": "NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Run",
+  "entryPoint": "NCS.DSS.Diversity.PutDiversityHttpTrigger.Run",
 
   "bindings": [
     {
@@ -8,8 +8,8 @@
       "name": "req",
       "type": "httpTrigger",
       "direction": "in",
-      "methods": [ "get" ]
-    }, 
+      "methods": [ "put" ] 
+    },
     {
       "name": "$return",
       "type": "http",

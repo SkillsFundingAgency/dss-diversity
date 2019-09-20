@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29102.190
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2018
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCS.DSS.Diversity", "NCS.DSS.Diversity\NCS.DSS.Diversity.csproj", "{A6712B51-E03A-43E8-BA48-EEFF0AA27F05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCS.DSS.Diversity.Tests", "NCS.DSS.Diversity.Tests\NCS.DSS.Diversity.Tests.csproj", "{5E94528D-1B58-4819-ABB6-125B2CF2649C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCS.DSS.Diversity.Tests", "NCS.DSS.Diversity.Tests\NCS.DSS.Diversity.Tests.csproj", "{5D432E62-8DEF-407C-BE9D-7E7EC8175596}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{A6712B51-E03A-43E8-BA48-EEFF0AA27F05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6712B51-E03A-43E8-BA48-EEFF0AA27F05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6712B51-E03A-43E8-BA48-EEFF0AA27F05}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5E94528D-1B58-4819-ABB6-125B2CF2649C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5E94528D-1B58-4819-ABB6-125B2CF2649C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5E94528D-1B58-4819-ABB6-125B2CF2649C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5E94528D-1B58-4819-ABB6-125B2CF2649C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D432E62-8DEF-407C-BE9D-7E7EC8175596}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D432E62-8DEF-407C-BE9D-7E7EC8175596}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D432E62-8DEF-407C-BE9D-7E7EC8175596}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D432E62-8DEF-407C-BE9D-7E7EC8175596}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
