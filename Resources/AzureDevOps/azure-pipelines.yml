@@ -6,11 +6,16 @@ variables:
 resources:
   repositories:
   - repository: self
-  - repository: dfc-devops
+  - repository: dfc-devops1.1.1
     type: github
     name: SkillsFundingAgency/dfc-devops
     ref: refs/tags/v1.1.1
     endpoint: 'GitHub (CDH)'
+  - repository: dfc-devops1.6.2
+    type: github
+    name: SkillsFundingAgency/dfc-devops
+    ref: refs/heads/NCSD-1653-MakeTestsOptionalOnFrameworkBuild
+    endpoint: 'GitHub (CDH)'    
 
 jobs:
 # Test the branch name, the output of this job will satisfy the condition of one or neither of the subsequent jobs
@@ -49,7 +54,7 @@ jobs:
     - visualstudio
 
   steps:
-  - template: AzureDevOpsTemplates/Build/dfc-dotnetframework-build.yml@dfc-devops
+  - template: AzureDevOpsTemplates/Build/dfc-dotnetframework-build.yml@dfc-devops1.6.2
     parameters:
       SolutionBaseName: $(SolutionBaseName)
       BuildPlatform: $(BuildPlatform)
@@ -67,7 +72,7 @@ jobs:
     - visualstudio
 
   steps:
-  - template: AzureDevOpsTemplates/Build/dfc-dotnetcorefunctionapp-build-notests.yml@dfc-devops
+  - template: AzureDevOpsTemplates/Build/dfc-dotnetcorefunctionapp-build-notests.yml@dfc-devops1.1.1
     parameters:
       SolutionBaseName: $(SolutionBaseName)
       BuildPlatform: $(BuildPlatform)
