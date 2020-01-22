@@ -3,34 +3,61 @@ using System.Net;
 using System.Threading.Tasks;
 using NCS.DSS.Diversity.Cosmos.Provider;
 using NCS.DSS.Diversity.Models;
+using NCS.DSS.Diversity.ServiceBus;
 
 namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
 {
     public class PatchDiversityHttpTriggerService : IPatchDiversityHttpTriggerService
     {
-        public async Task<Models.Diversity> UpdateDiversityAsync(Models.Diversity diversity, DiversityPatch diversityPatch)
+
+        private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly IDiversityPatchService _diversityPatchService;
+        private readonly IServiceBusClient _serviceBusClient;
+
+        public PatchDiversityHttpTriggerService(IDocumentDBProvider documentDbProvider, IDiversityPatchService diversityPatchService, IServiceBusClient serviceBusClient)
         {
-            if (diversity == null)
+            _documentDbProvider = documentDbProvider;
+            _diversityPatchService = diversityPatchService;
+            _serviceBusClient = serviceBusClient;
+        }
+
+        public string PatchResource(string diversityJson, DiversityPatch diversityPatch)
+        {
+            if (string.IsNullOrEmpty(diversityJson))
+                return null;
+
+            if (diversityPatch == null)
                 return null;
 
             diversityPatch.SetDefaultValues();
 
-            diversity.Patch(diversityPatch);
+            var updatedDiversity = _diversityPatchService.Patch(diversityJson, diversityPatch);
 
-            var documentDbProvider = new DocumentDBProvider();
-            var response = await documentDbProvider.UpdateDiversityDetailAsync(diversity);
-
-            var responseStatusCode = response.StatusCode;
-
-            return responseStatusCode == HttpStatusCode.OK ? diversity : null;
+            return updatedDiversity;
         }
 
-        public async Task<Models.Diversity> GetDiversityByIdAsync(Guid customerId, Guid diversityId)
+        public async Task<Models.Diversity> UpdateCosmosAsync(string diversityJson, Guid diversityId)
         {
-            var documentDbProvider = new DocumentDBProvider();
-            var diversityDetail = await documentDbProvider.GetDiversityDetailForCustomerAsync(customerId, diversityId);
+            if (string.IsNullOrEmpty(diversityJson))
+                return null;
 
-            return diversityDetail;
+            var response = await _documentDbProvider.UpdateDiversityDetailAsync(diversityJson, diversityId);
+
+            var responseStatusCode = response?.StatusCode;
+
+            return responseStatusCode == HttpStatusCode.OK ? (dynamic) response.Resource : null;
         }
+
+        public async Task<string> GetDiversityForCustomerAsync(Guid customerId, Guid diversityId)
+        {
+            return await _documentDbProvider.GetDiversityDetailForCustomerToUpdateAsync(customerId, diversityId);
+        }
+
+        public async Task SendToServiceBusQueueAsync(DiversityPatch diversityPatch, Guid customerId, string reqUrl)
+        {
+            await _serviceBusClient.SendPatchMessageAsync(diversityPatch, customerId, reqUrl);
+        }
+
+
     }
 }
