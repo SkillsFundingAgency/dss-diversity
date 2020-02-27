@@ -133,7 +133,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             Assert.IsType<HttpResponseMessage>(result);
             Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
         }
-
+        //To get a build running
         [Fact]
         public async Task GetDiversityHttpTrigger_ReturnsStatusCodeOk_WhenDiversityDetailExists()
         {
