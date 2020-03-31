@@ -22,7 +22,7 @@ namespace NCS.DSS.Diversity.ServiceBus
                 TitleMessage = "New Diversity record {" + diversity.CustomerId + "} added at " + DateTime.UtcNow,
                 CustomerGuid = diversity.CustomerId,
                 LastModifiedDate = diversity.LastModifiedDate,
-                URL = reqUrl + "/" + diversity.CustomerId,
+                URL = reqUrl + "/" + diversity.DiversityId,
                 IsNewCustomer = false,
                 TouchpointId = diversity.LastModifiedBy
             };
