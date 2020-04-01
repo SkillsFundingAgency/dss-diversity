@@ -62,7 +62,7 @@ namespace NCS.DSS.Diversity.ServiceBus
                 MessageId = customerId + " " + DateTime.UtcNow
             };
 
-            _loggerHelper.LogInformationObject(log, Guid.Empty, string.Format("New Diversity record {0}", diversity.DiversityId), msg);
+            _loggerHelper.LogInformationObject(log, Guid.Empty, string.Format("Diversity record modification for {0}", customerId), msg);
 
             await queueClient.SendAsync(msg);
 
