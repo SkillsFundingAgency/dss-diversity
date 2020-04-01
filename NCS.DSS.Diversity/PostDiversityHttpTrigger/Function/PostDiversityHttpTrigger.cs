@@ -99,7 +99,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             catch (JsonException ex)
             {
                 _loggerHelper.LogException(log, correlationGuid, "Unable to retrieve body from req", ex);
-                return _httpResponseMessageHelper.UnprocessableEntity(req);
+                return _httpResponseMessageHelper.UnprocessableEntity(ex);
             }
 
             if (diversityRequest == null)
