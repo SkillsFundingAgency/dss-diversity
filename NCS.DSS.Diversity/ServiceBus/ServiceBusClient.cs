@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
+using DFC.Common.Standard.Logging;
 using Microsoft.Azure.ServiceBus;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.Diversity.Models;
 using Newtonsoft.Json;
 
@@ -12,7 +14,9 @@ namespace NCS.DSS.Diversity.ServiceBus
     {
         public readonly string QueueName = Environment.GetEnvironmentVariable("QueueName");
         public readonly string ServiceBusConnectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
-        
+        private readonly ILoggerHelper _loggerHelper;
+        private ILogger log;
+
         public async Task SendPostMessageAsync(Models.Diversity diversity, string reqUrl)
         {
             var queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
@@ -32,6 +36,8 @@ namespace NCS.DSS.Diversity.ServiceBus
                 ContentType = "application/json",
                 MessageId = diversity.CustomerId + " " + DateTime.UtcNow
             };
+
+            _loggerHelper.LogInformationObject(log, Guid.Empty, string.Format("New Diversity record {0}", diversity.DiversityId), msg);
 
             await queueClient.SendAsync(msg);
         }
@@ -55,6 +61,8 @@ namespace NCS.DSS.Diversity.ServiceBus
                 ContentType = "application/json",
                 MessageId = customerId + " " + DateTime.UtcNow
             };
+
+            _loggerHelper.LogInformationObject(log, Guid.Empty, string.Format("New Diversity record {0}", diversity.DiversityId), msg);
 
             await queueClient.SendAsync(msg);
 
