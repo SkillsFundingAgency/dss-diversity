@@ -61,7 +61,7 @@ namespace NCS.DSS.Diversity.ServiceBus
                 ContentType = "application/json",
                 MessageId = customerId + " " + DateTime.UtcNow
             };
-            //Added to see changes within appinsights
+            //Added to see changes within appinsights 
             _loggerHelper.LogInformationObject(log, Guid.Empty, string.Format("Diversity record modification for {0}", customerId), messageModel);
 
             await queueClient.SendAsync(msg);
