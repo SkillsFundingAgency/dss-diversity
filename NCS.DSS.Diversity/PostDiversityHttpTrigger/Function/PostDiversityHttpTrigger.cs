@@ -149,7 +149,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             if (diversity != null)
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("attempting to send to service bus {0}", diversity.DiversityId));
-                await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl, log);
+                await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl, correlationGuid, log);
             }
 
             return diversity == null

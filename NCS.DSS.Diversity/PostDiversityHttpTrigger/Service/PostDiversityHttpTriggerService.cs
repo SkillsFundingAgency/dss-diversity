@@ -34,9 +34,9 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
             return response.StatusCode == HttpStatusCode.Created ? (dynamic) response.Resource : null;
         }
 
-        public async Task SendToServiceBusQueueAsync(Models.Diversity diversity, string reqUrl, ILogger log)
+        public async Task SendToServiceBusQueueAsync(Models.Diversity diversity, string reqUrl, Guid correlationId, ILogger log)
         {
-            await _serviceBusClient.SendPostMessageAsync(diversity, reqUrl, log);
+            await _serviceBusClient.SendPostMessageAsync(diversity, reqUrl, correlationId, log);
         }
 
     }

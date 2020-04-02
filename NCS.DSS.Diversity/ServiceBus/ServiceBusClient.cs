@@ -16,7 +16,7 @@ namespace NCS.DSS.Diversity.ServiceBus
         public readonly string ServiceBusConnectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
         private readonly ILoggerHelper _loggerHelper = new LoggerHelper();  
 
-        public async Task SendPostMessageAsync(Models.Diversity diversity, string reqUrl, ILogger log)
+        public async Task SendPostMessageAsync(Models.Diversity diversity, string reqUrl, Guid correlationId, ILogger log)
         {
             var queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
 
@@ -36,7 +36,7 @@ namespace NCS.DSS.Diversity.ServiceBus
                 MessageId = diversity.CustomerId + " " + DateTime.UtcNow
             };
 
-            _loggerHelper.LogInformationObject(log, Guid.Empty, string.Format("New Diversity record {0}", diversity.DiversityId), messageModel);
+            _loggerHelper.LogInformationObject(log, correlationId, string.Format("New Diversity record {0}", diversity.DiversityId), messageModel);
 
             await queueClient.SendAsync(msg);
         }
