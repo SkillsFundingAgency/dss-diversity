@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.Diversity.Cosmos.Provider;
 using NCS.DSS.Diversity.ServiceBus;
 
@@ -33,9 +34,9 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
             return response.StatusCode == HttpStatusCode.Created ? (dynamic) response.Resource : null;
         }
 
-        public async Task SendToServiceBusQueueAsync(Models.Diversity diversity, string reqUrl)
+        public async Task SendToServiceBusQueueAsync(Models.Diversity diversity, string reqUrl, ILogger log)
         {
-            await _serviceBusClient.SendPostMessageAsync(diversity, reqUrl);
+            await _serviceBusClient.SendPostMessageAsync(diversity, reqUrl, log);
         }
 
     }

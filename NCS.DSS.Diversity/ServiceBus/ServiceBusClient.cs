@@ -14,10 +14,9 @@ namespace NCS.DSS.Diversity.ServiceBus
     {
         public readonly string QueueName = Environment.GetEnvironmentVariable("QueueName");
         public readonly string ServiceBusConnectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
-        private readonly ILoggerHelper _loggerHelper;
-        private ILogger log;
+        private readonly ILoggerHelper _loggerHelper = new LoggerHelper();  
 
-        public async Task SendPostMessageAsync(Models.Diversity diversity, string reqUrl)
+        public async Task SendPostMessageAsync(Models.Diversity diversity, string reqUrl, ILogger log)
         {
             var queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
 
@@ -36,7 +35,7 @@ namespace NCS.DSS.Diversity.ServiceBus
                 ContentType = "application/json",
                 MessageId = diversity.CustomerId + " " + DateTime.UtcNow
             };
-            //Added to see changes within appinsights
+
             _loggerHelper.LogInformationObject(log, Guid.Empty, string.Format("New Diversity record {0}", diversity.DiversityId), messageModel);
 
             await queueClient.SendAsync(msg);
@@ -61,8 +60,6 @@ namespace NCS.DSS.Diversity.ServiceBus
                 ContentType = "application/json",
                 MessageId = customerId + " " + DateTime.UtcNow
             };
-            //Added to see changes within appinsights 
-            _loggerHelper.LogInformationObject(log, Guid.Empty, string.Format("Diversity record modification for {0}", customerId), messageModel);
 
             await queueClient.SendAsync(msg);
 
