@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
 namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
@@ -7,6 +8,6 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
     {
         bool DoesDiversityDetailsExistForCustomer(Guid customerId);
         Task<Models.Diversity> CreateAsync(Models.Diversity diversity);
-        Task SendToServiceBusQueueAsync(Models.Diversity diversity, string reqUrl);
+        Task SendToServiceBusQueueAsync(Models.Diversity diversity, string reqUrl, Guid correlationId, ILogger log);
     }
 }

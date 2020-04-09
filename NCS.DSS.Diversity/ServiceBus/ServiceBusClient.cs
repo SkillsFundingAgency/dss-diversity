@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
+using DFC.Common.Standard.Logging;
 using Microsoft.Azure.ServiceBus;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.Diversity.Models;
 using Newtonsoft.Json;
 
@@ -12,17 +14,18 @@ namespace NCS.DSS.Diversity.ServiceBus
     {
         public readonly string QueueName = Environment.GetEnvironmentVariable("QueueName");
         public readonly string ServiceBusConnectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
-        
-        public async Task SendPostMessageAsync(Models.Diversity diversity, string reqUrl)
+        private readonly ILoggerHelper _loggerHelper = new LoggerHelper();  
+
+        public async Task SendPostMessageAsync(Models.Diversity diversity, string reqUrl, Guid correlationId, ILogger log)
         {
             var queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
 
             var messageModel = new MessageModel()
             {
-                TitleMessage = "New Diversity record {" + diversity.CustomerId + "} added at " + DateTime.UtcNow,
+                TitleMessage = "New Diversity record {" + diversity.DiversityId + "} added for {" + diversity.CustomerId + "} at " + DateTime.UtcNow,
                 CustomerGuid = diversity.CustomerId,
                 LastModifiedDate = diversity.LastModifiedDate,
-                URL = reqUrl + "/" + diversity.CustomerId,
+                URL = reqUrl + "/" + diversity.DiversityId,
                 IsNewCustomer = false,
                 TouchpointId = diversity.LastModifiedBy
             };
@@ -32,6 +35,8 @@ namespace NCS.DSS.Diversity.ServiceBus
                 ContentType = "application/json",
                 MessageId = diversity.CustomerId + " " + DateTime.UtcNow
             };
+            //Lof messages to app insights
+            _loggerHelper.LogInformationObject(log, correlationId, string.Format("New Diversity record {0}", diversity.DiversityId), messageModel);
 
             await queueClient.SendAsync(msg);
         }

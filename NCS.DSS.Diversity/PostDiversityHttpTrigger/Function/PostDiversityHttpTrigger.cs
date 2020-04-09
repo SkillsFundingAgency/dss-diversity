@@ -99,7 +99,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             catch (JsonException ex)
             {
                 _loggerHelper.LogException(log, correlationGuid, "Unable to retrieve body from req", ex);
-                return _httpResponseMessageHelper.UnprocessableEntity(req);
+                return _httpResponseMessageHelper.UnprocessableEntity(ex);
             }
 
             if (diversityRequest == null)
@@ -149,7 +149,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             if (diversity != null)
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("attempting to send to service bus {0}", diversity.DiversityId));
-                await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl);
+                await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl, correlationGuid, log);
             }
 
             return diversity == null
