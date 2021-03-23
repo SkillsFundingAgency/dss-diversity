@@ -16,11 +16,11 @@ using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.ServiceBus;
 using NCS.DSS.Diversity.Validation;
 
-[assembly: FunctionsStartup(typeof(FunctionStartupExtension))]
+[assembly: FunctionsStartup(typeof(Startup))]
 
 namespace NCS.DSS.Diversity.Ioc
 {
-    public class FunctionStartupExtension : FunctionsStartup
+    public class Startup : FunctionsStartup
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
