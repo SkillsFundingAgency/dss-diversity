@@ -152,12 +152,6 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             }
 
             var patchedDiversity = _patchDiversityService.PatchResource(diversity, diversityPatchRequest);
-
-            if (patchedDiversity == null)
-            {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to patch Diversity {0}", diversityGuid));
-                return _httpResponseMessageHelper.NoContent(diversityGuid);
-            }
             
             var updatedDiversity = await _patchDiversityService.UpdateCosmosAsync(patchedDiversity, diversityGuid);
 

@@ -6,17 +6,16 @@ using DFC.Common.Standard.GuidHelper;
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Service;
 using Moq;
-using Xunit;
+using NUnit.Framework;
 
 namespace NCS.DSS.Diversity.Tests.FunctionTests
 {
-
+    [TestFixture]
     public class GetDiversityByIdHttpTriggerTests
     {
         private const string ValidCustomerId = "1e1a555c-9633-4e12-ab28-09ed60d51cb3";
@@ -26,19 +25,20 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         private static readonly Guid CustomerGuid = Guid.NewGuid();
         private static readonly Guid DiversityGuid = Guid.NewGuid();
 
-        private readonly Models.Diversity _diversity;
+        private Models.Diversity _diversity;
         private Mock<ILogger> _log;
         private DefaultHttpRequest _request;
         private Mock<IResourceHelper> _resourceHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
-        private readonly HttpResponseMessageHelper _httpResponseMessageHelper;
-        private readonly Mock<IGuidHelper> _guidHelper;
-        private readonly Mock<IGetDiversityByIdHttpTriggerService> _getDiversityByIdHttpTriggerService;
-        private readonly GetDiversityByIdHttpTrigger.Function.GetDiversityByIdHttpTrigger function;
+        private HttpResponseMessageHelper _httpResponseMessageHelper;
+        private Mock<IGuidHelper> _guidHelper;
+        private Mock<IGetDiversityByIdHttpTriggerService> _getDiversityByIdHttpTriggerService;
+        private GetDiversityByIdHttpTrigger.Function.GetDiversityByIdHttpTrigger function;
         private IJsonHelper _jsonHelper;
         private Mock<ILoggerHelper> _loggerHelper;
 
-        public GetDiversityByIdHttpTriggerTests()
+        [SetUp]
+        public void Setup()
         {
             _request = null;
 
@@ -69,7 +69,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             _guidHelper.Setup(x => x.ValidateGuid(ValidDiversityId)).Returns(DiversityGuid);            
         }
 
-        [Fact]
+        [Test]
         public async Task GetDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns((string)null);
@@ -78,11 +78,11 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidDiversityId);
 
             // Assert
-            Assert.IsType<HttpResponseMessage>(result);
-            Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
-        [Fact]
+        [Test]
         public async Task GetDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
             _guidHelper.Setup(x => x.ValidateGuid(ValidCustomerId)).Returns(Guid.Empty);
@@ -91,11 +91,11 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             var result = await RunFunction(InValidId, ValidDiversityId);
 
             // Assert
-            Assert.IsType<HttpResponseMessage>(result);
-            Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
-        [Fact]
+        [Test]
         public async Task GetDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenDiversityIdIsInvalid()
         {
             _guidHelper.Setup(x => x.ValidateGuid(ValidCustomerId)).Returns(Guid.Empty);
@@ -104,11 +104,11 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, InValidId);
 
             // Assert
-            Assert.IsType<HttpResponseMessage>(result);
-            Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
-        [Fact]
+        [Test]
         public async Task GetDiversityHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesntExist()
         {
             _resourceHelper.Setup(x => x.DoesCustomerExist(CustomerGuid)).Returns(Task.FromResult(true));
@@ -117,11 +117,11 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidDiversityId);
 
             // Assert
-            Assert.IsType<HttpResponseMessage>(result);
-            Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
         }
 
-        [Fact]
+        [Test]
         public async Task GetDiversityHttpTrigger_ReturnsStatusCodeNoContent_WhenDiversityDetailDoesntExist()
         {
 
@@ -131,11 +131,11 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidDiversityId);
 
             // Assert
-            Assert.IsType<HttpResponseMessage>(result);
-            Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
         }
 
-        [Fact]
+        [Test]
         public async Task GetDiversityHttpTrigger_ReturnsStatusCodeOk_WhenDiversityDetailExists()
         {
             _resourceHelper.Setup(x => x.DoesCustomerExist(CustomerGuid)).Returns(Task.FromResult(true));
@@ -145,8 +145,8 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidDiversityId);
 
             // Assert
-            Assert.IsType<HttpResponseMessage>(result);
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
         }
 
         private async Task<HttpResponseMessage> RunFunction(string customerId, string diversityId)
