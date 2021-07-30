@@ -9,29 +9,28 @@ using Microsoft.Azure.Documents.Client;
 using NCS.DSS.Diversity.Cosmos.Provider;
 using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.ServiceBus;
-using Newtonsoft.Json;
-using NSubstitute;
-using Xunit;
+using Moq;
+using NUnit.Framework;
 
 namespace NCS.DSS.Diversity.Tests.ServiceTests
 {
-   
+    [TestFixture]
     public class PostDiversityHttpTriggerServiceTests
     {
-        private readonly IPostDiversityHttpTriggerService _diversityHttpTriggerService;
-        private readonly IDocumentDBProvider _documentDbProvider;
-        private readonly Models.Diversity _diversity;
+        private IPostDiversityHttpTriggerService _diversityHttpTriggerService;
+        private Mock<IDocumentDBProvider> _documentDbProvider;
+        private Models.Diversity _diversity;
 
-        public PostDiversityHttpTriggerServiceTests()
+        [SetUp]
+        public void Setup()
         {
-            _documentDbProvider = Substitute.For<IDocumentDBProvider>();
-            var serviceBusClient = Substitute.For<IServiceBusClient>();
-            _diversityHttpTriggerService =
-                Substitute.For<PostDiversityHttpTriggerService>(_documentDbProvider, serviceBusClient);
+            _documentDbProvider = new Mock<IDocumentDBProvider>();
+            var serviceBusClient = new Mock<IServiceBusClient>();
+            _diversityHttpTriggerService = new PostDiversityHttpTriggerService(_documentDbProvider.Object, serviceBusClient.Object);
             _diversity = new Models.Diversity();
         }
 
-        [Fact]
+        [Test]
         public async Task PostDiversityHttpTriggerServiceTests_CreateAsync_ReturnsNullWhenDiversityJsonNull()
         {
             // Act
@@ -41,7 +40,7 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             Assert.Null(result);
         }
 
-        [Fact]
+        [Test]
         public async Task PostDiversityHttpTriggerServiceTests_CreateAsync_ReturnsResource()
         {
             const string documentServiceResponseClass = "Microsoft.Azure.Documents.DocumentServiceResponse, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
@@ -66,14 +65,14 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
-            _documentDbProvider.CreateDiversityDetailAsync(_diversity).Returns(Task.FromResult(resourceResponse).Result);
+            _documentDbProvider.Setup(x => x.CreateDiversityDetailAsync(_diversity)).Returns(Task.FromResult(resourceResponse));
 
             // Act
             var result = await _diversityHttpTriggerService.CreateAsync(_diversity);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<Models.Diversity>(result);
+            Assert.IsInstanceOf<Models.Diversity>(result);
 
         }
     }

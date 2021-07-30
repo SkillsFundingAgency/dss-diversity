@@ -83,8 +83,6 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Diversity>(_request)).Returns(Task.FromResult(_diversity));
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _postDiversityHttpTriggerService.Setup(x => x.DoesDiversityDetailsExistForCustomer(DiversityGuid)).Returns(false);
-
-            //SetUpHttpResponseMessageHelper();
         }
 
         [Test]
@@ -192,36 +190,5 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
                 _log.Object,
                 customerId).ConfigureAwait(false);
         }
-
-        /*private void SetUpHttpResponseMessageHelper()
-        {
-            _httpResponseMessageHelper
-                .BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
-
-            _httpResponseMessageHelper
-                .BadRequest(Arg.Any<string>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
-
-            _httpResponseMessageHelper
-                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
-
-            _httpResponseMessageHelper
-                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
-
-            _httpResponseMessageHelper
-                .UnprocessableEntity(Arg.Any<List<ValidationResult>>())
-                .Returns(x => new HttpResponseMessage((HttpStatusCode)422));
-
-            _httpResponseMessageHelper
-                .UnprocessableEntity(Arg.Any<HttpRequest>()).Returns(x => new HttpResponseMessage((HttpStatusCode)422));
-
-            _httpResponseMessageHelper.Forbidden().Returns(x => new HttpResponseMessage(HttpStatusCode.Forbidden));
-
-            _httpResponseMessageHelper.Conflict().Returns(x => new HttpResponseMessage(HttpStatusCode.Conflict));
-            
-            _httpResponseMessageHelper
-                .Created(Arg.Any<string>()).Returns(x => new HttpResponseMessage(HttpStatusCode.Created));
-
-        }*/
-
     }
 }
