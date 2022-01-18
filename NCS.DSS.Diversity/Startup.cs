@@ -16,11 +16,11 @@ using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.ServiceBus;
 using NCS.DSS.Diversity.Validation;
 
-[assembly: FunctionsStartup(typeof(FunctionStartupExtension))]
+[assembly: FunctionsStartup(typeof(Startup))]
 
 namespace NCS.DSS.Diversity.Ioc
 {
-    public class FunctionStartupExtension : FunctionsStartup
+    public class Startup : FunctionsStartup
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
@@ -38,7 +38,7 @@ namespace NCS.DSS.Diversity.Ioc
             builder.Services.AddSingleton<IGetDiversityByIdHttpTriggerService, GetDiversityByIdHttpTriggerService>();
             builder.Services.AddSingleton<IGetDiversityHttpTriggerService, GetDiversityHttpTriggerService>();
             builder.Services.AddSingleton<IPostDiversityHttpTriggerService, PostDiversityHttpTriggerService>();
-            builder.Services.AddSingleton<IPatchDiversityHttpTriggerService, PatchDiversityHttpTriggerService>();
+            builder.Services.AddTransient<IPatchDiversityHttpTriggerService, PatchDiversityHttpTriggerService>();
             builder.Services.AddSingleton<IDiversityPatchService, DiversityPatchService>();
             builder.Services.AddSingleton<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
 

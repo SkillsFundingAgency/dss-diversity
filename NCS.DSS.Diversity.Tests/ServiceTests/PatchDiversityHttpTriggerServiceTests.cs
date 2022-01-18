@@ -11,39 +11,39 @@ using NCS.DSS.Diversity.Models;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.ServiceBus;
 using Newtonsoft.Json;
-using NSubstitute;
-using NSubstitute.ReturnsExtensions;
-using Xunit;
+using Moq;
+using NUnit.Framework;
 
 namespace NCS.DSS.Diversity.Tests.ServiceTests
 {
-   
+    [TestFixture]
     public class PatchDiversityHttpTriggerServiceTests
     {
         private IPatchDiversityHttpTriggerService _DiversityHttpTriggerService;
-        private IDiversityPatchService _diversityPatchService;
-        private IDocumentDBProvider _documentDbProvider;
-        private IServiceBusClient _serviceBusClient;
+        private Mock<IDiversityPatchService> _diversityPatchService;
+        private Mock<IDocumentDBProvider> _documentDbProvider;
+        private Mock<IServiceBusClient> _serviceBusClient;
 
         private string _json;
-        private readonly Models.Diversity _diversity;
-        private readonly DiversityPatch _diversityPatch;
+        private Models.Diversity _diversity;
+        private DiversityPatch _diversityPatch;
         private readonly Guid _customerId = Guid.Parse("044d15fa-e776-4797-8f57-bd2484d5b4b4");
         private readonly Guid _diversityId = Guid.Parse("7E467BDB-213F-407A-B86A-1954053D3C24");
 
-        public PatchDiversityHttpTriggerServiceTests()
+        [SetUp]
+        public void Setup()
         {
-            _diversityPatchService = Substitute.For<IDiversityPatchService>();
-            _documentDbProvider = Substitute.For<IDocumentDBProvider>();
-            _serviceBusClient = Substitute.For<IServiceBusClient>();
-            _DiversityHttpTriggerService = Substitute.For<PatchDiversityHttpTriggerService>(_documentDbProvider, _diversityPatchService, _serviceBusClient);
+            _diversityPatchService = new Mock<IDiversityPatchService>();
+            _documentDbProvider = new Mock<IDocumentDBProvider>();
+            _serviceBusClient = new Mock<IServiceBusClient>();
+            _DiversityHttpTriggerService = new PatchDiversityHttpTriggerService(_documentDbProvider.Object, _diversityPatchService.Object, _serviceBusClient.Object);
             _diversityPatch = new DiversityPatch();
             _diversity = new Models.Diversity();
 
             _json = JsonConvert.SerializeObject(_diversityPatch);
         }
 
-        [Fact]
+        [Test]
         public void PatchDiversityHttpTriggerServiceTests_PatchResource_ReturnsNullWhenDiversityJsonNullOrEmpty()
         {
             // Act
@@ -53,7 +53,7 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             Assert.Null(result);
         }
 
-        [Fact]
+        [Test]
         public void PatchDiversityHttpTriggerServiceTests_PatchResource_ReturnsNullWhenDiversityPatchNullOrEmpty()
         {
             // Act
@@ -63,7 +63,7 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             Assert.Null(result);
         }
 
-        [Fact]
+        [Test]
         public async Task PatchDiversityHttpTriggerServiceTests_UpdateAsync_ReturnsResourceWhenUpdated()
         {
             const string documentServiceResponseClass = "Microsoft.Azure.Documents.DocumentServiceResponse, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
@@ -88,21 +88,21 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
-            _documentDbProvider.UpdateDiversityDetailAsync(_json, _diversityId).Returns(Task.FromResult(resourceResponse).Result);
+            _documentDbProvider.Setup(x => x.UpdateDiversityDetailAsync(_json, _diversityId)).Returns(Task.FromResult(resourceResponse));
 
             // Act
             var result = await _DiversityHttpTriggerService.UpdateCosmosAsync(_json, _diversityId);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<Models.Diversity>(result);
+            Assert.IsInstanceOf<Models.Diversity>(result);
 
         }
 
-        [Fact]
+        [Test]
         public async Task PatchDiversityHttpTriggerServiceTests_GetDiversityForCustomerAsync_ReturnsNullWhenResourceHasNotBeenFound()
         {
-            _documentDbProvider.GetDiversityDetailForCustomerToUpdateAsync(_customerId, _diversityId).Returns(Task.FromResult<string>(null).Result);
+            _documentDbProvider.Setup(x => x.GetDiversityDetailForCustomerToUpdateAsync(_customerId, _diversityId)).Returns(Task.FromResult<string>(null));
 
             // Act
             var result = await _DiversityHttpTriggerService.GetDiversityForCustomerAsync(_customerId, _diversityId);
@@ -111,17 +111,17 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             Assert.Null(result);
         }
 
-        [Fact]
+        [Test]
         public async Task PatchDiversityHttpTriggerServiceTests_GetDiversityForCustomerAsync_ReturnsResourceWhenResourceHasBeenFound()
         {
-            _documentDbProvider.GetDiversityDetailForCustomerToUpdateAsync(_customerId, _diversityId).Returns(Task.FromResult(_json).Result);
+            _documentDbProvider.Setup(x => x.GetDiversityDetailForCustomerToUpdateAsync(_customerId, _diversityId)).Returns(Task.FromResult(_json));
 
             // Act
             var result = await _DiversityHttpTriggerService.GetDiversityForCustomerAsync(_customerId, _diversityId);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<string>(result);
+            Assert.IsInstanceOf<string>(result);
         }
     }
 }
