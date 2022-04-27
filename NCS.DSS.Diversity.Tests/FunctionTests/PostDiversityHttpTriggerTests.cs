@@ -220,3 +220,4 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
 
     }
 }
+
