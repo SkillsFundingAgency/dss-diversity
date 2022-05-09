@@ -65,6 +65,14 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Function
                 return _httpResponseMessageHelper.BadRequest();
             }
 
+            var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
+            if (string.IsNullOrEmpty(subcontractorId))
+            {
+                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'APIM-subcontractorId' in request header");
+                return _httpResponseMessageHelper.BadRequest();
+            }
+
+
             _loggerHelper.LogInformationMessage(log, correlationGuid,
                 "C# HTTP trigger function GetDiversityHttpTrigger processed a request. By Touchpoint " + touchpointId);
 
