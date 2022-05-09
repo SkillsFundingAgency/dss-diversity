@@ -61,6 +61,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
 
             _httpRequestHelper.GetDssCorrelationId(_request).Returns(ValidDssCorrelationId);
             _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
+            _httpRequestHelper.GetDssSubcontractorId(_request).Returns("9999999999");
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
             _guidHelper.ValidateGuid(ValidCustomerId).Returns(CustomerGuid);
             _guidHelper.ValidateGuid(ValidDiversityId).Returns(DiversityGuid);
@@ -72,6 +73,19 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         public async Task GetDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
             _httpRequestHelper.GetDssTouchpointId(_request).Returns((string)null);
+
+            // Act
+            var result = await RunFunction(ValidCustomerId, ValidDiversityId);
+
+            // Assert
+            Assert.IsType<HttpResponseMessage>(result);
+            Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenSubcontractorIdIsNotProvided()
+        {
+            _httpRequestHelper.GetDssSubcontractorId(_request).Returns((string)null);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidDiversityId);
