@@ -64,6 +64,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
 
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _httpRequestHelper.Setup(x => x.GetDssSubcontractorId(_request)).Returns("9999999999");
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _guidHelper.Setup(x => x.ValidateGuid(ValidCustomerId)).Returns(CustomerGuid);
             var diversityList = new List<Models.Diversity>();
@@ -74,6 +75,19 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         public async Task GetDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns((string)null);
+
+            // Act
+            var result = await RunFunction(ValidCustomerId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        }
+
+        [Test]
+        public async Task GetDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenSubcontractorIdIsNotProvided()
+        {
+            _httpRequestHelper.Setup(x => x.GetDssSubcontractorId(_request)).Returns((string)null);
 
             // Act
             var result = await RunFunction(ValidCustomerId);
