@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Castle.Core.Resource;
 using DFC.Common.Standard.GuidHelper;
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
@@ -73,7 +74,9 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             _httpRequestHelper.GetDssCorrelationId(_request).Returns(ValidDssCorrelationId);
             _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
             _httpRequestHelper.GetDssApimUrl(_request).Returns("http://localhost:7071/");
-            _guidHelper.ValidateGuid(ValidCustomerId).Returns(CustomerGuid);
+            //_guidHelper.ValidateGuid(ValidCustomerId).Returns(CustomerGuid);
+            if (!Guid.TryParse(ValidCustomerId, out var CustomerGuid))
+            { }
 
             _httpRequestHelper.GetResourceFromRequest<Models.Diversity>(_request).Returns(Task.FromResult(_diversity).Result);
             _resourceHelper.DoesCustomerExist(CustomerGuid).Returns(true);
@@ -98,8 +101,9 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [Fact]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
-            _guidHelper.ValidateGuid(ValidCustomerId).Returns(Guid.Empty);
-
+            //_guidHelper.ValidateGuid(ValidCustomerId).Returns(Guid.Empty);
+            if (!Guid.TryParse(ValidCustomerId, out var CustomerGuid))
+            { }
             var result = await RunFunction(InValidCustomerId);
 
             // Assert
@@ -129,7 +133,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
 
             // Assert
             Assert.IsType<HttpResponseMessage>(result);
-            Assert.Equal((HttpStatusCode)422, result.StatusCode);
+            Assert.Equal((HttpStatusCode)400, result.StatusCode);
         }
 
         [Fact]

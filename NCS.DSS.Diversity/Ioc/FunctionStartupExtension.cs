@@ -1,4 +1,4 @@
-﻿using DFC.Common.Standard.CosmosDocumentClient;
+﻿using DFC.Common.Standard;
 using DFC.Common.Standard.GuidHelper;
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
@@ -31,7 +31,7 @@ namespace NCS.DSS.Diversity.Ioc
             builder.Services.AddSingleton<IHttpResponseMessageHelper, HttpResponseMessageHelper>();
             builder.Services.AddSingleton<IJsonHelper, JsonHelper>();
             builder.Services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
-            builder.Services.AddSingleton<ICosmosDocumentClient, CosmosDocumentClient>();
+            //builder.Services.AddSingleton<ICosmosDocumentClient, CosmosDocumentClient>();
             builder.Services.AddSingleton<IServiceBusClient, ServiceBusClient>();
             builder.Services.AddSingleton<IGuidHelper, GuidHelper>();
 

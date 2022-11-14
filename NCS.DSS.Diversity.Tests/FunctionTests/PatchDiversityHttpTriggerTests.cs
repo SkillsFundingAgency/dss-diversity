@@ -82,9 +82,12 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             _httpRequestHelper.GetDssCorrelationId(_request).Returns(ValidDssCorrelationId);
             _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
             _httpRequestHelper.GetDssApimUrl(_request).Returns("http://localhost:7071/");
-            _guidHelper.ValidateGuid(ValidCustomerId).Returns(CustomerGuid);
-            _guidHelper.ValidateGuid(DiversityId).Returns(DiversityGuid);
-
+            //_guidHelper.ValidateGuid(ValidCustomerId).Returns(CustomerGuid);
+            if (!Guid.TryParse(ValidCustomerId, out var CustomerGuid))
+            { }
+            //_guidHelper.ValidateGuid(DiversityId).Returns(DiversityGuid);
+            if (!Guid.TryParse(DiversityId, out var DiversityGuid))
+            { }
             _resourceHelper.DoesCustomerExist(CustomerGuid).Returns(true);
             _httpRequestHelper.GetResourceFromRequest<Models.Diversity>(_request).Returns(Task.FromResult(_diversity).Result);
             _httpRequestHelper.GetResourceFromRequest<Models.DiversityPatch>(_request).Returns(Task.FromResult(_diversityPatch).Result);
@@ -108,8 +111,9 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [Fact]
         public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
-            _guidHelper.ValidateGuid(ValidCustomerId).Returns(Guid.Empty);
-
+            //_guidHelper.ValidateGuid(ValidCustomerId).Returns(Guid.Empty);
+            if (!Guid.TryParse(ValidCustomerId, out var CustomerGuid))
+            { }
             var result = await RunFunction(InValidId, DiversityId);
 
             // Assert
@@ -120,8 +124,9 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [Fact]
         public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenDiversityIdIsInvalid()
         {
-            _guidHelper.ValidateGuid(DiversityId).Returns(Guid.Empty);
-
+            //_guidHelper.ValidateGuid(DiversityId).Returns(Guid.Empty);
+            if (!Guid.TryParse(DiversityId, out var DiversityGuid))
+            { }
             var result = await RunFunction(ValidCustomerId, InValidId);
 
             // Assert
