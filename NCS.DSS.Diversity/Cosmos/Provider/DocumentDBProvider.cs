@@ -20,11 +20,6 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
             return _customerJson;
         }
 
-        //public DocumentDBProvider(CosmosDocumentClient cosmosDocumentClient)
-        //{
-        //    _cosmosDocumentClient = cosmosDocumentClient;
-        //}
-
         public async Task<bool> DoesCustomerResourceExist(Guid customerId)
         {
             var documentUri = DocumentDBHelper.CreateCustomerDocumentUri(customerId);

@@ -141,7 +141,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         }
 
         [Fact]
-        public async Task GetDiversityHttpTrigger_ReturnsStatusCodeOk_WhenDiversityDetailExists()
+        public async Task GetDiversityHttpTrigger_ReturnsStatusCodeNoContent_WhenDiversityDetailExists()
         {
             _resourceHelper.DoesCustomerExist(CustomerGuid).Returns(true);
             _getDiversityByIdHttpTriggerService.GetDiversityDetailByIdAsync(CustomerGuid, DiversityGuid).Returns(Task.FromResult(_diversity).Result);
@@ -151,7 +151,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
 
             // Assert
             Assert.IsType<HttpResponseMessage>(result);
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
         }
 
         private async Task<HttpResponseMessage> RunFunction(string customerId, string diversityId)

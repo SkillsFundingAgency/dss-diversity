@@ -160,7 +160,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         }
 
         [Fact]
-        public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
+        public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerDoesNotExist()
         {
             _resourceHelper.DoesCustomerExist(CustomerGuid).Returns(false);
 
@@ -168,7 +168,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
 
             // Assert
             Assert.IsType<HttpResponseMessage>(result);
-            Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
 
@@ -188,7 +188,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
 
 
         [Fact]
-        public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeOk_WhenRequestIsValid()
+        public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenRequestIsValid()
         {
             _patchDiversityHttpTriggerService.GetDiversityForCustomerAsync(CustomerGuid, DiversityGuid).Returns(Task.FromResult(_diversity.ToString()).Result);
             _patchDiversityHttpTriggerService.PatchResource(_json, _diversityPatch).ReturnsForAnyArgs(_json);
@@ -198,7 +198,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
 
             // Assert
             Assert.IsType<HttpResponseMessage>(result);
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
         public async Task<HttpResponseMessage> RunFunction(string customerId, string diversityId)
