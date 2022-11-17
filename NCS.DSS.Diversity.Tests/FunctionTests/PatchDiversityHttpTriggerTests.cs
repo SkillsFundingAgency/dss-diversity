@@ -87,7 +87,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost");
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _guidHelper.Setup(x => x.ValidateGuid(ValidCustomerId)).Returns(CustomerGuid);
+            //_guidHelper.Setup(x => x.ValidateGuid(ValidCustomerId)).Returns(CustomerGuid);
 
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Diversity>(_request)).Returns(Task.FromResult(_diversity));
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.DiversityPatch>(_request)).Returns(Task.FromResult(_diversityPatch));
@@ -109,7 +109,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [Test]
         public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
-            _guidHelper.Setup(x => x.ValidateGuid(ValidCustomerId)).Returns(Guid.Empty);
+            //_guidHelper.Setup(x => x.ValidateGuid(ValidCustomerId)).Returns(Guid.Empty);
 
             var result = await RunFunction(InValidId, DiversityId);
 
@@ -121,7 +121,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [Test]
         public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenDiversityIdIsInvalid()
         {
-            _guidHelper.Setup(x => x.ValidateGuid(DiversityId)).Returns(Guid.Empty);
+            //_guidHelper.Setup(x => x.ValidateGuid(DiversityId)).Returns(Guid.Empty);
 
             var result = await RunFunction(ValidCustomerId, InValidId);
 
@@ -133,7 +133,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [Test]
         public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenDiversityHasFailedValidation()
         {
-            _guidHelper.Setup(x => x.ValidateGuid(DiversityId)).Returns(DiversityGuid);
+            //_guidHelper.Setup(x => x.ValidateGuid(DiversityId)).Returns(DiversityGuid);
             var validationResults = new List<ValidationResult> { new ValidationResult("Customer Id is Required") };
             _validate.Setup(x => x.ValidateResource(_diversityPatch)).Returns(validationResults);
 
@@ -148,7 +148,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenDiversityRequestIsInvalid()
         {
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.DiversityPatch>(_request)).Throws(new JsonException());
-            _guidHelper.Setup(x => x.ValidateGuid(DiversityId)).Returns(DiversityGuid);
+            //_guidHelper.Setup(x => x.ValidateGuid(DiversityId)).Returns(DiversityGuid);
 
             var result = await RunFunction(ValidCustomerId, DiversityId);
 
@@ -161,7 +161,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
         {
             _resourceHelper.Setup(x => x.DoesCustomerExist(CustomerGuid)).Returns(Task.FromResult(false));
-            _guidHelper.Setup(x => x.ValidateGuid(DiversityId)).Returns(DiversityGuid);
+            //_guidHelper.Setup(x => x.ValidateGuid(DiversityId)).Returns(DiversityGuid);
             var result = await RunFunction(ValidCustomerId, DiversityId);
 
             // Assert
@@ -175,7 +175,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         {
 
             _patchDiversityHttpTriggerService.Setup(x => x.GetDiversityForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(_diversity.ToString()));
-            _guidHelper.Setup(x => x.ValidateGuid(DiversityId)).Returns(DiversityGuid);
+            //_guidHelper.Setup(x => x.ValidateGuid(DiversityId)).Returns(DiversityGuid);
             _patchDiversityHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), DiversityGuid)).Returns(Task.FromResult<Models.Diversity>(null));
 
             var result = await RunFunction(ValidCustomerId, DiversityId);
@@ -187,10 +187,10 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
 
 
         [Test]
-        public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeOk_WhenRequestIsValid()
+        public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenRequestIsValid()
         {
             _patchDiversityHttpTriggerService.Setup(x => x.GetDiversityForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(_diversity.ToString()));
-            _guidHelper.Setup(x => x.ValidateGuid(DiversityId)).Returns(DiversityGuid);
+            //_guidHelper.Setup(x => x.ValidateGuid(DiversityId)).Returns(DiversityGuid);
             _patchDiversityHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<Models.DiversityPatch>())).Returns(_json);
             _patchDiversityHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), DiversityGuid)).Returns(Task.FromResult(_diversity));
 
@@ -198,7 +198,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
         public async Task<HttpResponseMessage> RunFunction(string customerId, string diversityId)
