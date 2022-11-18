@@ -71,6 +71,11 @@
               "value": "1"
             },
             {
+              "name": "WEBSITE_RUN_FROM_ZIP",
+              "value": "1"
+
+            },
+            {
               "name": "AzureWebJobsStorage",
               "value": "[variables('storageAccountConnectionString')]"
             },
