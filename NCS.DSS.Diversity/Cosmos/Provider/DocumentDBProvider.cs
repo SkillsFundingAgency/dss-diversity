@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DFC.Common.Standard.CosmosDocumentClient;
+using DFC.Common.Standard;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
+using NCS.DSS.Diversity.Cosmos.Client;
 using NCS.DSS.Diversity.Cosmos.Helper;
 using Newtonsoft.Json.Linq;
 
@@ -14,8 +15,6 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
     public class DocumentDBProvider : IDocumentDBProvider
     {
 
-        private readonly ICosmosDocumentClient _cosmosDocumentClient;
-
         private string _customerJson;
 
         public string GetCustomerJson()
@@ -23,16 +22,11 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
             return _customerJson;
         }
 
-        public DocumentDBProvider(ICosmosDocumentClient cosmosDocumentClient)
-        {
-            _cosmosDocumentClient = cosmosDocumentClient;
-        }
-
         public async Task<bool> DoesCustomerResourceExist(Guid customerId)
         {
             var documentUri = DocumentDBHelper.CreateCustomerDocumentUri(customerId);
 
-            var client = _cosmosDocumentClient.GetDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return false;
@@ -57,7 +51,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
         {
             var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
-            var client = _cosmosDocumentClient.GetDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return false;
@@ -70,7 +64,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
         {
             var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
-            var client = _cosmosDocumentClient.GetDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             var diversityDetailQuery = client
                 ?.CreateDocumentQuery<Models.Diversity>(collectionUri, new FeedOptions {MaxItemCount = 1})
@@ -92,7 +86,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
         {
             var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
-            var client = _cosmosDocumentClient.GetDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             var diversityDetailQuery = client
                 ?.CreateDocumentQuery<Models.Diversity>(collectionUri, new FeedOptions { MaxItemCount = 1 })
@@ -117,7 +111,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
         {
             var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
-            var client = _cosmosDocumentClient.GetDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             var diversityDetailQuery = client
                 ?.CreateDocumentQuery<Models.Diversity>(collectionUri, new FeedOptions { MaxItemCount = 1 })
@@ -138,7 +132,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
 
             var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
-            var client = _cosmosDocumentClient.GetDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
@@ -156,7 +150,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
 
             var documentUri = DocumentDBHelper.CreateDocumentUri(diversityId);
 
-            var client = _cosmosDocumentClient.GetDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;

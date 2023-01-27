@@ -52,10 +52,14 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
             HttpRequest req, ILogger log, string customerId)
         {
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
-            var correlationGuid = _guidHelper.ValidateGuid(correlationId);
+            if (string.IsNullOrEmpty(correlationId))
+                log.LogInformation("Unable to locate 'DssCorrelationId' in request header");
 
-            if (correlationGuid == Guid.Empty)
-                correlationGuid = _guidHelper.GenerateGuid();
+            if (!Guid.TryParse(correlationId, out var correlationGuid))
+            {
+                log.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
+                correlationGuid = Guid.NewGuid();
+            }
 
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
@@ -67,11 +71,10 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
             _loggerHelper.LogInformationMessage(log, correlationGuid,
                 "C# HTTP trigger function GetDiversityHttpTrigger processed a request. By Touchpoint " + touchpointId);
 
-            var customerGuid = _guidHelper.ValidateGuid(customerId);
-            if (customerGuid == Guid.Empty)
+            if (!Guid.TryParse(customerId, out var customerGuid))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", customerId));
-                return _httpResponseMessageHelper.BadRequest(customerId);
+                return _httpResponseMessageHelper.BadRequest(customerGuid);
             }
 
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
