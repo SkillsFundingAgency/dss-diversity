@@ -65,7 +65,6 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _guidHelper.Setup(x => x.ValidateGuid(ValidCustomerId)).Returns(CustomerGuid);
             var diversityList = new List<Models.Diversity>();
             _getDiversityHttpTriggerService.Setup(x => x.GetDiversityDetailForCustomerAsync(It.IsAny<Guid>())).Returns(Task.FromResult(diversityList));
         }
@@ -86,7 +85,6 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [Test]
         public async Task GetDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
-            _guidHelper.Setup(x => x.ValidateGuid(ValidCustomerId)).Returns(Guid.Empty);
 
             // Act
             var result = await RunFunction(InValidCustomerId);
