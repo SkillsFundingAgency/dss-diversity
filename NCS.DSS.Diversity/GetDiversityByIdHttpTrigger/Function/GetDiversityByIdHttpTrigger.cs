@@ -96,9 +96,16 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Function
             _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get diversity {0} for customer {1}", diversityGuid, customerGuid));
             var diversity = await _getDiversityService.GetDiversityDetailByIdAsync(customerGuid, diversityGuid);
 
-            return diversity ==  null ?
-                _httpResponseMessageHelper.NoContent(customerGuid) :
-                _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectAndRenameIdProperty(diversity, "id", "DiversityId"));
+            if (diversity ==  null)
+            {
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Diversity {0} for customer {1} not found. Returning NoContent", diversityGuid, customerGuid));
+                return _httpResponseMessageHelper.NoContent(customerGuid);
+            }
+            else
+            {
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Diversity {0} found for customer {1}", diversity, customerGuid));
+                return _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectAndRenameIdProperty(diversity, "id", "DiversityId"));
+            }
         }
     }
 }

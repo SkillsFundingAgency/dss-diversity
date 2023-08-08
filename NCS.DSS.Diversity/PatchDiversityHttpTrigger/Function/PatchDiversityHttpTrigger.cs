@@ -124,7 +124,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
 
             if (errors != null && errors.Any())
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "validation errors with resource");
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("validation errors {0} with resource", errors));
                 return _httpResponseMessageHelper.UnprocessableEntity(errors);
             }
 
@@ -146,15 +146,18 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
                 return _httpResponseMessageHelper.Forbidden(customerGuid);
             }
 
+            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get diversity {0} for the customer {1}", diversityGuid, customerGuid));
             var diversity = await _patchDiversityService.GetDiversityForCustomerAsync(customerGuid, diversityGuid);
 
             if (diversity == null)
             {
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Couldnt find diversity for the customer {0}. Returning NoContent",  customerGuid));
                 return _httpResponseMessageHelper.NoContent(customerGuid);
             }
 
             var patchedDiversity = _patchDiversityService.PatchResource(diversity, diversityPatchRequest);
-            
+
+            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to patch {1} diversity {0}", diversityGuid, patchedDiversity));
             var updatedDiversity = await _patchDiversityService.UpdateCosmosAsync(patchedDiversity, diversityGuid);
 
             if (updatedDiversity != null)
@@ -163,9 +166,16 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
                 await _patchDiversityService.SendToServiceBusQueueAsync(diversityPatchRequest, customerGuid, apimUrl);
             }
 
-            return updatedDiversity == null ?
-                _httpResponseMessageHelper.BadRequest(customerGuid) :
-                _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectAndRenameIdProperty(updatedDiversity, "id", "DiversityId"));
+            if (updatedDiversity == null)
+            {
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Patch diversity failed for the customer {0}. Returning BadRequest", customerGuid));
+                return _httpResponseMessageHelper.BadRequest(customerGuid);
+            }
+            else
+            {
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Successfully updated {0} diversity for the customer {1}", updatedDiversity, customerGuid));
+                return _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectAndRenameIdProperty(updatedDiversity, "id", "DiversityId"));
+            }
         }
     }
 }

@@ -145,7 +145,10 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             var doesDiversityDetailsExist = _postDiversityService.DoesDiversityDetailsExistForCustomer(customerGuid);
 
             if (doesDiversityDetailsExist)
+            {
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Diversity details already exist for the customer {0}", customerGuid));
                 return _httpResponseMessageHelper.Conflict();
+            }
 
             var diversity = await _postDiversityService.CreateAsync(diversityRequest);
 
@@ -155,9 +158,16 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                 await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl, correlationGuid, log);
             }
 
-            return diversity == null
-                ? _httpResponseMessageHelper.BadRequest(customerGuid)
-                : _httpResponseMessageHelper.Created(_jsonHelper.SerializeObjectAndRenameIdProperty(diversity, "id", "DiversityId"));
+            if (diversity == null)
+            {
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Failed to post diversity for the customer {0}. Returning BadRequest", customerGuid));
+                return _httpResponseMessageHelper.BadRequest(customerGuid);
+            }
+            else
+            {
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Diversity {0} successfully created for the customer {1}", diversity, customerGuid));
+                return _httpResponseMessageHelper.Created(_jsonHelper.SerializeObjectAndRenameIdProperty(diversity, "id", "DiversityId"));
+            }
         }
     }
 }
