@@ -62,35 +62,39 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
             if (string.IsNullOrEmpty(correlationId))
                 log.LogInformation("Unable to locate 'DssCorrelationId' in request header");
+            
 
             if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
                 log.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
                 correlationGuid = Guid.NewGuid();
+             
             }
+            log.LogInformation($"DssCorrelationId: {correlationGuid}");
 
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'APIM-TouchpointId' in request header");
-                return _httpResponseMessageHelper.BadRequest();
+                var response = _httpResponseMessageHelper.BadRequest();
+                log.LogWarning( $"Response Status Code: {response.StatusCode}. Unable to locate 'APIM-TouchpointId' in request header.");
+                return response;
             }
 
             var apimUrl = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(apimUrl))
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'apimurl' in request header");
-                return _httpResponseMessageHelper.BadRequest();
+                var response = _httpResponseMessageHelper.BadRequest();
+                log.LogWarning( $"Response Status Code: {response.StatusCode}. Unable to locate 'apimurl' in request header.");
+                return response;
             }
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid,
-                string.Format("Patch Diversity C# HTTP trigger function  processed a request. By Touchpoint: {0}",
-                    touchpointId));
+            log.LogInformation($"Patch Diversity C# HTTP trigger function  processed a request. By Touchpoint: {touchpointId}");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", customerId));
-                return _httpResponseMessageHelper.BadRequest(customerGuid);
+                var response = _httpResponseMessageHelper.BadRequest(customerGuid);
+                log.LogWarning( $"Response Status Code: {response.StatusCode}. Unable to parse 'customerId' to a Guid: {customerId}.");
+                return response;
             }
 
             Models.Diversity diversityRequest;
@@ -101,72 +105,80 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             }
             catch (JsonException ex)
             {
-                _loggerHelper.LogException(log, correlationGuid, "Unable to retrieve body from req", ex);
-                return _httpResponseMessageHelper.UnprocessableEntity(ex);
+                var response = _httpResponseMessageHelper.UnprocessableEntity(ex);
+                log.LogError($"Response Status Code: {response.StatusCode}. Unable to retrieve body from request.", ex);
+                return response;
+
             }
 
             if (diversityRequest == null)
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Diversity patch request is null");
-                return _httpResponseMessageHelper.UnprocessableEntity(req);
+               var response = _httpResponseMessageHelper.UnprocessableEntity(req);
+               log.LogWarning($"Response Status Code: {response.StatusCode}. Diversity patch request is null.");
+               return response;
             }
 
             diversityRequest.SetIds(customerGuid, touchpointId);
             diversityRequest.SetDefaultValues();
 
             // validate the request
-            _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
+            log.LogInformation( "Attempt to validate resource");
             var errors = _validate.ValidateResource(diversityRequest);
 
             if (errors != null && errors.Any())
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "validation errors with resource");
-                return _httpResponseMessageHelper.UnprocessableEntity(errors);
+                var response = _httpResponseMessageHelper.UnprocessableEntity(errors);
+                log.LogWarning($"Response Status Code: {response.StatusCode}. Validation errors with resource.", errors);
+                return response;
             }
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if customer exists {0}", customerGuid));
+            log.LogInformation( $"Attempting to see if customer exists {customerGuid}");
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer does not exist {0}", customerGuid));
-                return _httpResponseMessageHelper.NoContent(customerGuid);
+                var response = _httpResponseMessageHelper.NoContent(customerGuid);
+               log.LogWarning($"Response Status Code: {response.StatusCode}. Customer does not exist {customerGuid}.");
+                return response;
             }
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if this is a read only customer {0}", customerGuid));
+            log.LogInformation( $"Attempting to see if this is a read only customer {customerGuid}");
             var isCustomerReadOnly = _resourceHelper.IsCustomerReadOnly();
 
             if (isCustomerReadOnly)
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer is read only {0}", customerGuid));
-                return _httpResponseMessageHelper.Forbidden(customerGuid);
+                var response = _httpResponseMessageHelper.Forbidden(customerGuid);
+               log.LogWarning($"Response Status Code: {response.StatusCode}. Customer {customerGuid} is read only ");
+                return response;
             }
 
             var doesDiversityDetailsExist = _postDiversityService.DoesDiversityDetailsExistForCustomer(customerGuid);
 
             if (doesDiversityDetailsExist)
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Diversity details already exist for the customer {0}", customerGuid));
-                return _httpResponseMessageHelper.Conflict();
+               var response = _httpResponseMessageHelper.Conflict();
+               log.LogWarning($"Response Status Code: {response.StatusCode}. Diversity details already exist for the customer {customerGuid}.");
             }
 
             var diversity = await _postDiversityService.CreateAsync(diversityRequest);
 
             if (diversity != null)
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("attempting to send to service bus {0}", diversity.DiversityId));
+                log.LogInformation( $"attempting to send to service bus {diversity.DiversityId}");
                 await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl, correlationGuid, log);
             }
 
             if (diversity == null)
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Failed to post diversity for the customer {0}. Returning BadRequest", customerGuid));
-                return _httpResponseMessageHelper.BadRequest(customerGuid);
+                var response = _httpResponseMessageHelper.BadRequest(customerGuid);
+                log.LogWarning( $"Response Status Code: {response.StatusCode}. Failed to post diversity for the customer {customerGuid}.");
+                return response;
             }
             else
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Diversity {0} successfully created for the customer {1}", diversity, customerGuid));
-                return _httpResponseMessageHelper.Created(_jsonHelper.SerializeObjectAndRenameIdProperty(diversity, "id", "DiversityId"));
+                var response = _httpResponseMessageHelper.Created(_jsonHelper.SerializeObjectAndRenameIdProperty(diversity, "id", "DiversityId"));
+                log.LogInformation( $"Response Status Code: {response.StatusCode}. Diversity {diversity.DiversityId} successfully created for the customer {customerGuid}");
+                return response;
             }
         }
     }

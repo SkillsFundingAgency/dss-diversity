@@ -60,43 +60,48 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
                 log.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
                 correlationGuid = Guid.NewGuid();
             }
+            log.LogInformation($"DssCorrelationId: {correlationGuid}");
 
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'APIM-TouchpointId' in request header");
-                return _httpResponseMessageHelper.BadRequest();
+                var response = _httpResponseMessageHelper.BadRequest();
+                log.LogWarning($"Response Status Code: {response.StatusCode}. Unable to locate 'APIM-TouchpointId' in request header");
+                return response;
             }
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid,
-                "C# HTTP trigger function GetDiversityHttpTrigger processed a request. By Touchpoint " + touchpointId);
+            log.LogInformation("C# HTTP trigger function GetDiversityHttpTrigger processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", customerId));
-                return _httpResponseMessageHelper.BadRequest(customerGuid);
+                var response = _httpResponseMessageHelper.BadRequest(customerGuid);
+                log.LogWarning($"Response Status Code: {response.StatusCode}. Unable to parse 'customerId' to a Guid: {customerId}");
+                return response;
             }
 
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer does not exist {0}", customerGuid));
-                return _httpResponseMessageHelper.NoContent(customerGuid);
+                var response = _httpResponseMessageHelper.NoContent(customerGuid);
+                log.LogWarning($"Response Status Code: {response.StatusCode}. Customer does not exist {customerGuid}");
+                return response;
             }
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get diversity for customer {0}", customerGuid));
+            log.LogInformation($"Attempting to get diversity for customer {customerGuid}");
             var diversityDetails = await _getDiversityService.GetDiversityDetailForCustomerAsync(customerGuid);
 
             if (diversityDetails ==  null)
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Diversity for customer {0} not found. Returning NoContent", customerGuid));
-                return _httpResponseMessageHelper.NoContent(customerGuid);
+                var response = _httpResponseMessageHelper.NoContent(customerGuid);
+                log.LogWarning($"Response Status Code: {response.StatusCode}. Diversity for customer {customerGuid} not found.");
+                return response;
             }
             else
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Diversity {0} found for customer {1}",diversityDetails, customerGuid));
-                return _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectsAndRenameIdProperty(diversityDetails, "id", "DiversityId"));
+                var response = _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectsAndRenameIdProperty(diversityDetails, "id", "DiversityId"));
+                log.LogInformation($"Response Status Code: {response.StatusCode}. Diversity {diversityDetails} found for customer {customerGuid}");
+                return response;
             }
         }
     }
