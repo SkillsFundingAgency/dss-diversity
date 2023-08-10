@@ -85,7 +85,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
                 return response;
             }
 
-            log.LogInformation($"Get PatchDiversityHttpTrigger C# HTTP trigger function  processed a request. By Touchpoint: {touchpointId}");
+            log.LogInformation($"PatchDiversityHttpTrigger C# HTTP trigger function  processed a request. By Touchpoint: {touchpointId}");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {

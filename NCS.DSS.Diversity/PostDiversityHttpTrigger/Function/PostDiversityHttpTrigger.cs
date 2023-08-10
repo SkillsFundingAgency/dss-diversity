@@ -88,7 +88,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                 return response;
             }
 
-            log.LogInformation($"Patch Diversity C# HTTP trigger function  processed a request. By Touchpoint: {touchpointId}");
+            log.LogInformation($"Post Diversity C# HTTP trigger function  processed a request. By Touchpoint: {touchpointId}");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
@@ -158,6 +158,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             {
                var response = _httpResponseMessageHelper.Conflict();
                log.LogWarning($"Response Status Code: {response.StatusCode}. Diversity details already exist for the customer {customerGuid}.");
+                return response;
             }
 
             var diversity = await _postDiversityService.CreateAsync(diversityRequest);

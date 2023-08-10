@@ -72,7 +72,7 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Function
                 return response;
             }
 
-            log.LogInformation("C# HTTP trigger function GetDiversityHttpTrigger processed a request. By Touchpoint " + touchpointId);
+            log.LogInformation("C# HTTP trigger function GetDiversityByIdHttpTrigger processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
