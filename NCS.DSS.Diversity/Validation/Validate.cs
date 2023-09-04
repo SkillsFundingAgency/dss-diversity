@@ -44,6 +44,18 @@ namespace NCS.DSS.Diversity.Validation
 
             if (diversityResource.Ethnicity.HasValue && !Enum.IsDefined(typeof(Ethnicity), diversityResource.Ethnicity.Value))
                 results.Add(new ValidationResult("Please supply a valid Ethnicity", new[] { "Ethnicity" }));
+             
+            if (diversityResource.ConsentToCollectLLDDHealth != true && !diversityResource.LearningDifficultyOrDisabilityDeclaration.Equals(LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer))
+                results.Add(new ValidationResult("Learning Difficulty Or Disability Declaration must not be provided when no consent has been given to collect LLDD Health", new[] { "LearningDifficultyOrDisabilityDeclaration" }));
+
+            if (diversityResource.ConsentToCollectLLDDHealth != true && (!diversityResource.PrimaryLearningDifficultyOrDisability.Equals(PrimaryLearningDifficultyOrDisability.PreferNotToSay) && !diversityResource.PrimaryLearningDifficultyOrDisability.Equals(PrimaryLearningDifficultyOrDisability.NotProvided)))
+                results.Add(new ValidationResult("Primary Learning Difficulty Or Disability must not be provided when no consent has been given to collect LLDD Health", new[] { "PrimaryLearningDifficultyOrDisability" }));
+
+            if (diversityResource.ConsentToCollectLLDDHealth != true && (!diversityResource.SecondaryLearningDifficultyOrDisability.Equals(SecondaryLearningDifficultyOrDisability.PreferNotToSay) && !diversityResource.SecondaryLearningDifficultyOrDisability.Equals(SecondaryLearningDifficultyOrDisability.NotProvided)))
+                results.Add(new ValidationResult("Secondary Learning Difficulty Or Disability must not be provided when no consent has been given to collect LLDD Health", new[] { "SecondaryLearningDifficultyOrDisability" }));
+
+            if (diversityResource.ConsentToCollectEthnicity != true && !diversityResource.Ethnicity.Equals(Ethnicity.NotProvided))
+                results.Add(new ValidationResult("Ethnicity must not be provided when no consent has been given to collect Ethnicity", new[] { "Ethnicity" }));
 
         }
 
