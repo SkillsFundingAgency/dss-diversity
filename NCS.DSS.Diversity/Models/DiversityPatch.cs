@@ -63,6 +63,18 @@ namespace NCS.DSS.Diversity.Models
             if (!DateAndTimeEthnicityCollected.HasValue && ConsentToCollectEthnicity.GetValueOrDefault())
                 DateAndTimeEthnicityCollected = DateTime.UtcNow;
 
+            if (LearningDifficultyOrDisabilityDeclaration == null && ConsentToCollectLLDDHealth == false)
+                LearningDifficultyOrDisabilityDeclaration = ReferenceData.LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer;
+
+            if (PrimaryLearningDifficultyOrDisability == null && ConsentToCollectLLDDHealth == false)
+                PrimaryLearningDifficultyOrDisability = ReferenceData.PrimaryLearningDifficultyOrDisability.NotProvided;
+
+            if (SecondaryLearningDifficultyOrDisability == null && ConsentToCollectLLDDHealth == false)
+                SecondaryLearningDifficultyOrDisability = ReferenceData.SecondaryLearningDifficultyOrDisability.NotProvided;
+
+            if (Ethnicity == null && ConsentToCollectEthnicity == false)
+                Ethnicity = ReferenceData.Ethnicity.NotProvided;
+
         }
     }
 }
