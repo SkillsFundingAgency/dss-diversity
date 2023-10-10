@@ -46,17 +46,16 @@ namespace NCS.DSS.Diversity.Validation
                 results.Add(new ValidationResult("Please supply a valid Ethnicity", new[] { "Ethnicity" }));
              
             if (diversityResource.ConsentToCollectLLDDHealth != true && !diversityResource.LearningDifficultyOrDisabilityDeclaration.Equals(LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer) && diversityResource.LearningDifficultyOrDisabilityDeclaration.HasValue)
-                results.Add(new ValidationResult("Learning Difficulty Or Disability Declaration must not be provided when no consent has been given to collect LLDD Health", new[] { "LearningDifficultyOrDisabilityDeclaration" }));
+                results.Add(new ValidationResult("Learning Difficulty Or Disability Declaration must not be provided when no consent has been given to collect LLDD Health. To consent to Learning Difficulty Or Disability Declaration, ConsentToCollectLLDDHealth must be 'true'", new[] { "LearningDifficultyOrDisabilityDeclaration" }));
 
             if (diversityResource.ConsentToCollectLLDDHealth != true && !diversityResource.PrimaryLearningDifficultyOrDisability.Equals(PrimaryLearningDifficultyOrDisability.PreferNotToSay) && !diversityResource.PrimaryLearningDifficultyOrDisability.Equals(PrimaryLearningDifficultyOrDisability.NotProvided) && diversityResource.PrimaryLearningDifficultyOrDisability.HasValue)
-                results.Add(new ValidationResult("Primary Learning Difficulty Or Disability must not be provided when no consent has been given to collect LLDD Health", new[] { "PrimaryLearningDifficultyOrDisability" }));
+                results.Add(new ValidationResult("Primary Learning Difficulty Or Disability must not be provided when no consent has been given to collect LLDD Health. To consent to Primary Learning Difficulty Or Disability, ConsentToCollectLLDDHealth must be 'true'", new[] { "PrimaryLearningDifficultyOrDisability" }));
 
             if (diversityResource.ConsentToCollectLLDDHealth != true && !diversityResource.SecondaryLearningDifficultyOrDisability.Equals(SecondaryLearningDifficultyOrDisability.PreferNotToSay) && !diversityResource.SecondaryLearningDifficultyOrDisability.Equals(SecondaryLearningDifficultyOrDisability.NotProvided) && diversityResource.SecondaryLearningDifficultyOrDisability.HasValue)
-                results.Add(new ValidationResult("Secondary Learning Difficulty Or Disability must not be provided when no consent has been given to collect LLDD Health", new[] { "SecondaryLearningDifficultyOrDisability" }));
+                results.Add(new ValidationResult("Secondary Learning Difficulty Or Disability must not be provided when no consent has been given to collect LLDD Health. To consent to Secondary Learning Difficulty Or Disability, ConsentToCollectLLDDHealth must be 'true'", new[] { "SecondaryLearningDifficultyOrDisability" }));
 
             if (diversityResource.ConsentToCollectEthnicity != true && !diversityResource.Ethnicity.Equals(Ethnicity.NotProvided) && diversityResource.Ethnicity.HasValue)
-                results.Add(new ValidationResult("Ethnicity must not be provided when no consent has been given to collect Ethnicity", new[] { "Ethnicity" }));
+                results.Add(new ValidationResult("Ethnicity must not be provided when no consent has been given to collect Ethnicity. To consent to Ethnicity, ConsentToCollectEthnicity must be 'true'", new[] { "Ethnicity" }));
         }
-
     }
 }

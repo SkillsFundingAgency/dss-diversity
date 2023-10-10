@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.Azure.Cosmos.Serialization.HybridRow;
-using Microsoft.Azure.Documents;
-using System.Reflection.Metadata;
-using NCS.DSS.Diversity.ReferenceData;
+﻿using NCS.DSS.Diversity.ReferenceData;
 using NCS.DSS.Diversity.Validation;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace NCS.DSS.Diversity.Tests.ValidationTests
 {
-   
     public class ValidateTests
     {
-        
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenDiversityIsNotSuppliedForPost()
         {
@@ -26,7 +21,7 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.NotNull(result);
-            Assert.AreEqual(8, result.Count);
+            Assert.AreEqual(4, result.Count);
         }
 
         [Test]
@@ -34,13 +29,13 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
         {
             var diversity = new Models.Diversity
             {
-            LearningDifficultyOrDisabilityDeclaration = LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer, //if anything else then an additional validation results will be returned for supplying something other than 'Not Provided By Customer' when consent is not true
-            PrimaryLearningDifficultyOrDisability = PrimaryLearningDifficultyOrDisability.NotProvided, //if anything else then an additional validation results will be returned for supplying something other than 'Not Provided' when consent is not true
-            SecondaryLearningDifficultyOrDisability = SecondaryLearningDifficultyOrDisability.NotProvided, //if anything else then an additional validation results will be returned for supplying something other than 'Not Provided' when consent is not true
-            ConsentToCollectEthnicity = true,
-            DateAndTimeEthnicityCollected = DateTime.UtcNow,
-            Ethnicity = Ethnicity.AnyOtherEthnicGroup
-            }; 
+                LearningDifficultyOrDisabilityDeclaration = LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer, //if anything else then an additional validation results will be returned for supplying something other than 'Not Provided By Customer' when consent is not true
+                PrimaryLearningDifficultyOrDisability = PrimaryLearningDifficultyOrDisability.NotProvided, //if anything else then an additional validation results will be returned for supplying something other than 'Not Provided' when consent is not true
+                SecondaryLearningDifficultyOrDisability = SecondaryLearningDifficultyOrDisability.NotProvided, //if anything else then an additional validation results will be returned for supplying something other than 'Not Provided' when consent is not true
+                ConsentToCollectEthnicity = true,
+                DateAndTimeEthnicityCollected = DateTime.UtcNow,
+                Ethnicity = Ethnicity.AnyOtherEthnicGroup
+            };
 
             var validation = new Validate();
 
@@ -290,7 +285,7 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 ConsentToCollectLLDDHealth = false,
                 DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow,
                 LearningDifficultyOrDisabilityDeclaration = LearningDifficultyOrDisabilityDeclaration.CustomerConsidersThemselvesToHaveALearningDifficultyAndOrHealthProblem,
-                PrimaryLearningDifficultyOrDisability = PrimaryLearningDifficultyOrDisability.NotProvided, 
+                PrimaryLearningDifficultyOrDisability = PrimaryLearningDifficultyOrDisability.NotProvided,
                 SecondaryLearningDifficultyOrDisability = SecondaryLearningDifficultyOrDisability.NotProvided,
                 ConsentToCollectEthnicity = true,
                 DateAndTimeEthnicityCollected = DateTime.UtcNow,

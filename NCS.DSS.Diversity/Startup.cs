@@ -10,6 +10,7 @@ using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.Cosmos.Provider;
 using NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Service;
 using NCS.DSS.Diversity.GetDiversityHttpTrigger.Service;
+using NCS.DSS.Diversity.Helpers;
 using NCS.DSS.Diversity.Ioc;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
@@ -33,6 +34,7 @@ namespace NCS.DSS.Diversity.Ioc
             builder.Services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
             builder.Services.AddSingleton<IServiceBusClient, ServiceBusClient>();
             builder.Services.AddSingleton<IGuidHelper, GuidHelper>();
+            builder.Services.AddSingleton<IHelper, Helper>();
 
             builder.Services.AddSingleton<IGetDiversityByIdHttpTriggerService, GetDiversityByIdHttpTriggerService>();
             builder.Services.AddSingleton<IGetDiversityHttpTriggerService, GetDiversityHttpTriggerService>();
