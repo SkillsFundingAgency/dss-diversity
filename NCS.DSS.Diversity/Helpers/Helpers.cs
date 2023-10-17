@@ -12,8 +12,8 @@ namespace NCS.DSS.Diversity.Helpers
             request.Body.Position = 0;
 
             dynamic bodyContent = JsonConvert.DeserializeObject(new StreamReader(request.Body).ReadToEnd());
-            var consentToCollectEthnicity = (string)bodyContent.ConsentToCollectEthnicity;
-            var consentToCollectLLDDHealth = (string)bodyContent.ConsentToCollectLLDDHealth;
+            var consentToCollectEthnicity = (string)bodyContent.ConsentToCollectEthnicity ?? "false";
+            var consentToCollectLLDDHealth = (string)bodyContent.ConsentToCollectLLDDHealth ?? "false";
 
             diversity.ConsentToCollectEthnicity = consentToCollectEthnicity.ToLower() == "true" || consentToCollectEthnicity == "1" ? true : false;
 
