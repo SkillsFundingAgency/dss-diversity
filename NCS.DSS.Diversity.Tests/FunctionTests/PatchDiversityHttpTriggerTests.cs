@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using DFC.Common.Standard.GuidHelper;
+﻿using DFC.Common.Standard.GuidHelper;
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
@@ -12,14 +6,20 @@ using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.Diversity.Cosmos.Helper;
+using NCS.DSS.Diversity.Helpers;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.Validation;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Diversity.Tests.FunctionTests
 {
-
     [TestFixture]
     public class PatchDiversityHttpTriggerTests
     {
@@ -41,6 +41,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         private Mock<IValidate> _validate;
         private IJsonHelper _jsonHelper;
         private Mock<ILoggerHelper> _loggerHelper;
+        private Mock<IHelper> _helper;
 
         private Models.Diversity _diversity;
         private Models.DiversityPatch _diversityPatch;
@@ -68,9 +69,9 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             _loggerHelper = new Mock<ILoggerHelper>();
             _jsonHelper = new JsonHelper();
             _guidHelper = new Mock<IGuidHelper>();
+            _helper = new Mock<IHelper>();
 
             _json = JsonConvert.SerializeObject(_diversity);
-
 
             function = new PatchDiversityHttpTrigger.Function.PatchDiversityHttpTrigger(
                 _resourceHelper.Object,
@@ -80,8 +81,8 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
                 _httpRequestHelper.Object,
                 _httpResponseMessageHelper,
                 _jsonHelper,
-                _guidHelper.Object);
-
+                _guidHelper.Object,
+                _helper.Object);
 
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
@@ -163,11 +164,9 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
         }
 
-
         [Test]
         public async Task PatchAddressHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToUpdateDiversityRecord()
         {
-
             _patchDiversityHttpTriggerService.Setup(x => x.GetDiversityForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(_diversity.ToString()));
             _patchDiversityHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), DiversityGuid)).Returns(Task.FromResult<Models.Diversity>(null));
 
@@ -177,7 +176,6 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             Assert.IsInstanceOf<HttpResponseMessage>(result);
             Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
         }
-
 
         [Test]
         public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenRequestIsInvalid()

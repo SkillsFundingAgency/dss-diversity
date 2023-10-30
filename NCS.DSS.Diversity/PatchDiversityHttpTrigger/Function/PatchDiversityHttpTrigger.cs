@@ -1,9 +1,3 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using DFC.Common.Standard.GuidHelper;
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
@@ -15,9 +9,16 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Diversity.Cosmos.Helper;
+using NCS.DSS.Diversity.Helpers;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.Validation;
 using Newtonsoft.Json;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
 {
@@ -32,8 +33,11 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
         private readonly IHttpResponseMessageHelper _httpResponseMessageHelper;
         private readonly IJsonHelper _jsonHelper;
         private readonly IGuidHelper _guidHelper;
+        private readonly IHelper _helper;
 
-        public PatchDiversityHttpTrigger(IResourceHelper resourceHelper, IPatchDiversityHttpTriggerService patchDiversityService, IValidate validate, ILoggerHelper loggerHelper, IHttpRequestHelper httpRequestHelper, IHttpResponseMessageHelper httpResponseMessageHelper, IJsonHelper jsonHelper, IGuidHelper guidHelper)
+        public PatchDiversityHttpTrigger(IResourceHelper resourceHelper, IPatchDiversityHttpTriggerService patchDiversityService, IValidate validate,
+            ILoggerHelper loggerHelper, IHttpRequestHelper httpRequestHelper, IHttpResponseMessageHelper httpResponseMessageHelper, IJsonHelper jsonHelper,
+            IGuidHelper guidHelper, IHelper helper)
         {
             _resourceHelper = resourceHelper;
             _patchDiversityService = patchDiversityService;
@@ -43,6 +47,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             _httpResponseMessageHelper = httpResponseMessageHelper;
             _jsonHelper = jsonHelper;
             _guidHelper = guidHelper;
+            _helper = helper;
         }
 
 
@@ -55,7 +60,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Diversity Detail validation error(s)", ShowSchema = false)]
         [Display(Name = "Patch", Description = "Ability to modify/update an diversity detail record.")]
-        public async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/DiversityDetails/{diversityId}")]HttpRequest req, ILogger log, string customerId, string diversityId)
+        public async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/DiversityDetails/{diversityId}")] HttpRequest req, ILogger log, string customerId, string diversityId)
         {
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
 
@@ -89,7 +94,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                var response =_httpResponseMessageHelper.BadRequest(customerGuid);
+                var response = _httpResponseMessageHelper.BadRequest(customerGuid);
                 log.LogWarning($"Response Status Code: {response.StatusCode}. Unable to parse 'customerId' to a Guid: {customerId}");
                 return response;
             }
@@ -106,6 +111,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             try
             {
                 diversityPatchRequest = await _httpRequestHelper.GetResourceFromRequest<Models.DiversityPatch>(req);
+                _helper.UpdateValues(req, diversityPatchRequest);
             }
             catch (JsonException ex)
             {
@@ -177,7 +183,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
 
             if (updatedDiversity == null)
             {
-                var response =_httpResponseMessageHelper.BadRequest(customerGuid);
+                var response = _httpResponseMessageHelper.BadRequest(customerGuid);
                 log.LogWarning($"Response Status Code: {response.StatusCode}. Patch diversity failed for the customer {customerGuid}.");
                 return response;
             }
