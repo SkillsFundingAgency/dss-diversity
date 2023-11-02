@@ -38,7 +38,7 @@ namespace NCS.DSS.Diversity.ServiceBus
             //Lof messages to app insights
             _loggerHelper.LogInformationObject(log, correlationId, string.Format("New Diversity record {0}", diversity.DiversityId), messageModel);
 
-            await queueClient.SendAsync(msg);
+            //await queueClient.SendAsync(msg);
         }
 
         public async Task SendPatchMessageAsync(DiversityPatch diversityPatch, Guid customerId, string reqUrl)
@@ -61,7 +61,7 @@ namespace NCS.DSS.Diversity.ServiceBus
                 MessageId = customerId + " " + DateTime.UtcNow
             };
 
-            await queueClient.SendAsync(msg);
+            //await queueClient.SendAsync(msg);
 
         }
 

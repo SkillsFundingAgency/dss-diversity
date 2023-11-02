@@ -16,10 +16,10 @@ using NCS.DSS.Diversity.Validation;
 using Moq;
 using NUnit.Framework;
 using Newtonsoft.Json;
+using NCS.DSS.Diversity.Helpers;
 
 namespace NCS.DSS.Diversity.Tests.FunctionTests
 {
-
     [TestFixture]
     public class PostDiversityHttpTriggerTests
     {
@@ -39,6 +39,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         private Mock<IValidate> _validate;
         private IJsonHelper _jsonHelper;
         private Mock<ILoggerHelper> _loggerHelper;
+        private Mock<IHelper> _helper;
 
         private Models.Diversity _diversity;
         private PostDiversityHttpTrigger.Function.PostDiversityHttpTrigger function;
@@ -59,10 +60,10 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             _validate = new Mock<IValidate>();
             _postDiversityHttpTriggerService = new Mock<IPostDiversityHttpTriggerService>();
 
-
             _loggerHelper = new Mock<ILoggerHelper>();
             _jsonHelper = new JsonHelper();
             _guidHelper = new Mock<IGuidHelper>();
+            _helper = new Mock<IHelper>();
 
             function = new PostDiversityHttpTrigger.Function.PostDiversityHttpTrigger(
                 _resourceHelper.Object,
@@ -72,7 +73,8 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
                 _httpRequestHelper.Object,
                 _httpResponseMessageHelper,
                 _jsonHelper,
-                _guidHelper.Object);
+                _guidHelper.Object,
+                _helper.Object);
 
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
@@ -87,7 +89,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
-           _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns((string)null);
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns((string)null);
 
             // Act
             var result = await RunFunction(ValidCustomerId);
