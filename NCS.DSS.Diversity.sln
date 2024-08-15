@@ -1,11 +1,11 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCS.DSS.Diversity", "NCS.DSS.Diversity\NCS.DSS.Diversity.csproj", "{A6712B51-E03A-43E8-BA48-EEFF0AA27F05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCS.DSS.Diversity.Tests", "NCS.DSS.Diversity.Tests\NCS.DSS.Diversity.Tests.csproj", "{5E94528D-1B58-4819-ABB6-125B2CF2649C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCS.DSS.Diversity.Tests", "NCS.DSS.Diversity.Tests\NCS.DSS.Diversity.Tests.csproj", "{5E94528D-1B58-4819-ABB6-125B2CF2649C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
