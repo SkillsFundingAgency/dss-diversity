@@ -1,7 +1,5 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using DFC.JSON.Standard.Attributes;
 using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.Diversity.ReferenceData;
 

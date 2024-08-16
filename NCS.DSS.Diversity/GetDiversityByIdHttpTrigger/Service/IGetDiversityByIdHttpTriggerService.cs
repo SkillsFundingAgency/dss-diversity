@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Service
+﻿namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Service
 {
     public interface IGetDiversityByIdHttpTriggerService
     {

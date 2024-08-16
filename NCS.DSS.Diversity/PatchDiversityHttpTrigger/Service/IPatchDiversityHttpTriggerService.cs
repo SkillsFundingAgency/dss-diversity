@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using NCS.DSS.Diversity.Models;
+﻿using NCS.DSS.Diversity.Models;
 
 namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
 {

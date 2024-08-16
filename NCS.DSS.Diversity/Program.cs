@@ -15,7 +15,6 @@ using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.ServiceBus;
 using NCS.DSS.Diversity.Validation;
-using System.Linq;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()

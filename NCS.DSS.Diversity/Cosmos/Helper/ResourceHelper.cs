@@ -1,7 +1,5 @@
 ﻿using DFC.JSON.Standard;
 using NCS.DSS.Diversity.Cosmos.Provider;
-using System;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.Diversity.Cosmos.Helper
 {

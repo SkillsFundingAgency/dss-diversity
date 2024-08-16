@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Net;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Diversity.Cosmos.Provider;
 using NCS.DSS.Diversity.ServiceBus;

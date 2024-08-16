@@ -1,6 +1,4 @@
-﻿using System;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using DFC.Common.Standard.Logging;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Logging;
@@ -9,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace NCS.DSS.Diversity.ServiceBus
 {
-    
+
     public class ServiceBusClient : IServiceBusClient
     {
         public readonly string QueueName = Environment.GetEnvironmentVariable("QueueName");

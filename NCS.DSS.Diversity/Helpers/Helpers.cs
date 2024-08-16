@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using NCS.DSS.Diversity.Models;
 using Newtonsoft.Json;
-using System.IO;
 
 namespace NCS.DSS.Diversity.Helpers
 {
