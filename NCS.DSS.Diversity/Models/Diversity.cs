@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using DFC.JSON.Standard.Attributes;
 using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.Diversity.ReferenceData;
@@ -65,7 +66,7 @@ namespace NCS.DSS.Diversity.Models
         [Example(Description = "0000000001")]
         public string LastModifiedBy { get; set; }
 
-        [JsonIgnoreOnSerialize]
+        [JsonIgnore]
         public string CreatedBy { get; set; }
 
 
