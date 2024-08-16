@@ -8,12 +8,9 @@ using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.Helpers;
 using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.Validation;
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 using JsonException = Newtonsoft.Json.JsonException;
 
 namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
@@ -61,6 +58,8 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/DiversityDetails")]
             HttpRequest req, string customerId)
         {
+            req.EnableBuffering();
+
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
 
             if (string.IsNullOrEmpty(correlationId))
@@ -105,7 +104,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             try
             {
                 diversityRequest = await _httpRequestHelper.GetResourceFromRequest<Models.Diversity>(req);
-                _helper.UpdateValues(req, diversityRequest);
+                await _helper.UpdateValuesAsync(req, diversityRequest);
             }
             catch (JsonException ex)
             {

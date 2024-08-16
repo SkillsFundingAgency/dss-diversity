@@ -8,12 +8,9 @@ using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.Helpers;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.Validation;
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 using JsonException = Newtonsoft.Json.JsonException;
 
 namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
@@ -60,6 +57,8 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
         [Display(Name = "Patch", Description = "Ability to modify/update an diversity detail record.")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/DiversityDetails/{diversityId}")] HttpRequest req, string customerId, string diversityId)
         {
+            req.EnableBuffering();
+
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
 
             if (string.IsNullOrEmpty(correlationId))
@@ -109,7 +108,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             try
             {
                 diversityPatchRequest = await _httpRequestHelper.GetResourceFromRequest<Models.DiversityPatch>(req);
-                _helper.UpdateValues(req, diversityPatchRequest);
+                await _helper.UpdateValuesAsync(req, diversityPatchRequest);
             }
             catch (JsonException ex)
             {

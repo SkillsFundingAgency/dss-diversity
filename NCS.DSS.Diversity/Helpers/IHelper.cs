@@ -5,6 +5,6 @@ namespace NCS.DSS.Diversity.Helpers
 {
     public interface IHelper
     {
-        void UpdateValues<T>(HttpRequest request, T diversity) where T : IDiversity;
+        Task UpdateValuesAsync<T>(HttpRequest request, T diversity) where T : IDiversity;
     }
 }
