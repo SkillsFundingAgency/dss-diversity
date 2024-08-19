@@ -57,6 +57,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
         [Display(Name = "Patch", Description = "Ability to modify/update an diversity detail record.")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/DiversityDetails/{diversityId}")] HttpRequest req, string customerId, string diversityId)
         {
+            // Ensure the request body can be read multiple times by enabling buffering
             req.EnableBuffering();
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);

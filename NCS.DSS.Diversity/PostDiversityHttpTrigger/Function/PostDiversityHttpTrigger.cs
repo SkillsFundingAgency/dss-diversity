@@ -58,6 +58,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/DiversityDetails")]
             HttpRequest req, string customerId)
         {
+            // Ensure the request body can be read multiple times by enabling buffering
             req.EnableBuffering();
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
