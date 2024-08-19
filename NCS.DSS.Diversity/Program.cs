@@ -27,7 +27,6 @@ var host = new HostBuilder()
         services.AddSingleton<IValidate, Validate>();
         services.AddSingleton<ILoggerHelper, LoggerHelper>();
         services.AddSingleton<IHttpRequestHelper, HttpRequestHelper>();
-        services.AddSingleton<IHttpResponseMessageHelper, HttpResponseMessageHelper>();
         services.AddSingleton<IJsonHelper, JsonHelper>();
         services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
         services.AddSingleton<IServiceBusClient, ServiceBusClient>();
