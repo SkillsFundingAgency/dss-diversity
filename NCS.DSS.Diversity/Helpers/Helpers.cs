@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using NCS.DSS.Diversity.Models;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace NCS.DSS.Diversity.Helpers
 {
@@ -10,9 +11,6 @@ namespace NCS.DSS.Diversity.Helpers
         {
             try
             {
-                // Ensure the request body can be read multiple times by enabling buffering
-                request.EnableBuffering();
-
                 if (request.Body.CanSeek)
                 {
                     request.Body.Position = 0;
@@ -29,15 +27,15 @@ namespace NCS.DSS.Diversity.Helpers
                     throw new InvalidOperationException("The request body is empty or cannot be read.");
                 }
 
-                dynamic bodyJson = JsonConvert.DeserializeObject(bodyContent);
+                dynamic bodyJson = JsonSerializer.Deserialize<JsonNode>(bodyContent);
 
                 if (bodyJson == null)
                 {
                     throw new InvalidOperationException("Failed to deserialize the request body.");
                 }
 
-                var consentToCollectEthnicity = (string)bodyJson.ConsentToCollectEthnicity ?? "false";
-                var consentToCollectLLDDHealth = (string)bodyJson.ConsentToCollectLLDDHealth ?? "false";
+                var consentToCollectEthnicity = bodyJson["ConsentToCollectEthnicity"].ToString() ?? "false";
+                var consentToCollectLLDDHealth = bodyJson["ConsentToCollectLLDDHealth"].ToString() ?? "false";
 
                 diversity.ConsentToCollectEthnicity = consentToCollectEthnicity.ToLower() == "true" || consentToCollectEthnicity == "1" ? true : false;
                 diversity.ConsentToCollectLLDDHealth = consentToCollectLLDDHealth.ToLower() == "true" || consentToCollectLLDDHealth == "1" ? true : false;
