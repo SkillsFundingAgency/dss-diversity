@@ -1,7 +1,7 @@
 # DSS Diversity
 
 > [!NOTE]  
-> The latest version of this API is `v2`
+> The latest version of this API is `v3`
 
 [![Build Status](https://sfa-gov-uk.visualstudio.com/CDS%202.0/_apis/build/status/Yaml/dss-diversity?repoName=SkillsFundingAgency%2Fdss-diversity&branchName=master-v2)](https://sfa-gov-uk.visualstudio.com/CDS%202.0/_build/latest?definitionId=1459&repoName=SkillsFundingAgency%2Fdss-diversity&branchName=master-v2)
 
