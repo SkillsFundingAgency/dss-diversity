@@ -1,7 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-using DFC.Swagger.Standard.Annotations;
+﻿using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.Diversity.ReferenceData;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace NCS.DSS.Diversity.Models
 {
@@ -85,10 +85,10 @@ namespace NCS.DSS.Diversity.Models
             if (Ethnicity == null)
                 Ethnicity = ReferenceData.Ethnicity.NotProvided;
 
-            if(!DateAndTimeLLDDHealthConsentCollected.HasValue && ConsentToCollectLLDDHealth.GetValueOrDefault())
+            if (!DateAndTimeLLDDHealthConsentCollected.HasValue && ConsentToCollectLLDDHealth.GetValueOrDefault())
                 DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow;
 
-            if(!DateAndTimeEthnicityCollected.HasValue && ConsentToCollectEthnicity.GetValueOrDefault())
+            if (!DateAndTimeEthnicityCollected.HasValue && ConsentToCollectEthnicity.GetValueOrDefault())
                 DateAndTimeEthnicityCollected = DateTime.UtcNow;
         }
 
@@ -100,5 +100,5 @@ namespace NCS.DSS.Diversity.Models
             CreatedBy = touchpointId;
         }
 
-    } 
+    }
 }

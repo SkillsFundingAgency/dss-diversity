@@ -141,7 +141,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         {
             // Arrange
             _resourceHelper.Setup(x => x.DoesCustomerExist(CustomerGuid)).Returns(Task.FromResult(false));
-            
+
             // Act
             var result = await RunFunction(ValidCustomerId, DiversityId);
 

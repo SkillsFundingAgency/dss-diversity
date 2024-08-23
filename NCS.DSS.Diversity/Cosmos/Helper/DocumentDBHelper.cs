@@ -23,7 +23,7 @@ namespace NCS.DSS.Diversity.Cosmos.Helper
 
             return _documentCollectionUri;
         }
-        
+
         public static Uri CreateDocumentUri(Guid diversityDetailId)
         {
             return UriFactory.CreateDocumentUri(DatabaseId, CollectionId, diversityDetailId.ToString());

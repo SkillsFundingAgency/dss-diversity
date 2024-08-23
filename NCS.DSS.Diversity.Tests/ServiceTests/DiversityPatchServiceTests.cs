@@ -1,11 +1,11 @@
-﻿using System;
-using DFC.JSON.Standard;
+﻿using DFC.JSON.Standard;
 using Moq;
 using NCS.DSS.Diversity.Models;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.ReferenceData;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System;
 
 namespace NCS.DSS.Diversity.Tests.ServiceTests
 {

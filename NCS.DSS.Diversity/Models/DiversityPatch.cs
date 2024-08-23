@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using DFC.Swagger.Standard.Annotations;
+﻿using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.Diversity.ReferenceData;
+using System.ComponentModel.DataAnnotations;
 
 namespace NCS.DSS.Diversity.Models
 {
@@ -55,7 +55,7 @@ namespace NCS.DSS.Diversity.Models
         {
             if (!LastModifiedDate.HasValue)
                 LastModifiedDate = DateTime.UtcNow;
-            
+
             if (!DateAndTimeLLDDHealthConsentCollected.HasValue && ConsentToCollectLLDDHealth.GetValueOrDefault())
                 DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow;
 

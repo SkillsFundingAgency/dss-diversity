@@ -62,7 +62,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
             var client = DocumentDBClient.CreateDocumentClient();
 
             var diversityDetailQuery = client
-                ?.CreateDocumentQuery<Models.Diversity>(collectionUri, new FeedOptions {MaxItemCount = 1})
+                ?.CreateDocumentQuery<Models.Diversity>(collectionUri, new FeedOptions { MaxItemCount = 1 })
                 .Where(x => x.CustomerId == customerId &&
                             x.DiversityId == diversityId)
                 .AsDocumentQuery();
@@ -101,7 +101,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
 
             return diversityDetails.Any() ? diversityDetails : null;
         }
-        
+
         public async Task<string> GetDiversityDetailForCustomerToUpdateAsync(Guid customerId, Guid diversityId)
         {
             var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();

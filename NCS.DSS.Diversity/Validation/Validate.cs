@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using NCS.DSS.Diversity.Models;
+﻿using NCS.DSS.Diversity.Models;
 using NCS.DSS.Diversity.ReferenceData;
+using System.ComponentModel.DataAnnotations;
 
 namespace NCS.DSS.Diversity.Validation
 {
