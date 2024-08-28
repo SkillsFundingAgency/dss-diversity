@@ -107,7 +107,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
                 if (diversityRequest.ConsentToCollectLLDDHealth == null)
                     diversityRequest.ConsentToCollectLLDDHealth = false;
-                
+
                 // ConsentToCollectLLDDHealth and ConsentToCollectEthnicity def is bool
                 // 1 | "true"  | "True"  | true = true
                 // 0 | "false" | "False" | false = false
