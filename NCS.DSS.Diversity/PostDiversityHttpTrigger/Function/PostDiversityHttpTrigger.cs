@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Diversity.Cosmos.Helper;
-using NCS.DSS.Diversity.Helpers;
 using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.Validation;
 using System.ComponentModel.DataAnnotations;
@@ -23,7 +22,6 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
         private readonly IResourceHelper _resourceHelper;
         private readonly ILogger _logger;
         private readonly IValidate _validate;
-        private readonly IHelper _helper;
         private readonly IDynamicHelper _dynamicHelper;
         private static readonly string[] PropertyToExclude = { "TargetSite" };
 
@@ -33,7 +31,6 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             IResourceHelper resourceHelper,
             ILogger<PostDiversityHttpTrigger> logger,
             IValidate validate,
-            IHelper helper,
             IDynamicHelper dynamicHelper)
         {
             _postDiversityService = postDiversityService;
@@ -41,7 +38,6 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             _logger = logger;
             _resourceHelper = resourceHelper;
             _validate = validate;
-            _helper = helper;
             _dynamicHelper = dynamicHelper;
         }
 
@@ -79,7 +75,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             if (string.IsNullOrEmpty(touchpointId))
             {
                 var response = new BadRequestResult();
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Unable to locate 'APIM-TouchpointId' in request header.");
+                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Unable to locate 'TouchpointId' in request header.");
                 return response;
             }
 
@@ -105,7 +101,18 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             try
             {
                 diversityRequest = await _httpRequestHelper.GetResourceFromRequest<Models.Diversity>(req);
-                await _helper.UpdateValuesAsync(req, diversityRequest);
+
+                if (diversityRequest.ConsentToCollectEthnicity == null)
+                    diversityRequest.ConsentToCollectEthnicity = false;
+
+                if (diversityRequest.ConsentToCollectLLDDHealth == null)
+                    diversityRequest.ConsentToCollectLLDDHealth = false;
+                
+                // ConsentToCollectLLDDHealth and ConsentToCollectEthnicity def is bool
+                // 1 | "true"  | "True"  | true = true
+                // 0 | "false" | "False" | false = false
+                // "1" | "0" | False | True = Exception (from DFC Standard HTTP package)
+                // <nothing> = null
             }
             catch (JsonException ex)
             {

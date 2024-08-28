@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.Diversity.Cosmos.Helper;
-using NCS.DSS.Diversity.Helpers;
 using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.Validation;
 using Newtonsoft.Json;
@@ -31,7 +30,6 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         private Mock<IResourceHelper> _resourceHelper;
         private Mock<ILogger<PostDiversityHttpTrigger.Function.PostDiversityHttpTrigger>> _log;
         private Mock<IValidate> _validate;
-        private Mock<IHelper> _helper;
         private Mock<IDynamicHelper> _dynamicHelper;
 
         private HttpRequest _request;
@@ -49,7 +47,6 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             _resourceHelper = new Mock<IResourceHelper>();
             _log = new Mock<ILogger<PostDiversityHttpTrigger.Function.PostDiversityHttpTrigger>>();
             _validate = new Mock<IValidate>();
-            _helper = new Mock<IHelper>();
             _dynamicHelper = new Mock<IDynamicHelper>();
 
             _function = new PostDiversityHttpTrigger.Function.PostDiversityHttpTrigger(
@@ -58,7 +55,6 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
                 _resourceHelper.Object,
                 _log.Object,
                 _validate.Object,
-                _helper.Object,
                 _dynamicHelper.Object);
 
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);

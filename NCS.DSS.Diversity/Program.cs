@@ -10,7 +10,6 @@ using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.Cosmos.Provider;
 using NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Service;
 using NCS.DSS.Diversity.GetDiversityHttpTrigger.Service;
-using NCS.DSS.Diversity.Helpers;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.ServiceBus;
@@ -30,7 +29,6 @@ var host = new HostBuilder()
         services.AddSingleton<IJsonHelper, JsonHelper>();
         services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
         services.AddSingleton<IServiceBusClient, ServiceBusClient>();
-        services.AddSingleton<IHelper, Helper>();
         services.AddSingleton<IDynamicHelper, DynamicHelper>();
         services.AddSingleton<IGetDiversityByIdHttpTriggerService, GetDiversityByIdHttpTriggerService>();
         services.AddSingleton<IGetDiversityHttpTriggerService, GetDiversityHttpTriggerService>();

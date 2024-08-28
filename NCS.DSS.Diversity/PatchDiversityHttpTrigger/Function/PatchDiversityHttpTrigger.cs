@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Diversity.Cosmos.Helper;
-using NCS.DSS.Diversity.Helpers;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.Validation;
 using System.ComponentModel.DataAnnotations;
@@ -23,7 +22,6 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
         private readonly IResourceHelper _resourceHelper;
         private readonly ILogger _logger;
         private readonly IValidate _validate;
-        private readonly IHelper _helper;
         private readonly IDynamicHelper _dynamicHelper;
         private static readonly string[] PropertyToExclude = { "TargetSite" };
 
@@ -33,7 +31,6 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             IResourceHelper resourceHelper,
             ILogger<PatchDiversityHttpTrigger> logger,
             IValidate validate,
-            IHelper helper,
             IDynamicHelper dynamicHelper)
         {
             _patchDiversityService = patchDiversityService;
@@ -41,7 +38,6 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             _resourceHelper = resourceHelper;
             _logger = logger;
             _validate = validate;
-            _helper = helper;
             _dynamicHelper = dynamicHelper;
         }
 
@@ -109,7 +105,12 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             try
             {
                 diversityPatchRequest = await _httpRequestHelper.GetResourceFromRequest<Models.DiversityPatch>(req);
-                await _helper.UpdateValuesAsync(req, diversityPatchRequest);
+
+                if (diversityPatchRequest.ConsentToCollectEthnicity == null)
+                    diversityPatchRequest.ConsentToCollectEthnicity = false;
+
+                if (diversityPatchRequest.ConsentToCollectLLDDHealth == null)
+                    diversityPatchRequest.ConsentToCollectLLDDHealth = false;
             }
             catch (JsonException ex)
             {
