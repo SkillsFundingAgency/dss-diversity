@@ -34,8 +34,8 @@ namespace NCS.DSS.Diversity.Helpers
                     throw new InvalidOperationException("Failed to deserialize the request body.");
                 }
 
-                var consentToCollectEthnicity = bodyJson["ConsentToCollectEthnicity"]?.ToString() ?? "false";
-                var consentToCollectLLDDHealth = bodyJson["ConsentToCollectLLDDHealth"]?.ToString() ?? "false";
+                var consentToCollectEthnicity = (string)bodyJson["ConsentToCollectEthnicity"] ?? "false";
+                var consentToCollectLLDDHealth = (string)bodyJson["ConsentToCollectLLDDHealth"] ?? "false";
 
                 diversity.ConsentToCollectEthnicity = consentToCollectEthnicity.ToLower() == "true" || consentToCollectEthnicity == "1";
                 diversity.ConsentToCollectLLDDHealth = consentToCollectLLDDHealth.ToLower() == "true" || consentToCollectLLDDHealth == "1";
