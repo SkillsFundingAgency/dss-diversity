@@ -106,6 +106,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             {
                 diversityPatchRequest = await _httpRequestHelper.GetResourceFromRequest<Models.DiversityPatch>(req);
 
+                // Fix for bug AD-157065 (Oct '23)
                 if (diversityPatchRequest.ConsentToCollectEthnicity == null)
                     diversityPatchRequest.ConsentToCollectEthnicity = false;
 

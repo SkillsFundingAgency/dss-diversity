@@ -102,17 +102,12 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             {
                 diversityRequest = await _httpRequestHelper.GetResourceFromRequest<Models.Diversity>(req);
 
+                // Fix for bug AD-157065 (Oct '23)
                 if (diversityRequest.ConsentToCollectEthnicity == null)
                     diversityRequest.ConsentToCollectEthnicity = false;
 
                 if (diversityRequest.ConsentToCollectLLDDHealth == null)
                     diversityRequest.ConsentToCollectLLDDHealth = false;
-
-                // ConsentToCollectLLDDHealth and ConsentToCollectEthnicity def is bool
-                // 1 | "true"  | "True"  | true = true
-                // 0 | "false" | "False" | false = false
-                // "1" | "0" | False | True = Exception (from DFC Standard HTTP package)
-                // <nothing> = null
             }
             catch (JsonException ex)
             {
