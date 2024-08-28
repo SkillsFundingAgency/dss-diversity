@@ -17,7 +17,7 @@ namespace NCS.DSS.Diversity.Helpers
                 }
 
                 string bodyContent;
-                using (var reader = new StreamReader(request.Body, leaveOpen: true))
+                using (var reader = new StreamReader(request.Body))
                 {
                     bodyContent = await reader.ReadToEndAsync();
                 }
@@ -39,9 +39,6 @@ namespace NCS.DSS.Diversity.Helpers
 
                 diversity.ConsentToCollectEthnicity = consentToCollectEthnicity.ToLower() == "true" || consentToCollectEthnicity == "1";
                 diversity.ConsentToCollectLLDDHealth = consentToCollectLLDDHealth.ToLower() == "true" || consentToCollectLLDDHealth == "1";
-
-                // Reset the stream position to 0 if needed for further processing after this method
-                request.Body.Position = 0;
             }
             catch (Exception ex)
             {
