@@ -34,11 +34,11 @@ namespace NCS.DSS.Diversity.Helpers
                     throw new InvalidOperationException("Failed to deserialize the request body.");
                 }
 
-                var consentToCollectEthnicity = bodyJson["ConsentToCollectEthnicity"].ToString() ?? "false";
-                var consentToCollectLLDDHealth = bodyJson["ConsentToCollectLLDDHealth"].ToString() ?? "false";
+                var consentToCollectEthnicity = bodyJson["ConsentToCollectEthnicity"]?.ToString() ?? "false";
+                var consentToCollectLLDDHealth = bodyJson["ConsentToCollectLLDDHealth"]?.ToString() ?? "false";
 
-                diversity.ConsentToCollectEthnicity = consentToCollectEthnicity.ToLower() == "true" || consentToCollectEthnicity == "1" ? true : false;
-                diversity.ConsentToCollectLLDDHealth = consentToCollectLLDDHealth.ToLower() == "true" || consentToCollectLLDDHealth == "1" ? true : false;
+                diversity.ConsentToCollectEthnicity = consentToCollectEthnicity.ToLower() == "true" || consentToCollectEthnicity == "1";
+                diversity.ConsentToCollectLLDDHealth = consentToCollectLLDDHealth.ToLower() == "true" || consentToCollectLLDDHealth == "1";
 
                 // Reset the stream position to 0 if needed for further processing after this method
                 request.Body.Position = 0;
