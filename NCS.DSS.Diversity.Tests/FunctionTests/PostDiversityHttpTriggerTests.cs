@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using DFC.Common.Standard.GuidHelper;
-using DFC.Common.Standard.Logging;
-using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
-using Microsoft.AspNetCore.Http.Internal;
+﻿using DFC.HTTP.Standard;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Moq;
 using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.Validation;
-using Moq;
-using NUnit.Framework;
 using Newtonsoft.Json;
-using NCS.DSS.Diversity.Helpers;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Diversity.Tests.FunctionTests
 {
@@ -30,51 +26,36 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         private static readonly Guid DiversityGuid = Guid.NewGuid();
 
         private Mock<IPostDiversityHttpTriggerService> _postDiversityHttpTriggerService;
-        private Mock<ILogger> _log;
-        private DefaultHttpRequest _request;
-        private Mock<IResourceHelper> _resourceHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
-        private HttpResponseMessageHelper _httpResponseMessageHelper;
-        private Mock<IGuidHelper> _guidHelper;
+        private Mock<IResourceHelper> _resourceHelper;
+        private Mock<ILogger<PostDiversityHttpTrigger.Function.PostDiversityHttpTrigger>> _log;
         private Mock<IValidate> _validate;
-        private IJsonHelper _jsonHelper;
-        private Mock<ILoggerHelper> _loggerHelper;
-        private Mock<IHelper> _helper;
+        private Mock<IDynamicHelper> _dynamicHelper;
 
+        private HttpRequest _request;
         private Models.Diversity _diversity;
-        private PostDiversityHttpTrigger.Function.PostDiversityHttpTrigger function;
+        private PostDiversityHttpTrigger.Function.PostDiversityHttpTrigger _function;
 
         [SetUp]
         public void Setup()
         {
+            _request = new DefaultHttpContext().Request;
             _diversity = new Models.Diversity();
 
-            _request = null;
-
-            _log = new Mock<ILogger>();
-            _resourceHelper = new Mock<IResourceHelper>();
-            _httpRequestHelper = new Mock<IHttpRequestHelper>();
-
-            _diversity = new Models.Diversity();
-            _httpResponseMessageHelper = new HttpResponseMessageHelper();
-            _validate = new Mock<IValidate>();
             _postDiversityHttpTriggerService = new Mock<IPostDiversityHttpTriggerService>();
+            _httpRequestHelper = new Mock<IHttpRequestHelper>();
+            _resourceHelper = new Mock<IResourceHelper>();
+            _log = new Mock<ILogger<PostDiversityHttpTrigger.Function.PostDiversityHttpTrigger>>();
+            _validate = new Mock<IValidate>();
+            _dynamicHelper = new Mock<IDynamicHelper>();
 
-            _loggerHelper = new Mock<ILoggerHelper>();
-            _jsonHelper = new JsonHelper();
-            _guidHelper = new Mock<IGuidHelper>();
-            _helper = new Mock<IHelper>();
-
-            function = new PostDiversityHttpTrigger.Function.PostDiversityHttpTrigger(
-                _resourceHelper.Object,
+            _function = new PostDiversityHttpTrigger.Function.PostDiversityHttpTrigger(
                 _postDiversityHttpTriggerService.Object,
-                _validate.Object,
-                _loggerHelper.Object,
                 _httpRequestHelper.Object,
-                _httpResponseMessageHelper,
-                _jsonHelper,
-                _guidHelper.Object,
-                _helper.Object);
+                _resourceHelper.Object,
+                _log.Object,
+                _validate.Object,
+                _dynamicHelper.Object);
 
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
@@ -89,105 +70,111 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
+            // Arrange
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns((string)null);
 
             // Act
             var result = await RunFunction(ValidCustomerId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestResult>());
         }
 
         [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
-
+            // Act
             var result = await RunFunction(InValidCustomerId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenDiversityHasFailedValidation()
         {
+            // Arrange
             var validationResults = new List<ValidationResult> { new ValidationResult("Customer Id is Required") };
             _validate.Setup(x => x.ValidateResource(_diversity)).Returns(validationResults);
 
+            // Act
             var result = await RunFunction(ValidCustomerId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual((HttpStatusCode)422, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<UnprocessableEntityObjectResult>());
         }
 
         [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenDiversityRequestIsInvalid()
         {
+            // Arrange
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Diversity>(_request)).Throws(new JsonException());
 
+            // Act
             var result = await RunFunction(ValidCustomerId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual((HttpStatusCode)422, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<UnprocessableEntityObjectResult>());
         }
 
         [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
         {
+            // Arrange
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(false));
 
+            // Act
             var result = await RunFunction(ValidCustomerId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<NoContentResult>());
         }
 
         [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenDiversityDetailsForCustomerExists()
         {
+            // Arrange
             _postDiversityHttpTriggerService.Setup(x => x.DoesDiversityDetailsExistForCustomer(CustomerGuid)).Returns(true);
 
+            // Act
             var result = await RunFunction(ValidCustomerId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToCreateDiversityDetailRecord()
         {
+            // Arrange
             _postDiversityHttpTriggerService.Setup(x => x.CreateAsync(_diversity)).Returns(Task.FromResult<Models.Diversity>(null));
 
+            // Act
             var result = await RunFunction(ValidCustomerId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeCreated_WhenRequestIsValid()
         {
+            // Arrange
             _postDiversityHttpTriggerService.Setup(x => x.CreateAsync(_diversity)).Returns(Task.FromResult<Models.Diversity>(_diversity));
 
+            // Act
             var result = await RunFunction(ValidCustomerId);
+            var resultResponse = result as JsonResult;
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.Created, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<JsonResult>());
+            Assert.That(resultResponse.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
         }
 
-        public async Task<HttpResponseMessage> RunFunction(string customerId)
+        public async Task<IActionResult> RunFunction(string customerId)
         {
-            return await function.Run(
+            return await _function.Run(
                 _request,
-                _log.Object,
                 customerId).ConfigureAwait(false);
         }
     }

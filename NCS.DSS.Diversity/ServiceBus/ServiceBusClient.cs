@@ -1,20 +1,18 @@
-﻿using System;
-using System.Text;
-using System.Threading.Tasks;
-using DFC.Common.Standard.Logging;
+﻿using DFC.Common.Standard.Logging;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Diversity.Models;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace NCS.DSS.Diversity.ServiceBus
 {
-    
+
     public class ServiceBusClient : IServiceBusClient
     {
         public readonly string QueueName = Environment.GetEnvironmentVariable("QueueName");
         public readonly string ServiceBusConnectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
-        private readonly ILoggerHelper _loggerHelper = new LoggerHelper();  
+        private readonly ILoggerHelper _loggerHelper = new LoggerHelper();
 
         public async Task SendPostMessageAsync(Models.Diversity diversity, string reqUrl, Guid correlationId, ILogger log)
         {

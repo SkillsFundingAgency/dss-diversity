@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DFC.Common.Standard;
-using Microsoft.Azure.Documents;
+﻿using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using NCS.DSS.Diversity.Cosmos.Client;
@@ -67,7 +62,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
             var client = DocumentDBClient.CreateDocumentClient();
 
             var diversityDetailQuery = client
-                ?.CreateDocumentQuery<Models.Diversity>(collectionUri, new FeedOptions {MaxItemCount = 1})
+                ?.CreateDocumentQuery<Models.Diversity>(collectionUri, new FeedOptions { MaxItemCount = 1 })
                 .Where(x => x.CustomerId == customerId &&
                             x.DiversityId == diversityId)
                 .AsDocumentQuery();
@@ -106,7 +101,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
 
             return diversityDetails.Any() ? diversityDetails : null;
         }
-        
+
         public async Task<string> GetDiversityDetailForCustomerToUpdateAsync(Guid customerId, Guid diversityId)
         {
             var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();

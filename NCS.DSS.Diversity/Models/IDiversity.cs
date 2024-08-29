@@ -1,5 +1,4 @@
-﻿using System;
-using NCS.DSS.Diversity.ReferenceData;
+﻿using NCS.DSS.Diversity.ReferenceData;
 
 namespace NCS.DSS.Diversity.Models
 {

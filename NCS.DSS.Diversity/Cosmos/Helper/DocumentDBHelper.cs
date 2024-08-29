@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Azure.Documents.Client;
+﻿using Microsoft.Azure.Documents.Client;
 
 namespace NCS.DSS.Diversity.Cosmos.Helper
 {
@@ -24,7 +23,7 @@ namespace NCS.DSS.Diversity.Cosmos.Helper
 
             return _documentCollectionUri;
         }
-        
+
         public static Uri CreateDocumentUri(Guid diversityDetailId)
         {
             return UriFactory.CreateDocumentUri(DatabaseId, CollectionId, diversityDetailId.ToString());

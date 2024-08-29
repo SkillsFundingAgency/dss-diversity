@@ -49,7 +49,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
 
             if (!string.IsNullOrWhiteSpace(diversityPatch.LastModifiedBy))
                 _jsonHelper.UpdatePropertyValue(obj["LastModifiedBy"], diversityPatch.LastModifiedBy);
-            
+
             return obj.ToString();
         }
     }

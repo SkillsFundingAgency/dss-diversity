@@ -1,56 +1,65 @@
-﻿using System;
+﻿using Moq;
 using NCS.DSS.Diversity.ReferenceData;
-using Moq;
 using NUnit.Framework;
+using System;
 
 namespace NCS.DSS.Diversity.Tests.ModelTests
 {
     public class DiversityTests
     {
-        
+
         [Test]
         public void DiversityTests_PopulatesDefaultValues_WhenSetDefaultValuesIsCalled()
         {
+            // Arrange
             var diversity = new Models.Diversity();
+
+            // Act
             diversity.SetDefaultValues();
 
             // Assert
-            Assert.NotNull(diversity.LastModifiedDate);
-            Assert.AreEqual(PrimaryLearningDifficultyOrDisability.NotProvided, diversity.PrimaryLearningDifficultyOrDisability);
-            Assert.AreEqual(SecondaryLearningDifficultyOrDisability.NotProvided, diversity.SecondaryLearningDifficultyOrDisability);
+            Assert.That(diversity.LastModifiedDate, Is.Not.Null);
+            Assert.That(diversity.PrimaryLearningDifficultyOrDisability, Is.EqualTo(PrimaryLearningDifficultyOrDisability.NotProvided));
+            Assert.That(diversity.SecondaryLearningDifficultyOrDisability, Is.EqualTo(SecondaryLearningDifficultyOrDisability.NotProvided));
         }
 
         [Test]
         public void DiversityTests_CheckLastModifiedDateDoesNotGetPopulated_WhenSetDefaultValuesIsCalled()
         {
+            // Arrange
             var diversity = new Models.Diversity { LastModifiedDate = DateTime.MaxValue };
 
+            // Act
             diversity.SetDefaultValues();
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, diversity.LastModifiedDate);
+            Assert.That(diversity.LastModifiedDate, Is.EqualTo(DateTime.MaxValue));
         }
-        
+
         [Test]
         public void DiversityTests_CheckPrimaryLearningDifficultyOrDisabilityDoesNotGetPopulated_WhenSetDefaultValuesIsCalled()
         {
+            // Arrange
             var diversity = new Models.Diversity { PrimaryLearningDifficultyOrDisability = PrimaryLearningDifficultyOrDisability.Dyslexia };
 
+            // Act
             diversity.SetDefaultValues();
 
             // Assert
-            Assert.AreEqual(PrimaryLearningDifficultyOrDisability.Dyslexia, diversity.PrimaryLearningDifficultyOrDisability);
+            Assert.That(diversity.PrimaryLearningDifficultyOrDisability, Is.EqualTo(PrimaryLearningDifficultyOrDisability.Dyslexia));
         }
 
         [Test]
         public void DiversityTests_CheckSecondaryLearningDifficultyOrDisabilityDoesNotGetPopulated_WhenSetDefaultValuesIsCalled()
         {
+            // Arrange
             var diversity = new Models.Diversity { SecondaryLearningDifficultyOrDisability = SecondaryLearningDifficultyOrDisability.Dyslexia };
 
+            // Act
             diversity.SetDefaultValues();
 
             // Assert
-            Assert.AreEqual(SecondaryLearningDifficultyOrDisability.Dyslexia, diversity.SecondaryLearningDifficultyOrDisability);
+            Assert.That(diversity.SecondaryLearningDifficultyOrDisability, Is.EqualTo(SecondaryLearningDifficultyOrDisability.Dyslexia));
         }
         [Test]
         public void DiversityTests_CheckDiversityIdIsSet_WhenSetIdsIsCalled()
@@ -60,7 +69,7 @@ namespace NCS.DSS.Diversity.Tests.ModelTests
             diversity.SetIds(It.IsAny<Guid>(), It.IsAny<string>());
 
             // Assert
-            Assert.AreNotEqual(Guid.Empty, diversity.DiversityId);
+            Assert.That(diversity.DiversityId, Is.Not.EqualTo(Guid.Empty));
         }
 
         [Test]
@@ -72,10 +81,10 @@ namespace NCS.DSS.Diversity.Tests.ModelTests
             diversity.SetIds(customerId, It.IsAny<string>());
 
             // Assert
-            Assert.AreEqual(customerId, diversity.CustomerId);
+            Assert.That(diversity.CustomerId, Is.EqualTo(customerId));
         }
 
-       [Test]
+        [Test]
         public void DiversityTests_CheckLastModifiedTouchpointIdIsSet_WhenSetIdsIsCalled()
         {
             var diversity = new Models.Diversity();
@@ -83,7 +92,7 @@ namespace NCS.DSS.Diversity.Tests.ModelTests
             diversity.SetIds(It.IsAny<Guid>(), "0000000000");
 
             // Assert
-            Assert.AreEqual("0000000000", diversity.LastModifiedBy);
+            Assert.That(diversity.LastModifiedBy, Is.EqualTo("0000000000"));
         }
 
 

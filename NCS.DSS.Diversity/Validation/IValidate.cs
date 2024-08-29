@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using NCS.DSS.Diversity.Models;
 using System.ComponentModel.DataAnnotations;
-using NCS.DSS.Diversity.Models;
 
 namespace NCS.DSS.Diversity.Validation
 {
