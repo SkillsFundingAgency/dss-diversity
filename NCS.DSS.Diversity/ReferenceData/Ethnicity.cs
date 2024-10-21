@@ -22,7 +22,7 @@ namespace NCS.DSS.Diversity.ReferenceData
         WhiteAndBlackAfrican = 36,
 
         [Description("White and Asian")]
-        WhiteAndAsian =	37,
+        WhiteAndAsian = 37,
 
         [Description("Any Other Mixed / multiple ethnic background")]
         AnyOtherMixedMultipleEthnicBackground = 38,

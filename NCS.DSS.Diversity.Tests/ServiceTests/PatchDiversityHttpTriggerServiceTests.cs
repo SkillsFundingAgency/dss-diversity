@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.IO;
-using System.Net;
-using System.Reflection;
-using System.Threading.Tasks;
-using Microsoft.Azure.Documents;
+﻿using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Moq;
 using NCS.DSS.Diversity.Cosmos.Provider;
 using NCS.DSS.Diversity.Models;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.ServiceBus;
 using Newtonsoft.Json;
-using Moq;
 using NUnit.Framework;
+using System;
+using System.Collections.Specialized;
+using System.IO;
+using System.Net;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Diversity.Tests.ServiceTests
 {
@@ -50,7 +50,7 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             var result = _DiversityHttpTriggerService.PatchResource(null, _diversityPatch);
 
             // Assert
-            Assert.Null(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -60,12 +60,13 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             var result = _DiversityHttpTriggerService.PatchResource(_json, null);
 
             // Assert
-            Assert.Null(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
         public async Task PatchDiversityHttpTriggerServiceTests_UpdateAsync_ReturnsResourceWhenUpdated()
         {
+            // Arrange
             const string documentServiceResponseClass = "Microsoft.Azure.Documents.DocumentServiceResponse, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
             const string dictionaryNameValueCollectionClass = "Microsoft.Azure.Documents.Collections.DictionaryNameValueCollection, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
 
@@ -94,34 +95,36 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             var result = await _DiversityHttpTriggerService.UpdateCosmosAsync(_json, _diversityId);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<Models.Diversity>(result);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.InstanceOf<Models.Diversity>());
 
         }
 
         [Test]
         public async Task PatchDiversityHttpTriggerServiceTests_GetDiversityForCustomerAsync_ReturnsNullWhenResourceHasNotBeenFound()
         {
+            // Arrange
             _documentDbProvider.Setup(x => x.GetDiversityDetailForCustomerToUpdateAsync(_customerId, _diversityId)).Returns(Task.FromResult<string>(null));
 
             // Act
             var result = await _DiversityHttpTriggerService.GetDiversityForCustomerAsync(_customerId, _diversityId);
 
             // Assert
-            Assert.Null(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
         public async Task PatchDiversityHttpTriggerServiceTests_GetDiversityForCustomerAsync_ReturnsResourceWhenResourceHasBeenFound()
         {
+            // Arrange
             _documentDbProvider.Setup(x => x.GetDiversityDetailForCustomerToUpdateAsync(_customerId, _diversityId)).Returns(Task.FromResult(_json));
 
             // Act
             var result = await _DiversityHttpTriggerService.GetDiversityForCustomerAsync(_customerId, _diversityId);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<string>(result);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.InstanceOf<string>());
         }
     }
 }

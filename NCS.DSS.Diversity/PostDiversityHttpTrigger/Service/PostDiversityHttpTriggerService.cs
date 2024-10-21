@@ -1,9 +1,7 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NCS.DSS.Diversity.Cosmos.Provider;
 using NCS.DSS.Diversity.ServiceBus;
+using System.Net;
 
 namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
 {
@@ -31,7 +29,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
 
             var response = await _documentDbProvider.CreateDiversityDetailAsync(diversity);
 
-            return response.StatusCode == HttpStatusCode.Created ? (dynamic) response.Resource : null;
+            return response.StatusCode == HttpStatusCode.Created ? (dynamic)response.Resource : null;
         }
 
         public async Task SendToServiceBusQueueAsync(Models.Diversity diversity, string reqUrl, Guid correlationId, ILogger log)

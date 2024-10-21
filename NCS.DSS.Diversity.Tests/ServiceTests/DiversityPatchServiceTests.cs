@@ -1,15 +1,15 @@
-﻿using System;
-using DFC.JSON.Standard;
+﻿using DFC.JSON.Standard;
+using Moq;
 using NCS.DSS.Diversity.Models;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.ReferenceData;
 using Newtonsoft.Json;
-using Moq;
 using NUnit.Framework;
+using System;
 
 namespace NCS.DSS.Diversity.Tests.ServiceTests
 {
-   
+
     public class DiversityPatchServiceTests
     {
         private readonly JsonHelper _jsonHelper;
@@ -22,7 +22,7 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
 
             _jsonHelper = new JsonHelper();
             _diversityPatchService = new DiversityPatchService(_jsonHelper);
-            _diversityPatch = new Models.DiversityPatch();
+            _diversityPatch = new DiversityPatch();
 
             _json = JsonConvert.SerializeObject(_diversityPatch);
         }
@@ -30,129 +30,139 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
         [Test]
         public void DiversityPatchServiceTests_ReturnsNull_WhenDiversityPatchNull()
         {
+            // Act
             var result = _diversityPatchService.Patch(string.Empty, It.IsAny<DiversityPatch>());
 
             // Assert
-            Assert.Null(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
         public void DiversityTests_CheckConsentToCollectLLDDHealthIsUpdated_WhenPatchIsCalled()
         {
+            // Arrange
             var diversityPatch = new DiversityPatch { ConsentToCollectLLDDHealth = false };
 
+            // Act
             var patchedDiversity = _diversityPatchService.Patch(_json, diversityPatch);
-
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(false, diversity.ConsentToCollectLLDDHealth);
+            Assert.That(diversity.ConsentToCollectLLDDHealth, Is.False);
         }
 
 
         [Test]
         public void DiversityTests_CheckPrimaryLearningDifficultyOrDisabilityIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new Models.DiversityPatch { PrimaryLearningDifficultyOrDisability = PrimaryLearningDifficultyOrDisability.Dyslexia };
+            // Arrange
+            var diversityPatch = new DiversityPatch { PrimaryLearningDifficultyOrDisability = PrimaryLearningDifficultyOrDisability.Dyslexia };
 
+            // Act
             var patchedDiversity = _diversityPatchService.Patch(_json, diversityPatch);
-
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(PrimaryLearningDifficultyOrDisability.Dyslexia, diversity.PrimaryLearningDifficultyOrDisability);
+            Assert.That(diversity.PrimaryLearningDifficultyOrDisability, Is.EqualTo(PrimaryLearningDifficultyOrDisability.Dyslexia));
         }
 
         [Test]
         public void DiversityTests_CheckSecondaryLearningDifficultyOrDisabilityIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new Models.DiversityPatch { SecondaryLearningDifficultyOrDisability = SecondaryLearningDifficultyOrDisability.Dyslexia };
+            // Arrange
+            var diversityPatch = new DiversityPatch { SecondaryLearningDifficultyOrDisability = SecondaryLearningDifficultyOrDisability.Dyslexia };
 
+            // Act
             var patchedDiversity = _diversityPatchService.Patch(_json, diversityPatch);
-
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(SecondaryLearningDifficultyOrDisability.Dyslexia, diversity.SecondaryLearningDifficultyOrDisability);
+            Assert.That(diversity.SecondaryLearningDifficultyOrDisability, Is.EqualTo(SecondaryLearningDifficultyOrDisability.Dyslexia));
         }
 
         [Test]
         public void DiversityTests_CheckDateAndTimeLLDDHealthConsentCollectedIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new Models.DiversityPatch { DateAndTimeLLDDHealthConsentCollected = DateTime.MaxValue };
+            // Arrange
+            var diversityPatch = new DiversityPatch { DateAndTimeLLDDHealthConsentCollected = DateTime.MaxValue };
 
+            // Act
             var patchedDiversity = _diversityPatchService.Patch(_json, diversityPatch);
-
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, diversity.DateAndTimeLLDDHealthConsentCollected);
+            Assert.That(diversity.DateAndTimeLLDDHealthConsentCollected, Is.EqualTo(DateTime.MaxValue));
         }
 
         [Test]
         public void DiversityTests_CheckConsentToCollectEthnicityIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new Models.DiversityPatch { ConsentToCollectEthnicity = false };
+            // Arrange
+            var diversityPatch = new DiversityPatch { ConsentToCollectEthnicity = false };
 
+            // Act
             var patchedDiversity = _diversityPatchService.Patch(_json, diversityPatch);
-
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(false, diversity.ConsentToCollectEthnicity);
+            Assert.That(diversity.ConsentToCollectEthnicity, Is.False);
         }
 
         [Test]
         public void DiversityTests_CheckEthnicityIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new Models.DiversityPatch { Ethnicity = Ethnicity.AnyOtherEthnicGroup };
+            // Arrange
+            var diversityPatch = new DiversityPatch { Ethnicity = Ethnicity.AnyOtherEthnicGroup };
 
+            // Act
             var patchedDiversity = _diversityPatchService.Patch(_json, diversityPatch);
-
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(Ethnicity.AnyOtherEthnicGroup, diversity.Ethnicity);
+            Assert.That(diversity.Ethnicity, Is.EqualTo(Ethnicity.AnyOtherEthnicGroup));
         }
 
         [Test]
         public void DiversityTests_CheckDateAndTimeEthnicityCollectedIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new Models.DiversityPatch { DateAndTimeEthnicityCollected = DateTime.MaxValue };
+            // Arrange
+            var diversityPatch = new DiversityPatch { DateAndTimeEthnicityCollected = DateTime.MaxValue };
 
+            // Act
             var patchedDiversity = _diversityPatchService.Patch(_json, diversityPatch);
-
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, diversity.DateAndTimeEthnicityCollected);
+            Assert.That(diversity.DateAndTimeEthnicityCollected, Is.EqualTo(DateTime.MaxValue));
         }
 
         [Test]
         public void DiversityTests_CheckLastModifiedDateIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new Models.DiversityPatch { LastModifiedDate = DateTime.MaxValue };
+            // Arrange
+            var diversityPatch = new DiversityPatch { LastModifiedDate = DateTime.MaxValue };
 
+            // Act
             var patchedDiversity = _diversityPatchService.Patch(_json, diversityPatch);
-
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, diversity.LastModifiedDate);
+            Assert.That(diversity.LastModifiedDate, Is.EqualTo(DateTime.MaxValue));
         }
 
         [Test]
         public void DiversityTests_CheckLastModifiedByUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new Models.DiversityPatch { LastModifiedBy = "0000000111" };
+            // Arrange
+            var diversityPatch = new DiversityPatch { LastModifiedBy = "0000000111" };
 
+            // Act
             var patchedDiversity = _diversityPatchService.Patch(_json, diversityPatch);
-
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(patchedDiversity);
 
             // Assert
-            Assert.AreEqual("0000000111", diversity.LastModifiedBy);
+            Assert.That(diversity.LastModifiedBy, Is.EqualTo("0000000111"));
         }
-        
+
     }
 }

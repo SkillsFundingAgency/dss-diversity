@@ -1,9 +1,7 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
-using NCS.DSS.Diversity.Cosmos.Provider;
+﻿using NCS.DSS.Diversity.Cosmos.Provider;
 using NCS.DSS.Diversity.Models;
 using NCS.DSS.Diversity.ServiceBus;
+using System.Net;
 
 namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
 {
@@ -45,7 +43,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
 
             var responseStatusCode = response?.StatusCode;
 
-            return responseStatusCode == HttpStatusCode.OK ? (dynamic) response.Resource : null;
+            return responseStatusCode == HttpStatusCode.OK ? (dynamic)response.Resource : null;
         }
 
         public async Task<string> GetDiversityForCustomerAsync(Guid customerId, Guid diversityId)

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace NCS.DSS.Diversity.Cosmos.Helper
+﻿namespace NCS.DSS.Diversity.Cosmos.Helper
 {
     public interface IResourceHelper
     {

@@ -12,21 +12,24 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenDiversityIsNotSuppliedForPost()
         {
+            // Arrange
             var diversity = new Models.Diversity();
-
             var validation = new Validate();
 
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.NotNull(result);
-            Assert.AreEqual(4, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(4));
         }
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenConsentToCollectLLDDHealthIsNotSuppliedForPost()
         {
+            // Arrange
+            var validation = new Validate();
             var diversity = new Models.Diversity
             {
                 LearningDifficultyOrDisabilityDeclaration = LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer, //if anything else then an additional validation results will be returned for supplying something other than 'Not Provided By Customer' when consent is not true
@@ -37,19 +40,20 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 Ethnicity = Ethnicity.AnyOtherEthnicGroup
             };
 
-            var validation = new Validate();
-
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.NotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
         }
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenConsentToCollectEthnicityIsNotSuppliedForPost()
         {
+            // Arrange
+            var validation = new Validate();
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
@@ -58,19 +62,20 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 Ethnicity = Ethnicity.NotProvided //if anything else then an additional validation results will be returned for supplying something other than 'Not Provided' when consent is not true
             };
 
-            var validation = new Validate();
-
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.NotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
         }
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenEthnicityIsNotSuppliedForPost()
         {
+            // Arrange
+            var validation = new Validate();
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
@@ -80,19 +85,20 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 DateAndTimeEthnicityCollected = DateTime.UtcNow
             };
 
-            var validation = new Validate();
-
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.NotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
         }
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenLearningDifficultyOrDisabilityDeclarationIsNotSuppliedForPost()
         {
+            // Arrange
+            var validation = new Validate();
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
@@ -102,19 +108,20 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 Ethnicity = Ethnicity.AnyOtherEthnicGroup
             };
 
-            var validation = new Validate();
-
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.NotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
         }
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenDateAndTimeLLDDHealthConsentCollectedIsNotValid()
         {
+            // Arrange
+            var validation = new Validate();
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
@@ -126,19 +133,20 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
 
             };
 
-            var validation = new Validate();
-
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.NotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
         }
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenDateAndTimeEthnicityCollectedIsInTheFuture()
         {
+            // Arrange
+            var validation = new Validate();
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
@@ -149,19 +157,20 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 DateAndTimeEthnicityCollected = DateTime.MaxValue
             };
 
-            var validation = new Validate();
-
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.NotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
         }
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenLastModifiedDateIsInTheFuture()
         {
+            // Arrange
+            var validation = new Validate();
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
@@ -173,19 +182,20 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 LastModifiedDate = DateTime.MaxValue
             };
 
-            var validation = new Validate();
-
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.NotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
         }
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenLearningDifficultyOrDisabilityDeclarationIsNotValid()
         {
+            // Arrange
+            var validation = new Validate();
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
@@ -196,20 +206,21 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 Ethnicity = Ethnicity.AnyOtherEthnicGroup
             };
 
-            var validation = new Validate();
-
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.NotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
         }
 
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenPrimaryLearningDifficultyOrDisabilityIsNotValid()
         {
+            // Arrange
+            var validation = new Validate();
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
@@ -221,18 +232,20 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 Ethnicity = Ethnicity.AnyOtherEthnicGroup
             };
 
-            var validation = new Validate();
-
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
         }
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenSecondaryLearningDifficultyOrDisabilityIsNotValid()
         {
+            // Arrange
+            var validation = new Validate();
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
@@ -244,19 +257,20 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 Ethnicity = Ethnicity.AnyOtherEthnicGroup
             };
 
-            var validation = new Validate();
-
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.NotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
         }
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenEthnicityIsNotValid()
         {
+            // Arrange
+            var validation = new Validate();
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
@@ -267,19 +281,20 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 Ethnicity = (Ethnicity)100,
             };
 
-            var validation = new Validate();
-
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.NotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
         }
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenLLDDHealthConsentIsFalseAndLearningDifficultyOrDisabilityDeclarationValueIsNotNotProvidedByCustomer()
         {
+            // Arrange
+            var validation = new Validate();
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = false,
@@ -292,19 +307,20 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 Ethnicity = Ethnicity.EnglishWelshScottishNorthernIrishBritish,
             };
 
-            var validation = new Validate();
-
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.NotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
         }
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenLLDDHealthConsentIsFalseAndPrimaryLearningDifficultyOrDisabilityValueIsNotNotProvided()
         {
+            // Arrange
+            var validation = new Validate();
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = false,
@@ -317,19 +333,20 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 Ethnicity = Ethnicity.EnglishWelshScottishNorthernIrishBritish,
             };
 
-            var validation = new Validate();
-
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.NotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
         }
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenLLDDHealthConsentIsFalseAndSecondaryLearningDifficultyOrDisabilityValueIsNotNotProvided()
         {
+            // Arrange
+            var validation = new Validate();
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = false,
@@ -342,19 +359,20 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 Ethnicity = Ethnicity.EnglishWelshScottishNorthernIrishBritish,
             };
 
-            var validation = new Validate();
-
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.NotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
         }
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenEthnicityConsentIsFalseAndEthnicityIsNotNotProvided()
         {
+            // Arrange
+            var validation = new Validate();
             var diversity = new Models.Diversity
             {
                 ConsentToCollectLLDDHealth = true,
@@ -367,14 +385,13 @@ namespace NCS.DSS.Diversity.Tests.ValidationTests
                 Ethnicity = Ethnicity.EnglishWelshScottishNorthernIrishBritish,
             };
 
-            var validation = new Validate();
-
+            // Act
             var result = validation.ValidateResource(diversity);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.NotNull(result);
-            Assert.AreEqual(1, result.Count);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count, Is.EqualTo(1));
         }
     }
 }

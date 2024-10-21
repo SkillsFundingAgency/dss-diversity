@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using NCS.DSS.Diversity.Cosmos.Provider;
+﻿using NCS.DSS.Diversity.Cosmos.Provider;
 
 namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Service
 {

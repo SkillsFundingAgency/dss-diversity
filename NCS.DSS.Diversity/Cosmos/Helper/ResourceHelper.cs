@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using DFC.JSON.Standard;
+﻿using DFC.JSON.Standard;
 using NCS.DSS.Diversity.Cosmos.Provider;
 
 namespace NCS.DSS.Diversity.Cosmos.Helper

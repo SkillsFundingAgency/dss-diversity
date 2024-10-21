@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Service
+﻿namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Service
 {
     public interface IGetDiversityHttpTriggerService
     {

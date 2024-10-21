@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
+using Moq;
+using NCS.DSS.Diversity.Cosmos.Provider;
+using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
+using NCS.DSS.Diversity.ServiceBus;
+using NUnit.Framework;
+using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
-using NCS.DSS.Diversity.Cosmos.Provider;
-using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
-using NCS.DSS.Diversity.ServiceBus;
-using Moq;
-using NUnit.Framework;
 
 namespace NCS.DSS.Diversity.Tests.ServiceTests
 {
@@ -37,12 +37,13 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             var result = await _diversityHttpTriggerService.CreateAsync(null);
 
             // Assert
-            Assert.Null(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
         public async Task PostDiversityHttpTriggerServiceTests_CreateAsync_ReturnsResource()
         {
+            // Arrange
             const string documentServiceResponseClass = "Microsoft.Azure.Documents.DocumentServiceResponse, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
             const string dictionaryNameValueCollectionClass = "Microsoft.Azure.Documents.Collections.DictionaryNameValueCollection, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
 
@@ -71,8 +72,8 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             var result = await _diversityHttpTriggerService.CreateAsync(_diversity);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<Models.Diversity>(result);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.InstanceOf<Models.Diversity>());
 
         }
     }
