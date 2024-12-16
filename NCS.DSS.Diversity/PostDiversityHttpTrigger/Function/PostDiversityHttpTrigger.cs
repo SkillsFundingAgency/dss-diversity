@@ -20,7 +20,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
         private readonly IPostDiversityHttpTriggerService _postDiversityService;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IResourceHelper _resourceHelper;
-        private readonly ILogger _logger;
+        private readonly ILogger<PostDiversityHttpTrigger> _logger;
         private readonly IValidate _validate;
         private readonly IDynamicHelper _dynamicHelper;
         private static readonly string[] PropertyToExclude = { "TargetSite" };

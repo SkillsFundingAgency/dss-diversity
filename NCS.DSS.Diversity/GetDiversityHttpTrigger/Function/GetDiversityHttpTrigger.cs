@@ -18,7 +18,7 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
         private readonly IGetDiversityHttpTriggerService _getDiversityService;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IResourceHelper _resourceHelper;
-        private readonly ILogger _logger;
+        private readonly ILogger<GetDiversityHttpTrigger> _logger;
 
         public GetDiversityHttpTrigger(
             IGetDiversityHttpTriggerService getDiversityService,
