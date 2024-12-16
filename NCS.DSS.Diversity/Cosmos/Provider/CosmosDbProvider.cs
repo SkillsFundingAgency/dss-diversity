@@ -62,7 +62,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
             {
                 _logger.LogError(ex, "Error checking customer resource existence. Customer ID: {CustomerId}", customerId);
                 throw;
-            }            
+            }
         }
 
         public async Task<bool> DoesDiversityDetailsExistForCustomer(Guid customerId)
@@ -96,7 +96,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
             {
                 _logger.LogError(ex, "Error occurred while retrieving Diversity. Customer ID: {CustomerId}. Diversity ID: {DiversityId}.", customerId, diversityId);
                 throw;
-            }            
+            }
         }
 
         public async Task<List<Models.Diversity>> GetDiversityDetailsForCustomerAsync(Guid customerId)
@@ -130,7 +130,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
         {
             var diversity = await GetDiversityDetailForCustomerAsync(customerId, diversityId);
 
-            return JsonConvert.SerializeObject(diversity);            
+            return JsonConvert.SerializeObject(diversity);
         }
 
         public async Task<ItemResponse<Models.Diversity>> CreateDiversityDetailAsync(Models.Diversity diversity)
@@ -178,7 +178,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
             {
                 _logger.LogError(ex, "Failed to update Diversity with ID: {DiversityId}", diversityId);
                 throw;
-            }            
+            }
         }
     }
 

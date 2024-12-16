@@ -77,7 +77,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId);
 
             // Assert
-            Assert.That(result, Is.InstanceOf<BadRequestResult>());
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]

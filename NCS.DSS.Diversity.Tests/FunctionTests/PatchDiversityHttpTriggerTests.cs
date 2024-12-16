@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.Diversity.Cosmos.Helper;
+using NCS.DSS.Diversity.Models;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.Validation;
 using Newtonsoft.Json;
@@ -82,7 +83,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, DiversityId);
 
             // Assert
-            Assert.That(result, Is.InstanceOf<BadRequestResult>());
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -146,10 +147,27 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         }
 
         [Test]
-        public async Task PatchAddressHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToUpdateDiversityRecord()
+        public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToPatchDiversityResource()
         {
             // Arrange
+            string patchedDiversity = null;
             _patchDiversityHttpTriggerService.Setup(x => x.GetDiversityForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(_diversity.ToString()));
+            _patchDiversityHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<DiversityPatch>())).Returns(patchedDiversity);
+
+            // Act
+            var result = await RunFunction(ValidCustomerId, DiversityId);
+
+            // Assert
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+        }
+
+        [Test]
+        public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToUpdateDiversityRecord()
+        {
+            // Arrange
+            string patchedDiversity = $"{{ DiversityId = {Guid.NewGuid()} }}";
+            _patchDiversityHttpTriggerService.Setup(x => x.GetDiversityForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(_diversity.ToString()));
+            _patchDiversityHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<DiversityPatch>())).Returns(patchedDiversity);
             _patchDiversityHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), DiversityGuid)).Returns(Task.FromResult<Models.Diversity>(null));
 
             // Act

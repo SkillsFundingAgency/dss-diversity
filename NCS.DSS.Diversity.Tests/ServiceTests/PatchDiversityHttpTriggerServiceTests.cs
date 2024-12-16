@@ -1,19 +1,14 @@
 ﻿using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.Diversity.Cosmos.Provider;
 using NCS.DSS.Diversity.Models;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.ServiceBus;
 using Newtonsoft.Json;
-using NSubstitute;
 using NUnit.Framework;
 using System;
-using System.Collections.Specialized;
-using System.IO;
 using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace NCS.DSS.Diversity.Tests.ServiceTests
@@ -25,6 +20,7 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
         private Mock<IDiversityPatchService> _diversityPatchService;
         private Mock<ICosmosDbProvider> _cosmosDbProvider;
         private Mock<IDiversityServiceBusClient> _serviceBusClient;
+        private Mock<ILogger<PatchDiversityHttpTriggerService>> _logger;
 
         private string _json;
         private Models.Diversity _diversity;
@@ -38,7 +34,8 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
             _diversityPatchService = new Mock<IDiversityPatchService>();
             _cosmosDbProvider = new Mock<ICosmosDbProvider>();
             _serviceBusClient = new Mock<IDiversityServiceBusClient>();
-            _DiversityHttpTriggerService = new PatchDiversityHttpTriggerService(_cosmosDbProvider.Object, _diversityPatchService.Object, _serviceBusClient.Object);
+            _logger = new Mock<ILogger<PatchDiversityHttpTriggerService>>();
+            _DiversityHttpTriggerService = new PatchDiversityHttpTriggerService(_cosmosDbProvider.Object, _diversityPatchService.Object, _serviceBusClient.Object, _logger.Object);
             _diversityPatch = new DiversityPatch();
             _diversity = new Models.Diversity();
 

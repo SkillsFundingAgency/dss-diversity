@@ -54,52 +54,48 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/DiversityDetails")]
             HttpRequest req, string customerId)
         {
+            _logger.LogInformation("Function {FunctionName} has been invoked", nameof(PostDiversityHttpTrigger));
             // Ensure the request body can be read multiple times by enabling buffering
             req.EnableBuffering();
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
-
             if (string.IsNullOrEmpty(correlationId))
+            {
                 _logger.LogInformation("Unable to locate 'DssCorrelationId' in request header");
-
+            }
 
             if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
-                _logger.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
+                _logger.LogInformation("Unable to parse 'DssCorrelationId' to a Guid. CorrelationId: {CorrelationId}", correlationId);
                 correlationGuid = Guid.NewGuid();
-
             }
-            _logger.LogInformation($"DssCorrelationId: {correlationGuid}");
 
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                var response = new BadRequestResult();
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Unable to locate 'TouchpointId' in request header.");
-                return response;
+                _logger.LogWarning("Unable to locate 'TouchpointId' in request header");
+                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
 
             var apimUrl = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(apimUrl))
             {
-                var response = new BadRequestResult();
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Unable to locate 'apimurl' in request header.");
-                return response;
+                _logger.LogWarning("Unable to locate 'apimURL' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
-
-            _logger.LogInformation($"Post Diversity C# HTTP trigger function  processed a request. By Touchpoint: {touchpointId}");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                var response = new BadRequestObjectResult(customerGuid.ToString());
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Unable to parse 'customerId' to a Guid: {customerId}.");
-                return response;
+                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
+                return new BadRequestObjectResult(customerId);
             }
+            _logger.LogInformation("Input validation has succeeded. Touchpoint ID: {TouchpointId}.", touchpointId);
 
             Models.Diversity diversityRequest;
 
             try
             {
+                _logger.LogInformation("Attempting to retrieve resource from request. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 diversityRequest = await _httpRequestHelper.GetResourceFromRequest<Models.Diversity>(req);
 
                 // Fix for bug AD-157065 (Oct '23)
@@ -111,43 +107,41 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             }
             catch (JsonException ex)
             {
-                var response = new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, PropertyToExclude));
-                _logger.LogError($"Response Status Code: {response.StatusCode}. Unable to retrieve body from request.", ex);
-                return response;
+                _logger.LogError(ex, "Unable to parse {diversityRequest} from request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", nameof(diversityRequest), correlationGuid, ex.Message);
+                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, PropertyToExclude));
             }
 
             if (diversityRequest == null)
             {
-                var response = new UnprocessableEntityObjectResult(req);
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Diversity patch request is null.");
-                return response;
+                _logger.LogWarning("{diversityRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(diversityRequest), correlationGuid);
+                return new UnprocessableEntityObjectResult(req);
             }
 
             diversityRequest.SetIds(customerGuid, touchpointId);
             diversityRequest.SetDefaultValues();
 
             // validate the request
-            _logger.LogInformation("Attempt to validate resource");
+            _logger.LogInformation("Attempting to validate {diversityRequest} object", nameof(diversityRequest));
             var errors = _validate.ValidateResource(diversityRequest);
 
             if (errors != null && errors.Any())
             {
-                var response = new UnprocessableEntityObjectResult(errors);
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Validation errors with resource.", errors);
-                return response;
+                _logger.LogWarning("Falied to validate {diversityRequest} object", nameof(diversityRequest));
+                return new UnprocessableEntityObjectResult(errors);
             }
+            _logger.LogInformation("Successfully validated {diversityRequest} object", nameof(diversityRequest));
 
-            _logger.LogInformation($"Attempting to see if customer exists {customerGuid}");
+            _logger.LogInformation("Checking if customer exists. Customer ID: {CustomerId}.", customerGuid);
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
-                var response = new NoContentResult();
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Customer does not exist {customerGuid}.");
-                return response;
+                _logger.LogWarning("Customer not found. Customer ID: {CustomerId}.", customerGuid);
+                return new NoContentResult();
             }
+            _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}.", customerGuid);
 
-            _logger.LogInformation($"Attempting to see if this is a read only customer {customerGuid}");
+            _logger.LogInformation("Checking if customer is read-only. Customer GUID: {CustomerId}.", customerGuid);
             var isCustomerReadOnly = _resourceHelper.IsCustomerReadOnly();
 
             if (isCustomerReadOnly)
@@ -157,43 +151,43 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                     StatusCode = (int)HttpStatusCode.Forbidden,
                 };
 
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Customer {customerGuid} is read only ");
+                _logger.LogWarning("Customer is read-only. Customer GUID: {CustomerId}.", customerGuid);
                 return response;
             }
 
+            _logger.LogInformation("Checking if Diversity record alread exists for customer with ID: {CustomerId}.", customerGuid);
             var doesDiversityDetailsExist = await _postDiversityService.DoesDiversityDetailsExistForCustomer(customerGuid);
 
             if (doesDiversityDetailsExist)
             {
-                var response = new ConflictResult();
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Diversity details already exist for the customer {customerGuid}.");
-                return response;
+                _logger.LogWarning("Diversity record already exist for customer with ID: {customerGuid}", customerGuid);
+                return new ConflictResult();
             }
+            _logger.LogInformation("Diversity record does not exists for customer with ID: {customerGuid}", customerGuid);
 
+            _logger.LogInformation("Attempting to create Diversity in Cosmos DB. Diversity GUID: {DiversityId}", diversityRequest.DiversityId);
             var diversity = await _postDiversityService.CreateAsync(diversityRequest);
-
-            if (diversity != null)
-            {
-                _logger.LogInformation($"attempting to send to service bus {diversity.DiversityId}");
-                await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl, correlationGuid, _logger);
-            }
 
             if (diversity == null)
             {
-                var response = new BadRequestObjectResult(customerGuid.ToString());
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Failed to post diversity for the customer {customerGuid}.");
-                return response;
+                _logger.LogWarning("Failed to create Diversity in Cosmos DB. Diversity GUID: {DiversityId}", diversityRequest.DiversityId);
+                _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PostDiversityHttpTrigger));
+                return new BadRequestObjectResult(customerGuid);
             }
-            else
-            {
-                var response = new JsonResult(diversity, new JsonSerializerOptions())
-                {
-                    StatusCode = (int)HttpStatusCode.Created,
-                };
 
-                _logger.LogInformation($"Response Status Code: {response.StatusCode}. Diversity {diversity.DiversityId} successfully created for the customer {customerGuid}");
-                return response;
-            }
+            _logger.LogInformation("Diversity created successfully in Cosmos DB. Diversity GUID: {DiversityId}", diversity.DiversityId);
+
+
+            _logger.LogInformation("Attempting to send message to Service Bus Namespace. Diversity GUID: {DiversityId}", diversity.DiversityId);
+            await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl, correlationGuid, _logger);
+            _logger.LogInformation("Successfully sent message to Service Bus. Diversity GUID: {DiversityId}", diversity.DiversityId);
+
+
+            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PostDiversityHttpTrigger));
+            return new JsonResult(diversity, new JsonSerializerOptions())
+            {
+                StatusCode = (int)HttpStatusCode.Created,
+            };
         }
     }
 }

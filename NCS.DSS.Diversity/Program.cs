@@ -36,7 +36,7 @@ namespace NCS.DSS.Diversity
                     services.ConfigureFunctionsApplicationInsights();
                     services.AddLogging();
                     services.AddSingleton<IResourceHelper, ResourceHelper>();
-                    services.AddSingleton<IValidate, Validate>();                    
+                    services.AddSingleton<IValidate, Validate>();
                     services.AddSingleton<IHttpRequestHelper, HttpRequestHelper>();
                     services.AddSingleton<IJsonHelper, JsonHelper>();
                     services.AddSingleton<ICosmosDbProvider, CosmosDbProvider>();
@@ -73,7 +73,7 @@ namespace NCS.DSS.Diversity
                             options.Rules.Remove(toRemove);
                         }
                     });
-                })                
+                })
                 .Build();
 
             await host.RunAsync();
