@@ -64,7 +64,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
 
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Diversity>(_request)).Returns(Task.FromResult(_diversity));
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _postDiversityHttpTriggerService.Setup(x => x.DoesDiversityDetailsExistForCustomer(DiversityGuid)).Returns(false);
+            _postDiversityHttpTriggerService.Setup(x => x.DoesDiversityDetailsExistForCustomer(DiversityGuid)).Returns(Task.FromResult(false));
         }
 
         [Test]
@@ -134,7 +134,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         public async Task PostDiversityHttpTrigger_ReturnsStatusCodeBadRequest_WhenDiversityDetailsForCustomerExists()
         {
             // Arrange
-            _postDiversityHttpTriggerService.Setup(x => x.DoesDiversityDetailsExistForCustomer(CustomerGuid)).Returns(true);
+            _postDiversityHttpTriggerService.Setup(x => x.DoesDiversityDetailsExistForCustomer(CustomerGuid)).Returns(Task.FromResult(true));
 
             // Act
             var result = await RunFunction(ValidCustomerId);

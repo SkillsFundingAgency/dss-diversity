@@ -8,13 +8,13 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
     public class PatchDiversityHttpTriggerService : IPatchDiversityHttpTriggerService
     {
 
-        private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly ICosmosDbProvider _cosmosDbProvider;
         private readonly IDiversityPatchService _diversityPatchService;
-        private readonly IServiceBusClient _serviceBusClient;
+        private readonly IDiversityServiceBusClient _serviceBusClient;
 
-        public PatchDiversityHttpTriggerService(IDocumentDBProvider documentDbProvider, IDiversityPatchService diversityPatchService, IServiceBusClient serviceBusClient)
+        public PatchDiversityHttpTriggerService(ICosmosDbProvider cosmosDbProvider, IDiversityPatchService diversityPatchService, IDiversityServiceBusClient serviceBusClient)
         {
-            _documentDbProvider = documentDbProvider;
+            _cosmosDbProvider = cosmosDbProvider;
             _diversityPatchService = diversityPatchService;
             _serviceBusClient = serviceBusClient;
         }
@@ -39,7 +39,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
             if (string.IsNullOrEmpty(diversityJson))
                 return null;
 
-            var response = await _documentDbProvider.UpdateDiversityDetailAsync(diversityJson, diversityId);
+            var response = await _cosmosDbProvider.UpdateDiversityDetailAsync(diversityJson, diversityId);
 
             var responseStatusCode = response?.StatusCode;
 
@@ -48,7 +48,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
 
         public async Task<string> GetDiversityForCustomerAsync(Guid customerId, Guid diversityId)
         {
-            return await _documentDbProvider.GetDiversityDetailForCustomerToUpdateAsync(customerId, diversityId);
+            return await _cosmosDbProvider.GetDiversityDetailForCustomerToUpdateAsync(customerId, diversityId);
         }
 
         public async Task SendToServiceBusQueueAsync(DiversityPatch diversityPatch, Guid customerId, string reqUrl)

@@ -161,7 +161,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                 return response;
             }
 
-            var doesDiversityDetailsExist = _postDiversityService.DoesDiversityDetailsExistForCustomer(customerGuid);
+            var doesDiversityDetailsExist = await _postDiversityService.DoesDiversityDetailsExistForCustomer(customerGuid);
 
             if (doesDiversityDetailsExist)
             {

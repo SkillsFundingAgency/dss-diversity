@@ -4,16 +4,16 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Service
 {
     public class GetDiversityByIdHttpTriggerService : IGetDiversityByIdHttpTriggerService
     {
-        private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly ICosmosDbProvider _cosmosDbProvider;
 
-        public GetDiversityByIdHttpTriggerService(IDocumentDBProvider documentDbProvider)
+        public GetDiversityByIdHttpTriggerService(ICosmosDbProvider cosmosDbProvider)
         {
-            _documentDbProvider = documentDbProvider;
+            _cosmosDbProvider = cosmosDbProvider;
         }
 
         public async Task<Models.Diversity> GetDiversityDetailByIdAsync(Guid customerId, Guid diversityId)
         {
-            return await _documentDbProvider.GetDiversityDetailIdForCustomerAsync(customerId, diversityId);
+            return await _cosmosDbProvider.GetDiversityDetailForCustomerAsync(customerId, diversityId);
         }
     }
 }

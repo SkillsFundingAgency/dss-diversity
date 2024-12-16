@@ -8,18 +8,18 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
     public class PostDiversityHttpTriggerService : IPostDiversityHttpTriggerService
     {
 
-        private readonly IDocumentDBProvider _documentDbProvider;
-        private readonly IServiceBusClient _serviceBusClient;
+        private readonly ICosmosDbProvider _cosmosDbProvider;
+        private readonly IDiversityServiceBusClient _serviceBusClient;
 
-        public PostDiversityHttpTriggerService(IDocumentDBProvider documentDbProvider, IServiceBusClient serviceBusClient)
+        public PostDiversityHttpTriggerService(ICosmosDbProvider cosmosDbProvider, IDiversityServiceBusClient serviceBusClient)
         {
-            _documentDbProvider = documentDbProvider;
+            _cosmosDbProvider = cosmosDbProvider;
             _serviceBusClient = serviceBusClient;
         }
 
-        public bool DoesDiversityDetailsExistForCustomer(Guid customerId)
+        public async Task<bool> DoesDiversityDetailsExistForCustomer(Guid customerId)
         {
-            return _documentDbProvider.DoesDiversityDetailsExistForCustomer(customerId);
+            return await _cosmosDbProvider.DoesDiversityDetailsExistForCustomer(customerId);
         }
 
         public async Task<Models.Diversity> CreateAsync(Models.Diversity diversity)
@@ -27,7 +27,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
             if (diversity == null)
                 return null;
 
-            var response = await _documentDbProvider.CreateDiversityDetailAsync(diversity);
+            var response = await _cosmosDbProvider.CreateDiversityDetailAsync(diversity);
 
             return response.StatusCode == HttpStatusCode.Created ? (dynamic)response.Resource : null;
         }

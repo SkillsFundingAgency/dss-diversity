@@ -1,20 +1,24 @@
+using Azure.Messaging.ServiceBus;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.Cosmos.Provider;
 using NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Service;
 using NCS.DSS.Diversity.GetDiversityHttpTrigger.Service;
+using NCS.DSS.Diversity.Models;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.PostDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.ServiceBus;
 using NCS.DSS.Diversity.Validation;
 
-namespace NCS.DSS.Address
+namespace NCS.DSS.Diversity
 {
     internal class Program
     {
@@ -22,8 +26,12 @@ namespace NCS.DSS.Address
         {
             var host = new HostBuilder()
                 .ConfigureFunctionsWebApplication()
-                .ConfigureServices(services =>
+                .ConfigureServices((context, services) =>
                 {
+                    var configuration = context.Configuration;
+                    services.AddOptions<DiversityConfigurationSettings>()
+                        .Bind(configuration);
+
                     services.AddApplicationInsightsTelemetryWorkerService();
                     services.ConfigureFunctionsApplicationInsights();
                     services.AddLogging();
@@ -31,8 +39,8 @@ namespace NCS.DSS.Address
                     services.AddSingleton<IValidate, Validate>();                    
                     services.AddSingleton<IHttpRequestHelper, HttpRequestHelper>();
                     services.AddSingleton<IJsonHelper, JsonHelper>();
-                    services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
-                    services.AddSingleton<IServiceBusClient, ServiceBusClient>();
+                    services.AddSingleton<ICosmosDbProvider, CosmosDbProvider>();
+                    services.AddSingleton<IDiversityServiceBusClient, DiversityServiceBusClient>();
                     services.AddSingleton<IDynamicHelper, DynamicHelper>();
                     services.AddSingleton<IGetDiversityByIdHttpTriggerService, GetDiversityByIdHttpTriggerService>();
                     services.AddSingleton<IGetDiversityHttpTriggerService, GetDiversityHttpTriggerService>();
@@ -40,6 +48,21 @@ namespace NCS.DSS.Address
                     services.AddTransient<IPatchDiversityHttpTriggerService, PatchDiversityHttpTriggerService>();
                     services.AddSingleton<IDiversityPatchService, DiversityPatchService>();
                     services.AddSingleton<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
+
+                    services.AddSingleton(s =>
+                    {
+                        var settings = s.GetRequiredService<IOptions<DiversityConfigurationSettings>>().Value;
+                        var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
+
+                        return new CosmosClient(settings.CosmosDBConnectionString, options);
+                    });
+
+                    services.AddSingleton(s =>
+                    {
+                        var settings = s.GetRequiredService<IOptions<DiversityConfigurationSettings>>().Value;
+
+                        return new ServiceBusClient(settings.ServiceBusConnectionString);
+                    });
 
                     services.Configure<LoggerFilterOptions>(options =>
                     {
