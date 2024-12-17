@@ -17,7 +17,7 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Function
         private readonly IGetDiversityByIdHttpTriggerService _getDiversityService;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IResourceHelper _resourceHelper;
-        private readonly ILogger _logger;
+        private readonly ILogger<GetDiversityByIdHttpTrigger> _logger;
 
         public GetDiversityByIdHttpTrigger(
             IGetDiversityByIdHttpTriggerService getDiversityService,
@@ -42,6 +42,7 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Function
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/DiversityDetails/{diversityId}")]
             HttpRequest req, string customerId, string diversityId)
         {
+            _logger.LogInformation("Function {FunctionName} has been invoked", nameof(GetDiversityByIdHttpTrigger));
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
 
@@ -51,63 +52,59 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Function
             }
             if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
-                _logger.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
+                _logger.LogInformation("Unable to parse 'DssCorrelationId' to a Guid. CorrelationId: {CorrelationId}", correlationId);
                 correlationGuid = Guid.NewGuid();
             }
-            _logger.LogInformation($"DssCorrelationId: {correlationGuid}");
 
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                var response = new BadRequestResult();
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Unable to locate 'APIM-TouchpointId' in request header");
-                return response;
+                _logger.LogWarning("Unable to locate 'TouchpointId' in request header");
+                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
-
-            _logger.LogInformation("C# HTTP trigger function GetDiversityByIdHttpTrigger processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                var response = new BadRequestObjectResult(customerGuid.ToString());
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Unable to parse 'customerId' to a Guid: {customerId}");
-                return response;
+                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
+                return new BadRequestObjectResult(customerId);
             }
 
             if (!Guid.TryParse(diversityId, out var diversityGuid))
             {
-                var response = new BadRequestObjectResult(diversityId);
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Unable to parse 'diversityId' to a Guid: {diversityId}");
-                return response;
+                _logger.LogWarning("Unable to parse 'diversityId' to a GUID. Diversity GUID: {DiversityID}", diversityId);
+                return new BadRequestObjectResult(diversityId);
             }
 
+            _logger.LogInformation("Input validation has succeeded. Touchpoint ID: {TouchpointId}.", touchpointId);
+
+            _logger.LogInformation("Attempting to check if customer exists. Customer GUID: {CustomerId}", customerGuid);
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
-                var response = new NoContentResult();
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Customer does not exist {customerGuid}");
-                return response;
+                _logger.LogWarning("Customer does not exist. Customer GUID: {CustomerGuid}.", customerGuid);
+                return new NoContentResult();
             }
+            _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}.", customerGuid);
 
-            _logger.LogInformation($"Attempting to get diversity {diversityGuid} for customer {customerGuid}");
+
+            _logger.LogInformation("Attempting to get Diversity for Customer. Customer GUID: {CustomerId}. Diversity GUID: {DiversityId}.", customerGuid, diversityGuid);
             var diversity = await _getDiversityService.GetDiversityDetailByIdAsync(customerGuid, diversityGuid);
 
             if (diversity == null)
             {
-                var response = new NoContentResult();
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Diversity {diversityGuid} for customer {customerGuid} not found.");
-                return response;
+                _logger.LogWarning("Diversity not found. Customer GUID: {CustomerId}. Diversity GUID: {DiversityId}.", customerGuid, diversityGuid);
+                _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetDiversityByIdHttpTrigger));
+                return new NoContentResult();
             }
-            else
-            {
-                var response = new JsonResult(diversity, new JsonSerializerOptions())
-                {
-                    StatusCode = (int)HttpStatusCode.OK
-                };
 
-                _logger.LogInformation($"Response Status Code: {response.StatusCode}. Diversity {diversity} found for customer {customerGuid}");
-                return response;
-            }
+
+            _logger.LogInformation("Diversity successfully retrieved. Diversity GUID: {DiversityId}", diversity.DiversityId);
+            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetDiversityByIdHttpTrigger));
+            return new JsonResult(diversity, new JsonSerializerOptions())
+            {
+                StatusCode = (int)HttpStatusCode.OK
+            };
         }
     }
 }
