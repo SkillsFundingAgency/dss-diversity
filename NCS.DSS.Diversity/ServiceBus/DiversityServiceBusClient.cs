@@ -29,7 +29,7 @@ namespace NCS.DSS.Diversity.ServiceBus
             _logger = logger;
         }
 
-        public async Task SendPostMessageAsync(Models.Diversity diversity, string reqUrl, Guid correlationId, ILogger log)
+        public async Task SendPostMessageAsync(Models.Diversity diversity, string reqUrl, Guid correlationId)
         {
             var serviceBusSender = _serviceBusClient.CreateSender(_queueName);
 

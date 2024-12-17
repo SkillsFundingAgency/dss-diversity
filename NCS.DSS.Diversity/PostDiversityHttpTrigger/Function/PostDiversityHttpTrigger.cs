@@ -179,7 +179,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
 
             _logger.LogInformation("Attempting to send message to Service Bus Namespace. Diversity GUID: {DiversityId}", diversity.DiversityId);
-            await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl, correlationGuid, _logger);
+            await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl, correlationGuid);
             _logger.LogInformation("Successfully sent message to Service Bus. Diversity GUID: {DiversityId}", diversity.DiversityId);
 
 

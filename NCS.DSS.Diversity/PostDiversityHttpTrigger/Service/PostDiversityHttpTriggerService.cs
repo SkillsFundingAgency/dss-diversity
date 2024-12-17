@@ -46,13 +46,13 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
             return null;
         }
 
-        public async Task SendToServiceBusQueueAsync(Models.Diversity diversity, string reqUrl, Guid correlationId, ILogger log)
+        public async Task SendToServiceBusQueueAsync(Models.Diversity diversity, string reqUrl, Guid correlationId)
         {
             try
             {
                 _logger.LogInformation("Sending newly created diversity with ID: {DiversityId} to Service Bus for customer ID: {CustomerId}.", diversity.DiversityId, diversity.CustomerId);
 
-                await _serviceBusClient.SendPostMessageAsync(diversity, reqUrl, correlationId, log);
+                await _serviceBusClient.SendPostMessageAsync(diversity, reqUrl, correlationId);
 
                 _logger.LogInformation("Successfully sent diversity with ID: {DiversityId} to Service Bus for customer ID: {CustomerId}.", diversity.DiversityId, diversity.CustomerId);
             }
