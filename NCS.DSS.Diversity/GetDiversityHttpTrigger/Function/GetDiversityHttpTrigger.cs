@@ -6,6 +6,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.GetDiversityHttpTrigger.Service;
+using NCS.DSS.Diversity.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
@@ -35,10 +36,8 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
         [Function("Get")]
         [ProducesResponseType(typeof(Models.Diversity), 200)]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Diversity Details found", ShowSchema = true)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Diversity Details do not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Resource Does Not Exist", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to return the diversity details for a given customer.")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/DiversityDetails/")]
             HttpRequest req, string customerId)
@@ -60,14 +59,14 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _logger.LogWarning("Unable to locate 'TouchpointId' in request header");
-                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
+                _logger.LogError("Unable to locate 'TouchpointId' in request header");
+                return new BadRequestObjectResult("Unable to locate 'TouchpointId' in request header");
             }
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
-                return new BadRequestObjectResult(customerId);
+                _logger.LogError("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
+                return new BadRequestObjectResult($"Unable to parse 'customerId' to a GUID. Customer GUID: {customerId}");
             }
 
             _logger.LogInformation("Input validation has succeeded. Touchpoint ID: {TouchpointId}.", touchpointId);
@@ -77,8 +76,8 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
 
             if (!doesCustomerExist)
             {
-                _logger.LogWarning("Customer does not exist. Customer GUID: {CustomerGuid}.", customerGuid);
-                return new NoContentResult();
+                _logger.LogError("Customer does not exist. Customer GUID: {CustomerGuid}.", customerGuid);
+                return new NotFoundObjectResult($"Customer does not exist. Customer GUID: {customerGuid}.");
             }
             _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}.", customerGuid);
 
@@ -88,9 +87,9 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
 
             if (diversityDetails == null)
             {
-                _logger.LogWarning("Diversity not found. Customer GUID: {CustomerId}.", customerGuid);
+                _logger.LogError("Diversity not found. Customer GUID: {CustomerId}.", customerGuid);
                 _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetDiversityHttpTrigger));
-                return new NoContentResult();
+                return new NotFoundObjectResult($"Diversity not found. Customer GUID: {customerGuid}.");
             }
 
             if (diversityDetails.Count == 1)
