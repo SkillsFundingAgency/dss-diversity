@@ -57,19 +57,19 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Function
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _logger.LogError("Unable to locate 'TouchpointId' in request header");
+                _logger.LogWarning("Unable to locate 'TouchpointId' in request header");
                 return new BadRequestObjectResult("Unable to locate 'TouchpointId' in request header");
             }
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                _logger.LogError("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
+                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
                 return new BadRequestObjectResult($"Unable to parse 'customerId' to a GUID. Customer GUID: {customerId}");
             }
 
             if (!Guid.TryParse(diversityId, out var diversityGuid))
             {
-                _logger.LogError("Unable to parse 'diversityId' to a GUID. Diversity GUID: {DiversityID}", diversityId);
+                _logger.LogWarning("Unable to parse 'diversityId' to a GUID. Diversity GUID: {DiversityID}", diversityId);
                 return new BadRequestObjectResult($"Unable to parse 'diversityId' to a GUID. Diversity GUID: {diversityId}");
             }
 
@@ -80,7 +80,7 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Function
 
             if (!doesCustomerExist)
             {
-                _logger.LogError("Customer does not exist. Customer GUID: {CustomerGuid}.", customerGuid);
+                _logger.LogWarning("Customer does not exist. Customer GUID: {CustomerGuid}.", customerGuid);
                 return new NotFoundObjectResult($"Customer does not exist. Customer GUID: {customerGuid}.");
             }
             _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}.", customerGuid);
@@ -91,7 +91,7 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Function
 
             if (diversity == null)
             {
-                _logger.LogError("Diversity not found. Customer GUID: {CustomerId}. Diversity GUID: {DiversityId}.", customerGuid, diversityGuid);
+                _logger.LogWarning("Diversity not found. Customer GUID: {CustomerId}. Diversity GUID: {DiversityId}.", customerGuid, diversityGuid);
                 _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetDiversityByIdHttpTrigger));
                 return new NotFoundObjectResult($"Diversity not found. Customer GUID: {customerGuid}. Diversity GUID: {diversityGuid}.");
             }

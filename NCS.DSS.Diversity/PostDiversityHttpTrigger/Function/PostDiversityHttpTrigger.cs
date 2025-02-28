@@ -73,20 +73,20 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _logger.LogError("Unable to locate 'TouchpointId' in request header");
+                _logger.LogWarning("Unable to locate 'TouchpointId' in request header");
                 return new BadRequestObjectResult("Unable to locate 'TouchpointId' in request header");
             }
 
             var apimUrl = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(apimUrl))
             {
-                _logger.LogError("Unable to locate 'apimURL' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                _logger.LogWarning("Unable to locate 'apimURL' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 return new BadRequestObjectResult($"Unable to locate 'apimURL' in request header. Correlation GUID: {correlationGuid}");
             }
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                _logger.LogError("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
+                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
                 return new BadRequestObjectResult($"Unable to parse 'customerId' to a GUID. Customer GUID: {customerId}");
             }
             _logger.LogInformation("Input validation has succeeded. Touchpoint ID: {TouchpointId}.", touchpointId);
@@ -108,13 +108,13 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             catch (JsonException ex)
             {
                 _logger.LogError(ex, "Unable to parse {diversityRequest} from request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", nameof(diversityRequest), correlationGuid, ex.Message);
-                return new UnprocessableEntityObjectResult($"Unable to parse {nameof(diversityRequest)} from request body. Correlation GUID: {correlationGuid}. Exception: {ex.Message}");
+                return new UnprocessableEntityObjectResult($"Unable to parse Diversity Details from request body. Exception: {ex.Message}");
             }
 
             if (diversityRequest == null)
             {
-                _logger.LogError("{diversityRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(diversityRequest), correlationGuid);
-                return new UnprocessableEntityObjectResult($"{nameof(diversityRequest)} object is NULL. Correlation GUID: {correlationGuid}");
+                _logger.LogWarning("{diversityRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(diversityRequest), correlationGuid);
+                return new UnprocessableEntityObjectResult($"Diversity Details in request body are NULL. Please supply this data.");
             }
 
             diversityRequest.SetIds(customerGuid, touchpointId);
@@ -127,7 +127,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             if (errors != null && errors.Any())
             {
                 _logger.LogWarning("Falied to validate {diversityRequest} object", nameof(diversityRequest));
-                return new UnprocessableEntityObjectResult($"Validation errors were found in the request. Please check the request to ensure no validation rules are violated.");
+                return new UnprocessableEntityObjectResult(errors);
             }
             _logger.LogInformation("Successfully validated {diversityRequest} object", nameof(diversityRequest));
 
@@ -136,7 +136,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
             if (!doesCustomerExist)
             {
-                _logger.LogError("Customer not found. Customer ID: {CustomerId}.", customerGuid);
+                _logger.LogWarning("Customer not found. Customer ID: {CustomerId}.", customerGuid);
                 return new NotFoundObjectResult($"Customer not found. Customer ID: {customerGuid}.");
             }
             _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}.", customerGuid);
@@ -151,7 +151,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                     StatusCode = (int)HttpStatusCode.Forbidden,
                 };
 
-                _logger.LogError("Customer is read-only. Customer GUID: {CustomerId}.", customerGuid);
+                _logger.LogWarning("Customer is read-only. Customer GUID: {CustomerId}.", customerGuid);
                 return response;
             }
 
@@ -160,7 +160,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
             if (doesDiversityDetailsExist)
             {
-                _logger.LogError("Diversity record already exist for customer with ID: {customerGuid}", customerGuid);
+                _logger.LogWarning("Diversity record already exist for customer with ID: {customerGuid}", customerGuid);
                 return new ConflictObjectResult($"Diversity record already exist for customer with ID: {customerGuid}");
             }
             _logger.LogInformation("Diversity record does not exists for customer with ID: {customerGuid}", customerGuid);
@@ -170,7 +170,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
             if (diversity == null)
             {
-                _logger.LogError("Failed to create Diversity in Cosmos DB. Diversity GUID: {DiversityId}", diversityRequest.DiversityId);
+                _logger.LogWarning("Failed to create Diversity in Cosmos DB. Diversity GUID: {DiversityId}", diversityRequest.DiversityId);
                 _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PostDiversityHttpTrigger));
                 return new BadRequestObjectResult($"Failed to create Diversity in Cosmos DB. Diversity GUID: {diversityRequest.DiversityId}");
             }
