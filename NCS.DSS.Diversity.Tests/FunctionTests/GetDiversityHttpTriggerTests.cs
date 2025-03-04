@@ -93,18 +93,15 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         }
 
         [Test]
-        public async Task GetDiversityHttpTrigger_ReturnsStatusCodeOK_WhenDiversityDetailDoesntExist()
+        public async Task GetDiversityHttpTrigger_ReturnsStatusCodeNotFound_WhenDiversityDetailDoesntExist()
         {
             // Arrange
             _getDiversityHttpTriggerService.Setup(x => x.GetDiversityDetailForCustomerAsync(CustomerGuid)).Returns(Task.FromResult<List<Models.Diversity>>(null));
 
             // Act
             var result = await RunFunction(ValidCustomerId);
-            var resultResponse = result as JsonResult;
-
             // Assert
-            Assert.That(result, Is.InstanceOf<JsonResult>());
-            Assert.That(resultResponse.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
+            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]

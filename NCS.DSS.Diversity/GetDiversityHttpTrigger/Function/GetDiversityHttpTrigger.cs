@@ -85,7 +85,7 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
             _logger.LogInformation("Attempting to get Diversity for Customer. Customer GUID: {CustomerId}.", customerGuid);
             var diversityDetails = await _getDiversityService.GetDiversityDetailForCustomerAsync(customerGuid);
 
-            if (diversityDetails == null)
+            if (diversityDetails.Count == 0)
             {
                 _logger.LogWarning("Diversity not found. Customer GUID: {CustomerId}.", customerGuid);
                 _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetDiversityHttpTrigger));
