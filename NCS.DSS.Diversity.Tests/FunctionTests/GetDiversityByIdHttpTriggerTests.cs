@@ -87,7 +87,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         }
 
         [Test]
-        public async Task GetDiversityHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesntExist()
+        public async Task GetDiversityHttpTrigger_ReturnsStatusCodeNotFound_WhenCustomerDoesntExist()
         {
             // Arrange
             _resourceHelper.Setup(x => x.DoesCustomerExist(CustomerGuid)).Returns(Task.FromResult(true));
@@ -96,11 +96,11 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidDiversityId);
 
             // Assert
-            Assert.That(result, Is.InstanceOf<NoContentResult>());
+            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
-        public async Task GetDiversityHttpTrigger_ReturnsStatusCodeNoContent_WhenDiversityDetailDoesntExist()
+        public async Task GetDiversityHttpTrigger_ReturnsStatusCodeNotFound_WhenDiversityDetailDoesntExist()
         {
             // Arrange
             _getDiversityByIdHttpTriggerService.Setup(x => x.GetDiversityDetailByIdAsync(CustomerGuid, DiversityGuid)).Returns(Task.FromResult<Models.Diversity>(null));
@@ -109,11 +109,11 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidDiversityId);
 
             // Assert
-            Assert.That(result, Is.InstanceOf<NoContentResult>());
+            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
-        public async Task GetDiversityHttpTrigger_ReturnsStatusCodeNoContent_WhenDiversityDetailExists()
+        public async Task GetDiversityHttpTrigger_ReturnsStatusCodeNotFound_WhenDiversityDetailExists()
         {
             // Arrange
             _resourceHelper.Setup(x => x.DoesCustomerExist(CustomerGuid)).Returns(Task.FromResult(true));
@@ -123,7 +123,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidDiversityId);
 
             // Assert
-            Assert.That(result, Is.InstanceOf<NoContentResult>());
+            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         private async Task<IActionResult> RunFunction(string customerId, string diversityId)
