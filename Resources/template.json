@@ -67,13 +67,13 @@
                 "AzureWebJobsStorage": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=SharedStorageAccountConnectionString)', parameters('keyVaultName'))]",
                 "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightsInstrumentationKey')]",
                 "CollectionId": "[parameters('cosmosDbCollectionId')]",
-                "CosmosDBConnectionString": "[concat('AccountEndpoint=', parameters('CosmosDbEndpoint'), '/;AccountKey=', parameters('cosmosDbKey'), ';')]",
+                "CosmosDBConnectionString": "[concat('AccountEndpoint=', parameters('cosmosDbEndpoint'), '/;AccountKey=', parameters('cosmosDbKey'), ';')]",
                 "DatabaseId": "[parameters('cosmosDbDatabaseId')]",
                 "CustomerDatabaseId": "customers",
                 "CustomerCollectionId": "customers",
                 "ServiceBusConnectionString": "[parameters('serviceBusConnectionString')]",
                 "QueueName": "[parameters('serviceBusQueueName')]",
-                "CosmosDbEndpoint": "[parameters('CosmosDbEndpoint')]"
+                "CosmosDbEndpoint": "[parameters('cosmosDbEndpoint')]"
             },
             "copy": {
                 "name": "FunctionAppSettingsCopy",
