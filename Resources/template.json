@@ -11,7 +11,7 @@
         "cosmosDbDatabaseId": {
             "type": "string"
         },
-        "cosmosDbEndpoint": {
+        "CosmosDbEndpoint": {
             "type": "string"
         },
         "cosmosDbKey": {
@@ -73,6 +73,7 @@
                 "CustomerCollectionId": "customers",
                 "ServiceBusConnectionString": "[parameters('serviceBusConnectionString')]",
                 "QueueName": "[parameters('serviceBusQueueName')]",
+                "CosmosDbEndpoint": "[parameters('cosmosDbEndpoint')]"
             },
             "copy": {
                 "name": "FunctionAppSettingsCopy",

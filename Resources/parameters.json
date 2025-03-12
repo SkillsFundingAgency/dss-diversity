@@ -9,7 +9,7 @@
             "value": "__ApiResourceName__"
         },
         "cosmosDbEndpoint": {
-            "value": "__CosmosDbEndpoint__"
+            "value": "__cosmosDbEndpoint__"
         },
         "cosmosDbKey": {
             "value": "__CosmosDbKey__"
