@@ -103,7 +103,7 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
                 };
             }
 
-            _logger.LogInformation("{Count} Diversty record(s) retrieved for Customer GUID: {CustomerId}.", diversityDetails.Count, customerGuid);
+            _logger.LogInformation("{Count} Diversity record(s) retrieved for Customer GUID: {CustomerId}.", diversityDetails.Count, customerGuid);
             _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetDiversityHttpTrigger));
             return new JsonResult(diversityDetails, new JsonSerializerOptions())
             {
