@@ -126,7 +126,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
             if (errors != null && errors.Any())
             {
-                _logger.LogWarning("Failed to validate {diversityRequest} object", nameof(diversityRequest));
+                _logger.LogWarning("Falied to validate {diversityRequest} object", nameof(diversityRequest));
                 return new UnprocessableEntityObjectResult(errors);
             }
             _logger.LogInformation("Successfully validated {diversityRequest} object", nameof(diversityRequest));
@@ -155,15 +155,15 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                 return response;
             }
 
-            _logger.LogInformation("Checking if Diversity record already exists for customer with ID: {CustomerId}.", customerGuid);
+            _logger.LogInformation("Checking if Diversity record alread exists for customer with ID: {CustomerId}.", customerGuid);
             var doesDiversityDetailsExist = await _postDiversityService.DoesDiversityDetailsExistForCustomer(customerGuid);
 
             if (doesDiversityDetailsExist)
             {
-                _logger.LogWarning("Diversity record already exists for customer with ID: {customerGuid}", customerGuid);
+                _logger.LogWarning("Diversity record already exist for customer with ID: {customerGuid}", customerGuid);
                 return new ConflictResult();
             }
-            _logger.LogInformation("Diversity record does not exist for customer with ID: {customerGuid}", customerGuid);
+            _logger.LogInformation("Diversity record does not exists for customer with ID: {customerGuid}", customerGuid);
 
             _logger.LogInformation("Attempting to create Diversity in Cosmos DB. Diversity GUID: {DiversityId}", diversityRequest.DiversityId);
             var diversity = await _postDiversityService.CreateAsync(diversityRequest);
