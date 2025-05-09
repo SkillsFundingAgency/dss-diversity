@@ -72,7 +72,7 @@
                 "CustomerDatabaseId": "customers",
                 "CustomerCollectionId": "customers",
                 "ServiceBusConnectionString": "[parameters('serviceBusConnectionString')]",
-                "QueueName": "[parameters('serviceBusQueueName')]",
+                "QueueName": "[parameters('serviceBusQueueName')]"
             },
             "copy": {
                 "name": "FunctionAppSettingsCopy",
