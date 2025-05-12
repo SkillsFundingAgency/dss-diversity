@@ -1,4 +1,5 @@
 ﻿using DFC.JSON.Standard;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.Diversity.Models;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
@@ -15,13 +16,15 @@ namespace NCS.DSS.Diversity.Tests.ServiceTests
         private readonly JsonHelper _jsonHelper;
         private readonly IDiversityPatchService _diversityPatchService;
         private readonly DiversityPatch _diversityPatch;
+        private readonly Mock<ILogger<DiversityPatchService>> _logger;
         private readonly string _json;
 
         public DiversityPatchServiceTests()
         {
 
             _jsonHelper = new JsonHelper();
-            _diversityPatchService = new DiversityPatchService(_jsonHelper);
+            _logger = new Mock<ILogger<DiversityPatchService>>();
+            _diversityPatchService = new DiversityPatchService(_jsonHelper, _logger.Object);
             _diversityPatch = new DiversityPatch();
 
             _json = JsonConvert.SerializeObject(_diversityPatch);

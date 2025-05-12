@@ -20,7 +20,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
         private readonly IPatchDiversityHttpTriggerService _patchDiversityService;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IResourceHelper _resourceHelper;
-        private readonly ILogger _logger;
+        private readonly ILogger<PatchDiversityHttpTrigger> _logger;
         private readonly IValidate _validate;
         private readonly IDynamicHelper _dynamicHelper;
         private static readonly string[] PropertyToExclude = { "TargetSite" };
@@ -53,57 +53,56 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
         [Display(Name = "Patch", Description = "Ability to modify/update an diversity detail record.")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/DiversityDetails/{diversityId}")] HttpRequest req, string customerId, string diversityId)
         {
+            _logger.LogInformation("Function {FunctionName} has been invoked", nameof(PatchDiversityHttpTrigger));
+
             // Ensure the request body can be read multiple times by enabling buffering
             req.EnableBuffering();
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
-
             if (string.IsNullOrEmpty(correlationId))
+            {
                 _logger.LogInformation("Unable to locate 'DssCorrelationId' in request header");
+            }
 
             if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
-                _logger.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
+                _logger.LogInformation("Unable to parse 'DssCorrelationId' to a Guid. CorrelationId: {CorrelationId}", correlationId);
                 correlationGuid = Guid.NewGuid();
             }
-            _logger.LogInformation($"DssCorrelationId: {correlationGuid}");
 
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                var response = new BadRequestResult();
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Unable to locate 'APIM-TouchpointId' in request header");
-                return response;
+                _logger.LogWarning("Unable to locate 'TouchpointId' in request header");
+                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
 
             var apimUrl = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(apimUrl))
             {
-                var response = new BadRequestResult();
-                _logger.LogWarning($"Unable to locate 'apimurl' in request header");
-                return response;
+                _logger.LogWarning("Unable to locate 'apimURL' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
-
-            _logger.LogInformation($"PatchDiversityHttpTrigger C# HTTP trigger function  processed a request. By Touchpoint: {touchpointId}");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                var response = new BadRequestObjectResult(customerGuid.ToString());
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Unable to parse 'customerId' to a Guid: {customerId}");
-                return response;
+                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
+                return new BadRequestObjectResult(customerId);
             }
 
             if (!Guid.TryParse(diversityId, out var diversityGuid))
             {
-                var response = new BadRequestObjectResult(diversityId);
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Unable to parse 'diversityId' to a Guid: {diversityId}");
-                return response;
+                _logger.LogWarning("Unable to parse 'diversityId' to a GUID. Diversity GUID: {DiversityID}", diversityId);
+                return new BadRequestObjectResult(diversityId);
             }
+
+            _logger.LogInformation("Input validation has succeeded. Touchpoint ID: {TouchpointId}.", touchpointId);
 
             Models.DiversityPatch diversityPatchRequest;
 
             try
             {
+                _logger.LogInformation("Attempting to retrieve resource from request. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 diversityPatchRequest = await _httpRequestHelper.GetResourceFromRequest<Models.DiversityPatch>(req);
 
                 // Fix for bug AD-157065 (Oct '23)
@@ -115,42 +114,41 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             }
             catch (JsonException ex)
             {
-                var response = new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, PropertyToExclude));
-                _logger.LogError($"Response Status Code: {response.StatusCode}. Unable to retrieve body from req", ex);
-                return response;
+                _logger.LogError(ex, "Unable to parse {diversityPatchRequest} from request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", nameof(diversityPatchRequest), correlationGuid, ex.Message);
+                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, PropertyToExclude));
             }
 
             if (diversityPatchRequest == null)
             {
-                var response = new UnprocessableEntityObjectResult(req);
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Diversity patch request is null");
-                return response;
+                _logger.LogWarning("{diversityPatchRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(diversityPatchRequest), correlationGuid);
+                return new UnprocessableEntityObjectResult(req);
             }
 
             diversityPatchRequest.LastModifiedBy = touchpointId;
 
-            // validate the request
-            _logger.LogInformation($"Attempt to validate resource");
+            // validate the request            
+            _logger.LogInformation("Attempting to validate {diversityPatchRequest} object", nameof(diversityPatchRequest));
             var errors = _validate.ValidateResource(diversityPatchRequest);
 
             if (errors != null && errors.Any())
             {
-                var response = new UnprocessableEntityObjectResult(errors);
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Validation errors with resource", errors);
-                return response;
+                _logger.LogWarning("Falied to validate {diversityPatchRequest} object", nameof(diversityPatchRequest));
+                return new UnprocessableEntityObjectResult(errors);
             }
+            _logger.LogInformation("Successfully validated {diversityPatchRequest} object", nameof(diversityPatchRequest));
 
-            _logger.LogInformation($"Attempting to see if customer exists {customerGuid}");
+
+            _logger.LogInformation("Checking if customer exists. Customer ID: {CustomerId}.", customerGuid);
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
-                var response = new NoContentResult();
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Customer does not exist {customerGuid}");
-                return response;
+                _logger.LogWarning("Customer not found. Customer ID: {CustomerId}.", customerGuid);
+                return new NoContentResult();
             }
+            _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}.", customerGuid);
 
-            _logger.LogInformation($"Attempting to see if this is a read only customer {customerGuid}");
+            _logger.LogInformation("Checking if customer is read-only. Customer GUID: {CustomerId}.", customerGuid);
             var isCustomerReadOnly = _resourceHelper.IsCustomerReadOnly();
 
             if (isCustomerReadOnly)
@@ -160,47 +158,48 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
                     StatusCode = (int)HttpStatusCode.Forbidden,
                 };
 
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Customer is read only {customerGuid}");
+                _logger.LogWarning("Customer is read-only. Customer GUID: {CustomerId}.", customerGuid);
                 return response;
             }
 
-            _logger.LogInformation($"Attempting to get diversity {diversityGuid} for the customer {customerGuid}");
+            _logger.LogInformation("Attempting to get Diversity for Customer. Customer GUID: {CustomerId}. Diversity GUID: {DiversityId}.", customerGuid, diversityGuid);
             var diversity = await _patchDiversityService.GetDiversityForCustomerAsync(customerGuid, diversityGuid);
 
             if (diversity == null)
             {
-                var response = new NoContentResult();
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Couldnt find diversity for the customer {customerGuid}.");
-                return response;
+                _logger.LogWarning("Diversity not found. Customer GUID: {CustomerId}. Diversity GUID: {DiversityId}.", customerGuid, diversityGuid);
+                return new NoContentResult();
             }
 
+            _logger.LogInformation("Attempting to PATCH Diversity resource.");
             var patchedDiversity = _patchDiversityService.PatchResource(diversity, diversityPatchRequest);
-
-            _logger.LogInformation($"Attempting to patch diversity {diversityGuid}");
-            var updatedDiversity = await _patchDiversityService.UpdateCosmosAsync(patchedDiversity, diversityGuid);
-
-            if (updatedDiversity != null)
+            if (patchedDiversity == null)
             {
-                _logger.LogInformation($"attempting to send to service bus {updatedDiversity.DiversityId}");
-                await _patchDiversityService.SendToServiceBusQueueAsync(diversityPatchRequest, customerGuid, apimUrl);
+                _logger.LogWarning("Failed to PATCH Diversity resource.");
+                return new BadRequestObjectResult(diversityGuid);
             }
 
+            _logger.LogInformation("Attempting to update Diversity in Cosmos DB. Diversity GUID: {DiversityId}", diversityGuid);
+            var updatedDiversity = await _patchDiversityService.UpdateCosmosAsync(patchedDiversity, diversityGuid);
             if (updatedDiversity == null)
             {
-                var response = new BadRequestObjectResult(customerGuid.ToString());
-                _logger.LogWarning($"Response Status Code: {response.StatusCode}. Patch diversity failed for the customer {customerGuid}.");
-                return response;
+                _logger.LogWarning("Failed to update Diversity in Cosmos DB. Diversity GUID: {DiversityId}", diversityGuid);
+                _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PatchDiversityHttpTrigger));
+                return new BadRequestObjectResult(diversityGuid);
             }
-            else
-            {
-                var response = new JsonResult(updatedDiversity, new JsonSerializerOptions())
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                };
+            _logger.LogInformation("Diversity updated successfully in Cosmos DB. Diversity GUID: {DiversityId}", diversityGuid);
 
-                _logger.LogInformation($"Response Status Code: {response.StatusCode}. Successfully updated diversity {updatedDiversity} for the customer {customerGuid}");
-                return response;
-            }
+
+            _logger.LogInformation("Attempting to send message to Service Bus Namespace. Diversity GUID: {DiversityId}", diversityGuid);
+            await _patchDiversityService.SendToServiceBusQueueAsync(diversityPatchRequest, customerGuid, apimUrl);
+            _logger.LogInformation("Successfully sent message to Service Bus. Diversity GUID: {DiversityId}", diversityGuid);
+
+
+            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PatchDiversityHttpTrigger));
+            return new JsonResult(updatedDiversity, new JsonSerializerOptions())
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+            };
         }
     }
 }
