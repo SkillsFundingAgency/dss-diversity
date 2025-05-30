@@ -98,6 +98,12 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                 _logger.LogInformation("Attempting to retrieve resource from request. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 diversityRequest = await _httpRequestHelper.GetResourceFromRequest<Models.Diversity>(req);
 
+                if (diversityRequest == null)
+                {
+                    _logger.LogWarning("{diversityRequest} object is NULL. Correlation GUID: {CorrelationGuid}\", nameof(diversityRequest), correlationGuid");
+                    return new UnprocessableEntityObjectResult("Diversity Details in request body are NULL. Please supply this data.");
+                }
+
                 // Fix for bug AD-157065 (Oct '23)
                 if (diversityRequest.ConsentToCollectEthnicity == null)
                     diversityRequest.ConsentToCollectEthnicity = false;
@@ -108,13 +114,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             catch (JsonException ex)
             {
                 _logger.LogError(ex, "Unable to parse {diversityRequest} from request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", nameof(diversityRequest), correlationGuid, ex.Message);
-                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, PropertyToExclude));
-            }
-
-            if (diversityRequest == null)
-            {
-                _logger.LogWarning("{diversityRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(diversityRequest), correlationGuid);
-                return new UnprocessableEntityObjectResult(req);
+                return new UnprocessableEntityObjectResult("Unable to parse Diversity Details from request body.");
             }
 
             diversityRequest.SetIds(customerGuid, touchpointId);
