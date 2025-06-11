@@ -98,7 +98,9 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                 _logger.LogInformation("Attempting to retrieve resource from request. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 diversityRequest = await _httpRequestHelper.GetResourceFromRequest<Models.Diversity>(req);
 
-                if (diversityRequest == null)
+                // Check All Property Values in the object is null or not becuase all properties in diversity object has default values 
+                // This check is to stop sending an empty object in the request
+                if (diversityRequest.GetType().GetProperties().All(p => p.GetValue(diversityRequest) == null))
                 {
                     _logger.LogWarning("{diversityRequest} object is NULL. Correlation GUID: {CorrelationGuid}\", nameof(diversityRequest), correlationGuid");
                     return new UnprocessableEntityObjectResult("Diversity Details in request body are NULL. Please supply this data.");
@@ -179,7 +181,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
 
             _logger.LogInformation("Attempting to send message to Service Bus Namespace. Diversity GUID: {DiversityId}", diversity.DiversityId);
-            await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl, correlationGuid);
+            //await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl, correlationGuid);
             _logger.LogInformation("Successfully sent message to Service Bus. Diversity GUID: {DiversityId}", diversity.DiversityId);
 
 

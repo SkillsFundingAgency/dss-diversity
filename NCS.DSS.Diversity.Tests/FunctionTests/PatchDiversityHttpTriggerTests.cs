@@ -42,8 +42,8 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         [SetUp]
         public void Setup()
         {
-            _diversity = new Models.Diversity();
-            _diversityPatch = new Models.DiversityPatch();
+            _diversity = new Models.Diversity() { Ethnicity = ReferenceData.Ethnicity.NotProvided };
+            _diversityPatch = new Models.DiversityPatch() { Ethnicity = ReferenceData.Ethnicity.NotProvided};
             _request = new DefaultHttpContext().Request;
             _diversity = new Models.Diversity();
 
@@ -138,7 +138,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         {
             // Arrange
             _resourceHelper.Setup(x => x.DoesCustomerExist(CustomerGuid)).Returns(Task.FromResult(false));
-
+            
             // Act
             var result = await RunFunction(ValidCustomerId, DiversityId);
 

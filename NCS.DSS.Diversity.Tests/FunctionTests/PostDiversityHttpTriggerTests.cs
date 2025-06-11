@@ -40,7 +40,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         public void Setup()
         {
             _request = new DefaultHttpContext().Request;
-            _diversity = new Models.Diversity();
+            _diversity = new Models.Diversity() { Ethnicity = ReferenceData.Ethnicity.NotProvided };
 
             _postDiversityHttpTriggerService = new Mock<IPostDiversityHttpTriggerService>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();

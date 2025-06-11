@@ -106,7 +106,9 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
                 _logger.LogInformation("Attempting to retrieve resource from request. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 diversityPatchRequest = await _httpRequestHelper.GetResourceFromRequest<Models.DiversityPatch>(req);
 
-                if (diversityPatchRequest == null)
+                // Check All Property Values in the object is null or not becuase all properties in diversity object has default values 
+                // This check is to stop sending an empty object in the request
+                if (diversityPatchRequest.GetType().GetProperties().All(p => p.GetValue(diversityPatchRequest) == null))
                 {
                     _logger.LogWarning("{diversityPatchRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(diversityPatchRequest), correlationGuid);
                     return new UnprocessableEntityObjectResult("Diversity Details in request body are NULL. Please supply this data.");
