@@ -100,7 +100,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
                 // Check All Property Values in the object is null or not becuase all properties in diversity object has default values 
                 // This check is to stop sending an empty object in the request
-                if (diversityRequest.GetType().GetProperties().All(p => p.GetValue(diversityRequest) == null))
+                if (diversityRequest == null)
                 {
                     _logger.LogWarning("{diversityRequest} object is NULL. Correlation GUID: {CorrelationGuid}\", nameof(diversityRequest), correlationGuid");
                     return new UnprocessableEntityObjectResult("Diversity Details in request body are NULL. Please supply this data.");
@@ -118,9 +118,6 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                 _logger.LogError(ex, "Unable to parse {diversityRequest} from request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", nameof(diversityRequest), correlationGuid, ex.Message);
                 return new UnprocessableEntityObjectResult("Unable to parse Diversity Details from request body.");
             }
-
-            diversityRequest.SetIds(customerGuid, touchpointId);
-            diversityRequest.SetDefaultValues();
 
             // validate the request
             _logger.LogInformation("Attempting to validate {diversityRequest} object", nameof(diversityRequest));
@@ -166,6 +163,9 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                 return new ConflictResult();
             }
             _logger.LogInformation("Diversity record does not exists for customer with ID: {customerGuid}", customerGuid);
+
+            diversityRequest.SetIds(customerGuid, touchpointId);
+            diversityRequest.SetDefaultValues();
 
             _logger.LogInformation("Attempting to create Diversity in Cosmos DB. Diversity GUID: {DiversityId}", diversityRequest.DiversityId);
             var diversity = await _postDiversityService.CreateAsync(diversityRequest);
