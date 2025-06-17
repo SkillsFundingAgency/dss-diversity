@@ -73,17 +73,11 @@ namespace NCS.DSS.Diversity.Models
             if (!LastModifiedDate.HasValue)
                 LastModifiedDate = DateTime.UtcNow;
 
-            if (LearningDifficultyOrDisabilityDeclaration == null)
-                LearningDifficultyOrDisabilityDeclaration = ReferenceData.LearningDifficultyOrDisabilityDeclaration.NotProvidedByTheCustomer;
-
             if (PrimaryLearningDifficultyOrDisability == null)
                 PrimaryLearningDifficultyOrDisability = ReferenceData.PrimaryLearningDifficultyOrDisability.NotProvided;
 
             if (SecondaryLearningDifficultyOrDisability == null)
                 SecondaryLearningDifficultyOrDisability = ReferenceData.SecondaryLearningDifficultyOrDisability.NotProvided;
-
-            if (Ethnicity == null)
-                Ethnicity = ReferenceData.Ethnicity.NotProvided;
 
             if (!DateAndTimeLLDDHealthConsentCollected.HasValue && ConsentToCollectLLDDHealth.GetValueOrDefault())
                 DateAndTimeLLDDHealthConsentCollected = DateTime.UtcNow;

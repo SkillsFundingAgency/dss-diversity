@@ -117,9 +117,6 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                 return new UnprocessableEntityObjectResult("Unable to parse Diversity Details from request body.");
             }
 
-            diversityRequest.SetIds(customerGuid, touchpointId);
-            diversityRequest.SetDefaultValues();
-
             // validate the request
             _logger.LogInformation("Attempting to validate {diversityRequest} object", nameof(diversityRequest));
             var errors = _validate.ValidateResource(diversityRequest);
@@ -165,6 +162,9 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             }
             _logger.LogInformation("Diversity record does not exists for customer with ID: {customerGuid}", customerGuid);
 
+            diversityRequest.SetIds(customerGuid, touchpointId);
+            diversityRequest.SetDefaultValues();
+
             _logger.LogInformation("Attempting to create Diversity in Cosmos DB. Diversity GUID: {DiversityId}", diversityRequest.DiversityId);
             var diversity = await _postDiversityService.CreateAsync(diversityRequest);
 
@@ -179,7 +179,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
 
             _logger.LogInformation("Attempting to send message to Service Bus Namespace. Diversity GUID: {DiversityId}", diversity.DiversityId);
-            await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl, correlationGuid);
+             await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl, correlationGuid);
             _logger.LogInformation("Successfully sent message to Service Bus. Diversity GUID: {DiversityId}", diversity.DiversityId);
 
 
