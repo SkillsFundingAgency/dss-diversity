@@ -8,13 +8,11 @@ namespace NCS.DSS.Diversity.Models
     {
         [Display(Description = "Indicator to say consent to collect special category LLDD Health data was given by the customer.")]
         [Example(Description = "false")]
-        [Required]
         public bool? ConsentToCollectLLDDHealth { get; set; }
 
 
         [Display(Description = "Learning Difficulty Or Disability Health Problem Declaration reference data")]
         [Example(Description = "1")]
-        [Required]
         public LearningDifficultyOrDisabilityDeclaration? LearningDifficultyOrDisabilityDeclaration { get; set; }
 
         [Display(Description = "Primary Learning Difficulty Or Disability Heath Problem reference data")]
@@ -32,12 +30,10 @@ namespace NCS.DSS.Diversity.Models
 
         [Display(Description = "Indicator to say consent to collect special category ethnicity data was given by the customer.")]
         [Example(Description = "true")]
-        [Required]
         public bool? ConsentToCollectEthnicity { get; set; }
 
         [Display(Description = "Ethnicity reference data values")]
         [Example(Description = "31")]
-        [Required]
         public Ethnicity? Ethnicity { get; set; }
 
         [DataType(DataType.DateTime)]
@@ -74,10 +70,6 @@ namespace NCS.DSS.Diversity.Models
 
             if (SecondaryLearningDifficultyOrDisability == null && ConsentToCollectLLDDHealth == false)
                 SecondaryLearningDifficultyOrDisability = ReferenceData.SecondaryLearningDifficultyOrDisability.NotProvided;
-
-            if (Ethnicity == null && ConsentToCollectEthnicity == false)
-                Ethnicity = ReferenceData.Ethnicity.NotProvided;
-
         }
     }
 }
