@@ -70,6 +70,10 @@ namespace NCS.DSS.Diversity.Models
 
             if (SecondaryLearningDifficultyOrDisability == null && ConsentToCollectLLDDHealth == false)
                 SecondaryLearningDifficultyOrDisability = ReferenceData.SecondaryLearningDifficultyOrDisability.NotProvided;
+
+            if (Ethnicity == null && ConsentToCollectEthnicity == false)
+                Ethnicity = ReferenceData.Ethnicity.NotProvided;
+
         }
     }
 }
