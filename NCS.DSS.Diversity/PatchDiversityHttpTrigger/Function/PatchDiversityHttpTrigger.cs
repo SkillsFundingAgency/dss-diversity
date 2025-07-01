@@ -1,3 +1,4 @@
+using Azure.Core;
 using DFC.HTTP.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
@@ -106,6 +107,12 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
                 _logger.LogInformation("Attempting to retrieve resource from request. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 diversityPatchRequest = await _httpRequestHelper.GetResourceFromRequest<Models.DiversityPatch>(req);
 
+                if (diversityPatchRequest == null)
+                {
+                    _logger.LogWarning("{diversityPatchRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(diversityPatchRequest), correlationGuid);
+                    return new UnprocessableEntityObjectResult("Diversity Details in request body are NULL. Please supply this data.");
+                }
+
                 // Fix for bug AD-157065 (Oct '23)
                 if (diversityPatchRequest.ConsentToCollectEthnicity == null)
                     diversityPatchRequest.ConsentToCollectEthnicity = false;
@@ -115,14 +122,8 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             }
             catch (JsonException ex)
             {
-                _logger.LogError(ex, "Unable to parse {diversityPatchRequest} from request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", nameof(diversityPatchRequest), correlationGuid, ex.Message);
-                return new UnprocessableEntityObjectResult($"Unable to parse Diversity Details from request body. Exception: {ex.Message}");
-            }
-
-            if (diversityPatchRequest == null)
-            {
-                _logger.LogWarning("{diversityPatchRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(diversityPatchRequest), correlationGuid);
-                return new UnprocessableEntityObjectResult($"Diversity Details in request body are NULL. Please supply this data.");
+                _logger.LogWarning(ex, "Unable to parse {diversityPatchRequest} from request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", nameof(diversityPatchRequest), correlationGuid, ex.Message);
+                return new UnprocessableEntityObjectResult("Unable to parse Diversity Details from request body.");
             }
 
             diversityPatchRequest.LastModifiedBy = touchpointId;
@@ -134,7 +135,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             if (errors != null && errors.Any())
             {
                 _logger.LogWarning("Falied to validate {diversityPatchRequest} object", nameof(diversityPatchRequest));
-                return new UnprocessableEntityObjectResult(errors);
+                return new UnprocessableEntityObjectResult(string.Join(';', errors));
             }
             _logger.LogInformation("Successfully validated {diversityPatchRequest} object", nameof(diversityPatchRequest));
 

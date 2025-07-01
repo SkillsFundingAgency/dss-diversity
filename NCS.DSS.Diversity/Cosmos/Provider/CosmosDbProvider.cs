@@ -129,12 +129,8 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
         public async Task<string> GetDiversityDetailForCustomerToUpdateAsync(Guid customerId, Guid diversityId)
         {
             var diversity = await GetDiversityDetailForCustomerAsync(customerId, diversityId);
-
             if (diversity == null)
-            {
-                return string.Empty;
-            }
-
+                return null;
             return JsonConvert.SerializeObject(diversity);
         }
 

@@ -99,6 +99,12 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                 _logger.LogInformation("Attempting to retrieve resource from request. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 diversityRequest = await _httpRequestHelper.GetResourceFromRequest<Models.Diversity>(req);
 
+                if (diversityRequest == null)
+                {
+                    _logger.LogWarning("{diversityRequest} object is NULL. Correlation GUID: {CorrelationGuid}\", nameof(diversityRequest), correlationGuid");
+                    return new UnprocessableEntityObjectResult("Diversity Details in request body are NULL. Please supply this data.");
+                }
+
                 // Fix for bug AD-157065 (Oct '23)
                 if (diversityRequest.ConsentToCollectEthnicity == null)
                     diversityRequest.ConsentToCollectEthnicity = false;
@@ -109,17 +115,8 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             catch (JsonException ex)
             {
                 _logger.LogError(ex, "Unable to parse {diversityRequest} from request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", nameof(diversityRequest), correlationGuid, ex.Message);
-                return new UnprocessableEntityObjectResult($"Unable to parse Diversity Details from request body. Exception: {ex.Message}");
+                return new UnprocessableEntityObjectResult("Unable to parse Diversity Details from request body.");
             }
-
-            if (diversityRequest == null)
-            {
-                _logger.LogWarning("{diversityRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(diversityRequest), correlationGuid);
-                return new UnprocessableEntityObjectResult($"Diversity Details in request body are NULL. Please supply this data.");
-            }
-
-            diversityRequest.SetIds(customerGuid, touchpointId);
-            diversityRequest.SetDefaultValues();
 
             // validate the request
             _logger.LogInformation("Attempting to validate {diversityRequest} object", nameof(diversityRequest));
@@ -166,6 +163,9 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
             }
             _logger.LogInformation("Diversity record does not exists for customer with ID: {customerGuid}", customerGuid);
 
+            diversityRequest.SetIds(customerGuid, touchpointId);
+            diversityRequest.SetDefaultValues();
+
             _logger.LogInformation("Attempting to create Diversity in Cosmos DB. Diversity GUID: {DiversityId}", diversityRequest.DiversityId);
             var diversity = await _postDiversityService.CreateAsync(diversityRequest);
 
@@ -180,7 +180,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
 
             _logger.LogInformation("Attempting to send message to Service Bus Namespace. Diversity GUID: {DiversityId}", diversity.DiversityId);
-            await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl, correlationGuid);
+             await _postDiversityService.SendToServiceBusQueueAsync(diversityRequest, apimUrl, correlationGuid);
             _logger.LogInformation("Successfully sent message to Service Bus. Diversity GUID: {DiversityId}", diversity.DiversityId);
 
 
