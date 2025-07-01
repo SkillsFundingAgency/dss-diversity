@@ -24,9 +24,9 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Service
                 return null;
             }
 
-            var diversitRecords = await _cosmosDbProvider.GetDiversityDetailsForCustomerAsync(customerId);
+            var diversityRecords = await _cosmosDbProvider.GetDiversityDetailsForCustomerAsync(customerId);
 
-            if (diversitRecords == null)
+            if (diversityRecords.Count == 0)
             {
                 _logger.LogInformation("No diversity record found for customer ID: {CustomerId}", customerId);
             }
@@ -35,7 +35,7 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Service
                 _logger.LogInformation("Successfully retrieved diversity records for customer ID: {CustomerId}", customerId);
             }
 
-            return diversitRecords;
+            return diversityRecords;
         }
     }
 }

@@ -134,7 +134,7 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         }
 
         [Test]
-        public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
+        public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeNotFound_WhenCustomerDoesNotExist()
         {
             // Arrange
             _resourceHelper.Setup(x => x.DoesCustomerExist(CustomerGuid)).Returns(Task.FromResult(false));
@@ -143,7 +143,21 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, DiversityId);
 
             // Assert
-            Assert.That(result, Is.InstanceOf<NoContentResult>());
+            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
+        }
+
+        [Test]
+        public async Task PatchDiversityHttpTrigger_ReturnsStatusCodeNotFound_WhenDiversityDetailDoesNotExist()
+        {
+            // Arrange
+            _resourceHelper.Setup(x => x.DoesCustomerExist(CustomerGuid)).Returns(Task.FromResult(true));
+            _patchDiversityHttpTriggerService.Setup(x => x.GetDiversityForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(String.Empty));
+
+            // Act
+            var result = await RunFunction(ValidCustomerId, DiversityId);
+
+            // Assert
+            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
