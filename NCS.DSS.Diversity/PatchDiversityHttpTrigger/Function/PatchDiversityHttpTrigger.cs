@@ -133,7 +133,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
 
             if (errors != null && errors.Any())
             {
-                _logger.LogWarning("Falied to validate {diversityPatchRequest} object", nameof(diversityPatchRequest));
+                _logger.LogWarning("Failed to validate {diversityPatchRequest} object", nameof(diversityPatchRequest));
                 return new UnprocessableEntityObjectResult(string.Join(';', errors));
             }
             _logger.LogInformation("Successfully validated {diversityPatchRequest} object", nameof(diversityPatchRequest));
