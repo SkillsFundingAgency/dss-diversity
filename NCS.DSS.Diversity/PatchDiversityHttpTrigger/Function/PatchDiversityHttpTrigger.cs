@@ -1,3 +1,4 @@
+using Azure.Core;
 using DFC.HTTP.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Diversity.Cosmos.Helper;
+using NCS.DSS.Diversity.Models;
 using NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service;
 using NCS.DSS.Diversity.Validation;
 using System.ComponentModel.DataAnnotations;
@@ -74,26 +76,26 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             if (string.IsNullOrEmpty(touchpointId))
             {
                 _logger.LogWarning("Unable to locate 'TouchpointId' in request header");
-                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
+                return new BadRequestObjectResult("Unable to locate 'TouchpointId' in request header");
             }
 
             var apimUrl = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(apimUrl))
             {
                 _logger.LogWarning("Unable to locate 'apimURL' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
-                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
+                return new BadRequestObjectResult($"Unable to locate 'apimURL' in request header. Correlation GUID: {correlationGuid}");
             }
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
                 _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
-                return new BadRequestObjectResult(customerId);
+                return new BadRequestObjectResult($"Unable to parse 'customerId' to a GUID. Customer GUID: {customerId}");
             }
 
             if (!Guid.TryParse(diversityId, out var diversityGuid))
             {
                 _logger.LogWarning("Unable to parse 'diversityId' to a GUID. Diversity GUID: {DiversityID}", diversityId);
-                return new BadRequestObjectResult(diversityId);
+                return new BadRequestObjectResult($"Unable to parse 'diversityId' to a GUID. Diversity GUID: {diversityId}");
             }
 
             _logger.LogInformation("Input validation has succeeded. Touchpoint ID: {TouchpointId}.", touchpointId);
@@ -105,6 +107,12 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
                 _logger.LogInformation("Attempting to retrieve resource from request. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 diversityPatchRequest = await _httpRequestHelper.GetResourceFromRequest<Models.DiversityPatch>(req);
 
+                if (diversityPatchRequest == null)
+                {
+                    _logger.LogWarning("{diversityPatchRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(diversityPatchRequest), correlationGuid);
+                    return new UnprocessableEntityObjectResult("Diversity Details in request body are NULL. Please supply this data.");
+                }
+
                 // Fix for bug AD-157065 (Oct '23)
                 if (diversityPatchRequest.ConsentToCollectEthnicity == null)
                     diversityPatchRequest.ConsentToCollectEthnicity = false;
@@ -114,14 +122,8 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             }
             catch (JsonException ex)
             {
-                _logger.LogError(ex, "Unable to parse {diversityPatchRequest} from request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", nameof(diversityPatchRequest), correlationGuid, ex.Message);
-                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, PropertyToExclude));
-            }
-
-            if (diversityPatchRequest == null)
-            {
-                _logger.LogWarning("{diversityPatchRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(diversityPatchRequest), correlationGuid);
-                return new UnprocessableEntityObjectResult(req);
+                _logger.LogWarning(ex, "Unable to parse {diversityPatchRequest} from request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", nameof(diversityPatchRequest), correlationGuid, ex.Message);
+                return new UnprocessableEntityObjectResult("Unable to parse Diversity Details from request body.");
             }
 
             diversityPatchRequest.LastModifiedBy = touchpointId;
@@ -132,8 +134,8 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
 
             if (errors != null && errors.Any())
             {
-                _logger.LogWarning("Falied to validate {diversityPatchRequest} object", nameof(diversityPatchRequest));
-                return new UnprocessableEntityObjectResult(errors);
+                _logger.LogWarning("Failed to validate {diversityPatchRequest} object", nameof(diversityPatchRequest));
+                return new UnprocessableEntityObjectResult(string.Join(';', errors));
             }
             _logger.LogInformation("Successfully validated {diversityPatchRequest} object", nameof(diversityPatchRequest));
 
@@ -144,7 +146,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             if (!doesCustomerExist)
             {
                 _logger.LogWarning("Customer not found. Customer ID: {CustomerId}.", customerGuid);
-                return new NoContentResult();
+                return new NotFoundObjectResult($"Customer not found. Customer ID: {customerGuid}.");
             }
             _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}.", customerGuid);
 
@@ -153,7 +155,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
 
             if (isCustomerReadOnly)
             {
-                var response = new ObjectResult(customerGuid.ToString())
+                var response = new ObjectResult($"Customer is read-only. Customer GUID: {customerGuid}.")
                 {
                     StatusCode = (int)HttpStatusCode.Forbidden,
                 };
@@ -165,10 +167,10 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             _logger.LogInformation("Attempting to get Diversity for Customer. Customer GUID: {CustomerId}. Diversity GUID: {DiversityId}.", customerGuid, diversityGuid);
             var diversity = await _patchDiversityService.GetDiversityForCustomerAsync(customerGuid, diversityGuid);
 
-            if (diversity == null)
+            if (diversity == string.Empty || diversity == null)
             {
                 _logger.LogWarning("Diversity not found. Customer GUID: {CustomerId}. Diversity GUID: {DiversityId}.", customerGuid, diversityGuid);
-                return new NoContentResult();
+                return new NotFoundObjectResult($"Diversity not found. Customer GUID: {customerGuid}. Diversity GUID: {diversityGuid}.");
             }
 
             _logger.LogInformation("Attempting to PATCH Diversity resource.");
@@ -176,7 +178,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             if (patchedDiversity == null)
             {
                 _logger.LogWarning("Failed to PATCH Diversity resource.");
-                return new BadRequestObjectResult(diversityGuid);
+                return new BadRequestObjectResult("Failed to PATCH Diversity resource.");
             }
 
             _logger.LogInformation("Attempting to update Diversity in Cosmos DB. Diversity GUID: {DiversityId}", diversityGuid);
@@ -185,7 +187,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
             {
                 _logger.LogWarning("Failed to update Diversity in Cosmos DB. Diversity GUID: {DiversityId}", diversityGuid);
                 _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PatchDiversityHttpTrigger));
-                return new BadRequestObjectResult(diversityGuid);
+                return new BadRequestObjectResult($"Failed to update Diversity in Cosmos DB. Diversity GUID: {diversityGuid}");
             }
             _logger.LogInformation("Diversity updated successfully in Cosmos DB. Diversity GUID: {DiversityId}", diversityGuid);
 
