@@ -20,9 +20,6 @@
         "functionAppNames": {
             "type": "array"
         },
-        "serviceBusConnectionString": {
-            "type": "securestring"
-        },
         "serviceBusQueueName": {
             "type": "string"
         },
@@ -67,7 +64,7 @@
                 "DatabaseId": "[parameters('cosmosDbDatabaseId')]",
                 "CustomerDatabaseId": "customers",
                 "CustomerCollectionId": "customers",
-                "ServiceBusConnectionString": "[parameters('serviceBusConnectionString')]",
+                "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
                 "QueueName": "[parameters('serviceBusQueueName')]",
                 "CosmosDbEndpoint": "[parameters('cosmosDbEndpoint')]"
             },

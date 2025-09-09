@@ -17,9 +17,6 @@
         "functionAppNames": {
             "value": [ "__FunctionAppName__" ]
         },
-        "serviceBusConnectionString": {
-            "value": "__ServiceBusConnectionString__"
-        },
         "serviceBusQueueName": {
             "value": "__ServiceBusQueueName__"
         },
