@@ -113,7 +113,6 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Function
                     return new UnprocessableEntityObjectResult("Diversity Details in request body are NULL. Please supply this data.");
                 }
 
-                // Fix for bug AD-157065 (Oct '23)
                 if (diversityPatchRequest.ConsentToCollectEthnicity == null)
                     diversityPatchRequest.ConsentToCollectEthnicity = false;
 

@@ -105,7 +105,6 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                     return new UnprocessableEntityObjectResult("Diversity Details in request body are NULL. Please supply this data.");
                 }
 
-                // Fix for bug AD-157065 (Oct '23)
                 if (diversityRequest.ConsentToCollectEthnicity == null)
                     diversityRequest.ConsentToCollectEthnicity = false;
 
