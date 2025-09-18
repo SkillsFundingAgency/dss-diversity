@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using NCS.DSS.Diversity.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace NCS.DSS.Diversity;
+namespace NCS.DSS.Diversity.UpdateDiversityRecordsToUseAutismNotAspergers.Function;
 
 public class UpdateDiversityRecordsToUseAutismNotAspergers
 {
@@ -26,6 +26,7 @@ public class UpdateDiversityRecordsToUseAutismNotAspergers
             => cosmosClient.GetContainer(databaseId, collectionId);
 
     [Function("UpdateDiversityRecordsToUseAutismNotAspergers")]
+    [Display(Name = "UpdateDiversityRecordsToUseAutismNotAspergers")]
     public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
     {
         try
