@@ -5,6 +5,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NCS.DSS.Diversity.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace NCS.DSS.Diversity;
 
@@ -25,7 +26,7 @@ public class UpdateDiversityRecordsToUseAutismNotAspergers
             => cosmosClient.GetContainer(databaseId, collectionId);
 
     [Function("UpdateDiversityRecordsToUseAutismNotAspergers")]
-    public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequest req)
+    public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
     {
         try
         {
