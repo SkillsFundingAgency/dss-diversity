@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NCS.DSS.Diversity.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
+using DFC.Swagger.Standard.Annotations;
+using NCS.DSS.Diversity.ReferenceData;
 
 namespace NCS.DSS.Diversity.UpdateDiversityRecordsToUseAutismNotAspergers.Function;
 
@@ -26,9 +29,14 @@ public class UpdateDiversityRecordsToUseAutismNotAspergers
             => cosmosClient.GetContainer(databaseId, collectionId);
 
     [Function("UpdateDiversityRecordsToUseAutismNotAspergers")]
+    [ProducesResponseType(typeof(string), 200)]
+    [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Successfully altered data", ShowSchema = false)]
+    [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
     [Display(Name = "UpdateDiversityRecordsToUseAutismNotAspergers")]
     public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
     {
+        _logger.LogInformation("Function {FunctionName} has been invoked", nameof(UpdateDiversityRecordsToUseAutismNotAspergers));
+
         try
         {
             var query = "SELECT c.id FROM c WHERE c.SecondaryLearningDifficultyOrDisability = 15";
@@ -59,6 +67,8 @@ public class UpdateDiversityRecordsToUseAutismNotAspergers
                 }
             }
 
+            _logger.LogInformation("Successfully altered with SecondaryLearningDifficultyOrDisability set to 'Autism' for appropriate records");
+
             query = "SELECT c.id FROM c WHERE c.PrimaryLearningDifficultyOrDisability = 15";
             using var iteratorPrimary = _diversityContainer.GetItemQueryIterator<dynamic>(query);
 
@@ -86,6 +96,8 @@ public class UpdateDiversityRecordsToUseAutismNotAspergers
                     );
                 }
             }
+            _logger.LogInformation("Successfully altered with PrimaryLearningDifficultyOrDisability set to 'Autism' for appropriate records");
+            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(UpdateDiversityRecordsToUseAutismNotAspergers));
 
             return new OkObjectResult("Success");
         }
