@@ -33,7 +33,7 @@ public class UpdateDiversityRecordsToUseAutismNotAspergers
     [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Successfully altered data", ShowSchema = false)]
     [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
     [Display(Name = "UpdateDiversityRecordsToUseAutismNotAspergers")]
-    public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
+    public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req)
     {
         _logger.LogInformation("Function {FunctionName} has been invoked", nameof(UpdateDiversityRecordsToUseAutismNotAspergers));
 
