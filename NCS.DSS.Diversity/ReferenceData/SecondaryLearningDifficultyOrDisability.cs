@@ -34,9 +34,6 @@ namespace NCS.DSS.Diversity.ReferenceData
         [Description("Autism spectrum disorder")]
         AutismSpectrumDisorder = 14,
 
-        [Description("Asperger's syndrome")]
-        AspergersSyndrome = 15,
-
         [Description("Temporary disability after illness (for example post viral) or accident")]
         TemporaryDisabilityAfterIllnessOrAccident = 16,
 
