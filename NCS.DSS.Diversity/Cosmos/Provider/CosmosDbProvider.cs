@@ -37,7 +37,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
         {
             try
             {
-                _logger.LogInformation("Checking for customer resource. Customer ID: {CustomerId}", customerId);
+                _logger.LogTrace("Checking for customer resource. Customer ID: {CustomerId}", customerId);
 
                 var response = await _customerContainer.ReadItemAsync<Customer>(
                     customerId.ToString(),
@@ -45,17 +45,17 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
 
                 if (response.Resource != null)
                 {
-                    _logger.LogInformation("Customer exists. Customer ID: {CustomerId}", customerId);
+                    _logger.LogTrace("Customer exists. Customer ID: {CustomerId}", customerId);
                     _customerJson = JsonConvert.SerializeObject(response.Resource);
                     return true;
                 }
 
-                _logger.LogInformation("Customer does not exist. Customer ID: {CustomerId}", customerId);
+                _logger.LogTrace("Customer does not exist. Customer ID: {CustomerId}", customerId);
                 return false;
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                _logger.LogInformation("Customer does not exist. Customer ID: {CustomerId}", customerId);
+                _logger.LogTrace("Customer does not exist. Customer ID: {CustomerId}", customerId);
                 return false;
             }
             catch (Exception ex)
@@ -74,7 +74,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
 
         public async Task<Models.Diversity> GetDiversityDetailForCustomerAsync(Guid customerId, Guid diversityId)
         {
-            _logger.LogInformation("Retrieving Diversity for Customer. Customer ID: {CustomerId}. Diversity ID: {DiversityId}.", customerId, diversityId);
+            _logger.LogTrace("Retrieving Diversity for Customer. Customer ID: {CustomerId}. Diversity ID: {DiversityId}.", customerId, diversityId);
 
             try
             {
@@ -85,7 +85,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
                 var response = await query.ReadNextAsync();
                 if (response.Any())
                 {
-                    _logger.LogInformation("Diversity retrieved successfully. Customer ID: {CustomerId}. Diversity ID: {DiversityId}.", customerId, diversityId);
+                    _logger.LogTrace("Diversity retrieved successfully. Customer ID: {CustomerId}. Diversity ID: {DiversityId}.", customerId, diversityId);
                     return response?.FirstOrDefault();
                 }
 
@@ -94,14 +94,14 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving Diversity. Customer ID: {CustomerId}. Diversity ID: {DiversityId}.", customerId, diversityId);
+                _logger.LogTrace(ex, "Error occurred while retrieving Diversity. Customer ID: {CustomerId}. Diversity ID: {DiversityId}.", customerId, diversityId);
                 throw;
             }
         }
 
         public async Task<List<Models.Diversity>> GetDiversityDetailsForCustomerAsync(Guid customerId)
         {
-            _logger.LogInformation("Retrieving Diversities for Customer. Customer ID: {CustomerId}.", customerId);
+            _logger.LogTrace("Retrieving Diversities for Customer. Customer ID: {CustomerId}.", customerId);
 
             try
             {
@@ -116,7 +116,7 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
                     diversities.AddRange(response);
                 }
 
-                _logger.LogInformation("Retrieved {Count} Diversity record(s) for Customer with ID: {CustomerId}.", diversities.Count, customerId);
+                _logger.LogTrace("Retrieved {Count} Diversity record(s) for Customer with ID: {CustomerId}.", diversities.Count, customerId);
                 return diversities;
             }
             catch (Exception ex)
@@ -142,12 +142,12 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
                 throw new ArgumentNullException(nameof(diversity), "Diversity cannot be null.");
             }
 
-            _logger.LogInformation("Creating Diversity with ID: {DiversityId}", diversity.DiversityId);
+            _logger.LogTrace("Creating Diversity with ID: {DiversityId}", diversity.DiversityId);
 
             try
             {
                 var response = await _diversityContainer.CreateItemAsync(diversity, PartitionKey.None);
-                _logger.LogInformation("Successfully created Diversity with ID: {DiversityID}", diversity.DiversityId);
+                _logger.LogTrace("Successfully created Diversity with ID: {DiversityID}", diversity.DiversityId);
                 return response;
             }
             catch (Exception ex)
@@ -167,12 +167,12 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
 
             var diversity = JsonConvert.DeserializeObject<Models.Diversity>(diversityJson);
 
-            _logger.LogInformation("Updating Diversity with ID: {DiversityId}", diversityId);
+            _logger.LogTrace("Updating Diversity with ID: {DiversityId}", diversityId);
 
             try
             {
                 var response = await _diversityContainer.ReplaceItemAsync(diversity, diversityId.ToString());
-                _logger.LogInformation("Successfully updated Diversity with ID: {DiversityId}", diversityId);
+                _logger.LogTrace("Successfully updated Diversity with ID: {DiversityId}", diversityId);
                 return response;
             }
             catch (Exception ex)

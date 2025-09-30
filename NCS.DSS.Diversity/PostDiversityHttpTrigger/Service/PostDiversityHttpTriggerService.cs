@@ -28,17 +28,17 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
         {
             if (diversity == null)
             {
-                _logger.LogInformation("Diversity record can't be created because input diversity object is null");
+                _logger.LogTrace("Diversity record can't be created because input diversity object is null");
                 return null;
             }
 
-            _logger.LogInformation("Started creating diversity in Cosmos DB with ID: {DiversityId}", diversity.DiversityId);
+            _logger.LogTrace("Started creating diversity in Cosmos DB with ID: {DiversityId}", diversity.DiversityId);
 
             var response = await _cosmosDbProvider.CreateDiversityDetailAsync(diversity);
 
             if (response?.StatusCode == HttpStatusCode.Created)
             {
-                _logger.LogInformation("Completed creating diversity in Cosmos DB with ID: {DiversityId}", diversity.DiversityId);
+                _logger.LogTrace("Completed creating diversity in Cosmos DB with ID: {DiversityId}", diversity.DiversityId);
                 return response.Resource;
             }
 
@@ -50,11 +50,11 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
         {
             try
             {
-                _logger.LogInformation("Sending newly created diversity with ID: {DiversityId} to Service Bus for customer ID: {CustomerId}.", diversity.DiversityId, diversity.CustomerId);
+                _logger.LogTrace("Sending newly created diversity with ID: {DiversityId} to Service Bus for customer ID: {CustomerId}.", diversity.DiversityId, diversity.CustomerId);
 
                 await _serviceBusClient.SendPostMessageAsync(diversity, reqUrl, correlationId);
 
-                _logger.LogInformation("Successfully sent diversity with ID: {DiversityId} to Service Bus for customer ID: {CustomerId}.", diversity.DiversityId, diversity.CustomerId);
+                _logger.LogTrace("Successfully sent diversity with ID: {DiversityId} to Service Bus for customer ID: {CustomerId}.", diversity.DiversityId, diversity.CustomerId);
             }
             catch (Exception ex)
             {
