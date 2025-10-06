@@ -28,7 +28,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Service
         {
             if (diversity == null)
             {
-                _logger.LogTrace("Diversity record can't be created because input diversity object is null");
+                _logger.LogInformation("Diversity record can't be created because input diversity object is null");
                 return null;
             }
 

@@ -63,7 +63,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
 
             if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
-                _logger.LogTrace("Unable to parse 'DssCorrelationId' to a Guid. CorrelationId: {CorrelationId}", correlationId);
+                _logger.LogInformation("Unable to parse 'DssCorrelationId' to a Guid. CorrelationId: {CorrelationId}", correlationId);
                 correlationGuid = Guid.NewGuid();
             }
 
@@ -156,7 +156,7 @@ namespace NCS.DSS.Diversity.PostDiversityHttpTrigger.Function
                 _logger.LogInformation("Diversity record already exist for customer with ID: {customerGuid}", customerGuid);
                 return new ConflictObjectResult($"Diversity record already exists for customer with ID: {customerGuid}");
             }
-            _logger.LogTrace("Diversity record does not exist for customer with ID: {customerGuid}", customerGuid);
+            _logger.LogInformation("Diversity record does not exist for customer with ID: {customerGuid}", customerGuid);
 
             diversityRequest.SetIds(customerGuid, touchpointId);
             diversityRequest.SetDefaultValues();

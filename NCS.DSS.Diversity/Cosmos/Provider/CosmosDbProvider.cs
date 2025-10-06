@@ -50,12 +50,12 @@ namespace NCS.DSS.Diversity.Cosmos.Provider
                     return true;
                 }
 
-                _logger.LogTrace("Customer does not exist. Customer ID: {CustomerId}", customerId);
+                _logger.LogInformation("Customer does not exist. Customer ID: {CustomerId}", customerId);
                 return false;
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                _logger.LogTrace("Customer does not exist. Customer ID: {CustomerId}", customerId);
+                _logger.LogInformation("Customer does not exist. Customer ID: {CustomerId}", customerId);
                 return false;
             }
             catch (Exception ex)

@@ -90,7 +90,7 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Function
 
             if (diversityDetails.Count == 1)
             {
-                _logger.LogInformation("1 Diversity found for Customer with ID: {CustomerId}.", customerGuid);
+                _logger.LogTrace("1 Diversity found for Customer with ID: {CustomerId}.", customerGuid);
                 return new JsonResult(diversityDetails[0], new JsonSerializerOptions())
                 {
                     StatusCode = (int)HttpStatusCode.OK
