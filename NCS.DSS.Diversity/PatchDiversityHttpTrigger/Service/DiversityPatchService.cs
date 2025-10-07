@@ -18,11 +18,11 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
 
         public string Patch(string diversityJson, DiversityPatch diversityPatch)
         {
-            _logger.LogInformation("Started updating diversity json object with PATCH request");
+            _logger.LogTrace("Started updating diversity json object with PATCH request");
 
             if (string.IsNullOrEmpty(diversityJson))
             {
-                _logger.LogWarning("Invalid diversityJson object provided. diversity json is either empty or null");
+                _logger.LogInformation("Invalid diversityJson object provided. diversity json is either empty or null");
                 return null;
             }
 
@@ -78,7 +78,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
                 _jsonHelper.UpdatePropertyValue(obj["LastModifiedBy"], diversityPatch.LastModifiedBy);
             }
 
-            _logger.LogInformation("Completed updating diversity json object with PATCH request.");
+            _logger.LogTrace("Completed updating diversity json object with PATCH request.");
             return obj.ToString();
         }
     }

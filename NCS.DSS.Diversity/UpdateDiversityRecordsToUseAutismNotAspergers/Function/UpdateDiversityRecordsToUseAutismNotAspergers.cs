@@ -35,7 +35,7 @@ public class UpdateDiversityRecordsToUseAutismNotAspergers
     [Display(Name = "UpdateDiversityRecordsToUseAutismNotAspergers")]
     public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req)
     {
-        _logger.LogInformation("Function {FunctionName} has been invoked", nameof(UpdateDiversityRecordsToUseAutismNotAspergers));
+        _logger.LogTrace("Function {FunctionName} has been invoked", nameof(UpdateDiversityRecordsToUseAutismNotAspergers));
 
         try
         {
@@ -67,7 +67,7 @@ public class UpdateDiversityRecordsToUseAutismNotAspergers
                 }
             }
 
-            _logger.LogInformation("Successfully altered with SecondaryLearningDifficultyOrDisability set to 'Autism' for appropriate records");
+            _logger.LogTrace("Successfully altered with SecondaryLearningDifficultyOrDisability set to 'Autism' for appropriate records");
 
             query = "SELECT c.id FROM c WHERE c.PrimaryLearningDifficultyOrDisability = 15";
             using var iteratorPrimary = _diversityContainer.GetItemQueryIterator<dynamic>(query);
@@ -96,8 +96,8 @@ public class UpdateDiversityRecordsToUseAutismNotAspergers
                     );
                 }
             }
-            _logger.LogInformation("Successfully altered with PrimaryLearningDifficultyOrDisability set to 'Autism' for appropriate records");
-            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(UpdateDiversityRecordsToUseAutismNotAspergers));
+            _logger.LogTrace("Successfully altered with PrimaryLearningDifficultyOrDisability set to 'Autism' for appropriate records");
+            _logger.LogTrace("Function {FunctionName} has finished invoking", nameof(UpdateDiversityRecordsToUseAutismNotAspergers));
 
             return new OkObjectResult("Success");
         }
