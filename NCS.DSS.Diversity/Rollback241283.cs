@@ -1,3 +1,6 @@
+using Azure.Identity;
+using Azure.Storage.Blobs;
+using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
@@ -7,7 +10,6 @@ using Microsoft.Extensions.Options;
 using NCS.DSS.Diversity.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using DFC.Swagger.Standard.Annotations;
 
 namespace NCS.DSS.Diversity;
 
@@ -15,12 +17,13 @@ public class Rollback241283
 {
     private readonly ILogger<Rollback241283> _logger;
     private readonly Container _diversityContainer;
+    private BlobServiceClient _blobServiceClient;
 
-    public Rollback241283(ILogger<Rollback241283> logger, IOptions<DiversityConfigurationSettings> configOptions, CosmosClient cosmosClient)
+    public Rollback241283(ILogger<Rollback241283> logger, IOptions<DiversityConfigurationSettings> configOptions, CosmosClient cosmosClient, BlobServiceClient blobServiceClient)
     {
         _logger = logger;
         var config = configOptions.Value;
-
+        _blobServiceClient = blobServiceClient;
         _diversityContainer = GetContainer(cosmosClient, config.DatabaseId, config.CollectionId);
     }
 
@@ -38,42 +41,17 @@ public class Rollback241283
 
         try
         {
-            var secondaryIds = new List<string>();
-            using (var reader = new StreamReader("SecondaryIDsAspergers.csv"))
-            {
-                while (!reader.EndOfStream)
-                {
-                    var line = reader.ReadLine();
-                    if (string.IsNullOrWhiteSpace(line)) continue;
+            BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient("diversitycosmosbackup");
 
-                    var columns = line.Split(',');
-                    if (columns.Length > 0)
-                    {
-                        if (!columns[0].Contains("sep") && !columns[0].Contains("id"))
-                        {
-                            string id = columns[0].Trim(new char[] { '/', '"' });
-                            secondaryIds.Add(id);
-                        }
-                    }
-                }
-            }
+            BlobClient blobClient = containerClient.GetBlobClient("PrimaryIDsAspergers.csv");
 
-            foreach (string id in secondaryIds) {
+            await blobClient.DownloadToAsync("PrimaryIDsAspergers.csv");
 
-                List<PatchOperation> operations = new()
-                    {
-                        PatchOperation.Replace($"/SecondaryLearningDifficultyOrDisability", 15),
-                    };
+            blobClient = containerClient.GetBlobClient("SecondaryIDsAspergers.csv");
 
-                await _diversityContainer.PatchItemAsync<dynamic>(
-                    id: id,
-                    partitionKey: PartitionKey.None,
-                    patchOperations: operations
-                );
+            await blobClient.DownloadToAsync("SecondaryIDsAspergers.csv");
 
-                _logger.LogInformation("Successfully altered with SecondaryLearningDifficultyOrDisability set to 'Autism' for appropriate records"); 
-            
-            }
+            _logger.LogInformation("Successfully downloaded backups csv files");
 
             var primaryIds = new List<string>();
             using (var reader = new StreamReader("PrimaryIDsAspergers.csv"))
@@ -107,6 +85,44 @@ public class Rollback241283
                     patchOperations: operations2
                 );
                 _logger.LogInformation("Successfully altered with PrimaryLearningDifficultyOrDisability set to 'Autism' for appropriate records");
+            }
+
+            var secondaryIds = new List<string>();
+            using (var reader = new StreamReader("SecondaryIDsAspergers.csv"))
+            {
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+
+                    var columns = line.Split(',');
+                    if (columns.Length > 0)
+                    {
+                        if (!columns[0].Contains("sep") && !columns[0].Contains("id"))
+                        {
+                            string id = columns[0].Trim(new char[] { '/', '"' });
+                            secondaryIds.Add(id);
+                        }
+                    }
+                }
+            }
+
+            foreach (string id in secondaryIds)
+            {
+
+                List<PatchOperation> operations = new()
+                    {
+                        PatchOperation.Replace($"/SecondaryLearningDifficultyOrDisability", 15),
+                    };
+
+                await _diversityContainer.PatchItemAsync<dynamic>(
+                    id: id,
+                    partitionKey: PartitionKey.None,
+                    patchOperations: operations
+                );
+
+                _logger.LogInformation("Successfully altered with SecondaryLearningDifficultyOrDisability set to 'Autism' for appropriate records");
+
             }
             _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(UpdateDiversityRecordsToUseAutismNotAspergers));
 

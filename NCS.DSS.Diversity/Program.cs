@@ -1,5 +1,6 @@
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
+using Azure.Storage.Blobs;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
@@ -49,7 +50,14 @@ namespace NCS.DSS.Diversity
                     services.AddTransient<IPatchDiversityHttpTriggerService, PatchDiversityHttpTriggerService>();
                     services.AddSingleton<IDiversityPatchService, DiversityPatchService>();
                     services.AddSingleton<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
+                    services.AddSingleton(s =>                     
+                    {
+                        //var endpoint = configuration["BlobStorageEndpoint"];
+                        return new BlobServiceClient(
+                           new Uri("https://dssatshdarmstr.blob.core.windows.net"),
+                           new DefaultAzureCredential());
 
+                    });
                     services.AddSingleton(s =>
                     {
                         var logger = s.GetRequiredService<ILogger<Program>>();
