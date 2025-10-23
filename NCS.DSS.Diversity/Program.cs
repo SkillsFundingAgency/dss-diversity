@@ -52,11 +52,8 @@ namespace NCS.DSS.Diversity
                     services.AddSingleton<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
                     services.AddSingleton(s =>                     
                     {
-                        //var endpoint = configuration["BlobStorageEndpoint"];
-                        return new BlobServiceClient(
-                           new Uri("https://dssatshdarmstr.blob.core.windows.net"),
-                           new DefaultAzureCredential());
-
+                        var connectionString = configuration["BlobStorageConnectionString"];
+                        return new BlobServiceClient(connectionString);
                     });
                     services.AddSingleton(s =>
                     {

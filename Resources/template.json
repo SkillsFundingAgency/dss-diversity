@@ -64,10 +64,11 @@
                 "DatabaseId": "[parameters('cosmosDbDatabaseId')]",
                 "CustomerDatabaseId": "customers",
                 "CustomerCollectionId": "customers",
+                "BlobStorageConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=SharedStorageAccountConnectionString)', parameters('keyVaultName'))]",
                 "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
                 "QueueName": "[parameters('serviceBusQueueName')]",
                 "CosmosDbEndpoint": "[parameters('cosmosDbEndpoint')]"
-            },
+                            },
             "copy": {
                 "name": "FunctionAppSettingsCopy",
                 "count": "[length(parameters('functionAppNames'))]"
