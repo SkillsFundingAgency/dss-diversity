@@ -37,6 +37,25 @@ public class UpdateDiversityRecordsToUseAutismNotAspergers
     {
         _logger.LogTrace("Function {FunctionName} has been invoked", nameof(UpdateDiversityRecordsToUseAutismNotAspergers));
 
+        if (!req.Headers.ContainsKey("securityKey"))
+        {
+            return new UnauthorizedResult();
+        }
+
+        string securityKey = req.Headers["securityKey"].FirstOrDefault();
+        if (securityKey.EndsWith("/"))
+        {
+            securityKey = securityKey.Substring(0, securityKey.Length - 1);
+        }
+
+        if (securityKey != Environment.GetEnvironmentVariable("SecurityKey"))
+        {
+            _logger.LogWarning("Security key validation failed");
+            return new UnauthorizedResult();
+        }
+
+        _logger.LogInformation("Successfully validated Security key");
+
         try
         {
             var query = "SELECT c.id FROM c WHERE c.SecondaryLearningDifficultyOrDisability = 15";

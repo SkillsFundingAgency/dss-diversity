@@ -30,14 +30,34 @@ public class Rollback241283
     private static Container GetContainer(CosmosClient cosmosClient, string databaseId, string collectionId)
             => cosmosClient.GetContainer(databaseId, collectionId);
 
-    [Function("Rollback241283")]
+    [Function("RollbackAspergersToAutism")]
     [ProducesResponseType(typeof(string), 200)]
     [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Successfully altered data", ShowSchema = false)]
     [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
-    [Display(Name = "Rollback241283")]
+    [Display(Name = "RollbackAspergersToAutism")]
     public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req)
     {
         _logger.LogInformation("Function {FunctionName} has been invoked", nameof(Rollback241283));
+
+
+        if (!req.Headers.ContainsKey("securityKey"))
+        {
+            return new UnauthorizedResult();
+        }
+
+        string securityKey = req.Headers["securityKey"].FirstOrDefault();
+        if (securityKey.EndsWith("/"))
+        {
+            securityKey = securityKey.Substring(0, securityKey.Length - 1);
+        }
+
+        if (securityKey != Environment.GetEnvironmentVariable("SecurityKey"))
+        {
+            _logger.LogWarning("Security key validation failed");
+            return new UnauthorizedResult();
+        }
+
+        _logger.LogInformation("Successfully validated Security key");
 
         try
         {

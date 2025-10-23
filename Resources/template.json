@@ -46,6 +46,9 @@
         },
         "keyVaultName": {
             "type": "string"
+        },
+        "securityKey": {
+            "type": "string"
         }
     },
     "resources": [
@@ -67,7 +70,8 @@
                 "BlobStorageConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=SharedStorageAccountConnectionString)', parameters('keyVaultName'))]",
                 "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
                 "QueueName": "[parameters('serviceBusQueueName')]",
-                "CosmosDbEndpoint": "[parameters('cosmosDbEndpoint')]"
+                "CosmosDbEndpoint": "[parameters('cosmosDbEndpoint')]",
+                "SecurityKey": "[parameters('securityKey')]"
                             },
             "copy": {
                 "name": "FunctionAppSettingsCopy",
