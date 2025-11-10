@@ -49,11 +49,11 @@ namespace NCS.DSS.Diversity.ServiceBus
                 MessageId = diversity.CustomerId + " " + DateTime.UtcNow
             };
 
-            _logger.LogInformation("Attempting to send POST message to service bus. Diversity ID: {DiversityId}", diversity.DiversityId);
+            _logger.LogTrace("Attempting to send POST message to service bus. Diversity ID: {DiversityId}", diversity.DiversityId);
 
             await serviceBusSender.SendMessageAsync(msg);
 
-            _logger.LogInformation("Successfully sent POST message to the service bus. Diversity ID: {DiversityId}", diversity.DiversityId);
+            _logger.LogTrace("Successfully sent POST message to the service bus. Diversity ID: {DiversityId}", diversity.DiversityId);
         }
 
         public async Task SendPatchMessageAsync(DiversityPatch diversityPatch, Guid customerId, string reqUrl)
@@ -76,11 +76,11 @@ namespace NCS.DSS.Diversity.ServiceBus
                 MessageId = customerId + " " + DateTime.UtcNow
             };
 
-            _logger.LogInformation("Attempting to send PATCH message to service bus. Customer ID: {CustomerId}", customerId);
+            _logger.LogTrace("Attempting to send PATCH message to service bus. Customer ID: {CustomerId}", customerId);
 
             await serviceBusSender.SendMessageAsync(msg);
 
-            _logger.LogInformation("Successfully sent PATCH message to the service bus. Customer ID: {CustomerId}", customerId);
+            _logger.LogTrace("Successfully sent PATCH message to the service bus. Customer ID: {CustomerId}", customerId);
 
         }
     }

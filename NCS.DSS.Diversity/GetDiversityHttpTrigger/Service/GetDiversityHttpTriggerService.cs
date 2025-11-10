@@ -16,11 +16,11 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Service
 
         public async Task<List<Models.Diversity>> GetDiversityDetailForCustomerAsync(Guid customerId)
         {
-            _logger.LogInformation("Retrieving diversity record for customer ID: {CustomerId}.", customerId);
+            _logger.LogTrace("Retrieving diversity record for customer ID: {CustomerId}.", customerId);
 
             if (customerId == Guid.Empty)
             {
-                _logger.LogWarning("Invalid customer ID provided: {CustomerId}.", customerId);
+                _logger.LogInformation("Invalid customer ID provided: {CustomerId}.", customerId);
                 return null;
             }
 
@@ -28,11 +28,11 @@ namespace NCS.DSS.Diversity.GetDiversityHttpTrigger.Service
 
             if (diversityRecords.Count == 0)
             {
-                _logger.LogInformation("No diversity record found for customer ID: {CustomerId}", customerId);
+                _logger.LogTrace("No diversity record found for customer ID: {CustomerId}", customerId);
             }
             else
             {
-                _logger.LogInformation("Successfully retrieved diversity records for customer ID: {CustomerId}", customerId);
+                _logger.LogTrace("Successfully retrieved diversity records for customer ID: {CustomerId}", customerId);
             }
 
             return diversityRecords;

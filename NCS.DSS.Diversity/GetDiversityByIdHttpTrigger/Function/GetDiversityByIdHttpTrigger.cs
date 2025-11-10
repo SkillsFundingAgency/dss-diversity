@@ -41,65 +41,60 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Function
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/DiversityDetails/{diversityId}")]
             HttpRequest req, string customerId, string diversityId)
         {
-            _logger.LogInformation("Function {FunctionName} has been invoked", nameof(GetDiversityByIdHttpTrigger));
+            _logger.LogTrace("Function {FunctionName} has been invoked", nameof(GetDiversityByIdHttpTrigger));
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
 
-            if (string.IsNullOrEmpty(correlationId))
-            {
-                _logger.LogInformation("Unable to locate 'DssCorrelationId' in request header");
-            }
             if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
-                _logger.LogInformation("Unable to parse 'DssCorrelationId' to a Guid. CorrelationId: {CorrelationId}", correlationId);
+                _logger.LogTrace("Unable to parse 'DssCorrelationId' to a Guid. CorrelationId: {CorrelationId}", correlationId);
                 correlationGuid = Guid.NewGuid();
             }
 
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _logger.LogWarning("Unable to locate 'TouchpointId' in request header");
+                _logger.LogInformation("Unable to locate 'TouchpointId' in request header");
                 return new BadRequestObjectResult("Unable to locate 'TouchpointId' in request header");
             }
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
+                _logger.LogInformation("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
                 return new BadRequestObjectResult($"Unable to parse 'customerId' to a GUID. Customer GUID: {customerId}");
             }
 
             if (!Guid.TryParse(diversityId, out var diversityGuid))
             {
-                _logger.LogWarning("Unable to parse 'diversityId' to a GUID. Diversity GUID: {DiversityID}", diversityId);
+                _logger.LogInformation("Unable to parse 'diversityId' to a GUID. Diversity GUID: {DiversityID}", diversityId);
                 return new BadRequestObjectResult($"Unable to parse 'diversityId' to a GUID. Diversity GUID: {diversityId}");
             }
 
-            _logger.LogInformation("Input validation has succeeded. Touchpoint ID: {TouchpointId}.", touchpointId);
+            _logger.LogTrace("Input validation has succeeded. Touchpoint ID: {TouchpointId}.", touchpointId);
 
-            _logger.LogInformation("Attempting to check if customer exists. Customer GUID: {CustomerId}", customerGuid);
+            _logger.LogTrace("Attempting to check if customer exists. Customer GUID: {CustomerId}", customerGuid);
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
-                _logger.LogWarning("Customer does not exist. Customer GUID: {CustomerGuid}.", customerGuid);
+                _logger.LogInformation("Customer does not exist. Customer GUID: {CustomerGuid}.", customerGuid);
                 return new NotFoundObjectResult($"Customer does not exist. Customer GUID: {customerGuid}.");
             }
-            _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}.", customerGuid);
+            _logger.LogTrace("Customer exists. Customer GUID: {CustomerGuid}.", customerGuid);
 
 
-            _logger.LogInformation("Attempting to get Diversity for Customer. Customer GUID: {CustomerId}. Diversity GUID: {DiversityId}.", customerGuid, diversityGuid);
+            _logger.LogTrace("Attempting to get Diversity for Customer. Customer GUID: {CustomerId}. Diversity GUID: {DiversityId}.", customerGuid, diversityGuid);
             var diversity = await _getDiversityService.GetDiversityDetailByIdAsync(customerGuid, diversityGuid);
 
             if (diversity == null)
             {
-                _logger.LogWarning("Diversity not found. Customer GUID: {CustomerId}. Diversity GUID: {DiversityId}.", customerGuid, diversityGuid);
-                _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetDiversityByIdHttpTrigger));
+                _logger.LogInformation("Diversity not found. Customer GUID: {CustomerId}. Diversity GUID: {DiversityId}.", customerGuid, diversityGuid);
                 return new NotFoundObjectResult($"Diversity not found. Customer GUID: {customerGuid}. Diversity GUID: {diversityGuid}.");
             }
 
 
-            _logger.LogInformation("Diversity successfully retrieved. Diversity GUID: {DiversityId}", diversity.DiversityId);
-            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetDiversityByIdHttpTrigger));
+            _logger.LogTrace("Diversity successfully retrieved. Diversity GUID: {DiversityId}", diversity.DiversityId);
+            _logger.LogTrace("Function {FunctionName} has finished invoking", nameof(GetDiversityByIdHttpTrigger));
             return new JsonResult(diversity, new JsonSerializerOptions())
             {
                 StatusCode = (int)HttpStatusCode.OK

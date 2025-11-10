@@ -16,7 +16,7 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Service
 
         public async Task<Models.Diversity> GetDiversityDetailByIdAsync(Guid customerId, Guid diversityId)
         {
-            _logger.LogInformation("Retrieving diversity with ID: {DiversityId} for customer ID: {CustomerId}.", diversityId, customerId);
+            _logger.LogTrace("Retrieving diversity with ID: {DiversityId} for customer ID: {CustomerId}.", diversityId, customerId);
 
             if (customerId == Guid.Empty)
             {
@@ -34,11 +34,11 @@ namespace NCS.DSS.Diversity.GetDiversityByIdHttpTrigger.Service
 
             if (diversity == null)
             {
-                _logger.LogInformation("No diversity record found with ID: {DiversityId} for customer ID: {CustomerId}", diversityId, customerId);
+                _logger.LogTrace("No diversity record found with ID: {DiversityId} for customer ID: {CustomerId}", diversityId, customerId);
             }
             else
             {
-                _logger.LogInformation("Successfully retrieved diversity with ID: {DiversityId} for customer ID: {CustomerId}", diversityId, customerId);
+                _logger.LogTrace("Successfully retrieved diversity with ID: {DiversityId} for customer ID: {CustomerId}", diversityId, customerId);
             }
 
             return diversity;

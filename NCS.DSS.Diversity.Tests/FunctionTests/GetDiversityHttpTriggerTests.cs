@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.Diversity.Cosmos.Helper;
 using NCS.DSS.Diversity.GetDiversityHttpTrigger.Service;
+using NCS.DSS.Diversity.Models;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -78,18 +79,17 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         }
 
         [Test]
-        public async Task GetDiversityHttpTrigger_ReturnsStatusCodeOK_WhenCustomerDoesntExist()
+        public async Task GetDiversityHttpTrigger_ReturnsStatusCodeNotFound_WhenCustomerDoesntExist()
         {
             // Arrange
             _resourceHelper.Setup(x => x.DoesCustomerExist(CustomerGuid)).Returns(Task.FromResult(false));
 
             // Act
-            var result = await RunFunction(ValidCustomerId);
+            var result = await RunFunction(CustomerGuid.ToString());
             var resultResponse = result as JsonResult;
 
             // Assert
-            Assert.That(result, Is.InstanceOf<JsonResult>());
-            Assert.That(resultResponse.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
+            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
@@ -108,7 +108,8 @@ namespace NCS.DSS.Diversity.Tests.FunctionTests
         public async Task GetDiversityHttpTrigger_ReturnsStatusCodeOk_WhenDiversityDetailExists()
         {
             // Arrange
-            _resourceHelper.Setup(x => x.DoesCustomerExist(CustomerGuid)).Returns(Task.FromResult(true));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(Guid.Parse(ValidCustomerId))).Returns(Task.FromResult(true));
+            _getDiversityHttpTriggerService.Setup(x => x.GetDiversityDetailForCustomerAsync(Guid.Parse(ValidCustomerId))).Returns(Task.FromResult(new List<Models.Diversity> { new Models.Diversity() }));
 
             // Act
             var result = await RunFunction(ValidCustomerId);

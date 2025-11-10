@@ -11,17 +11,11 @@
         "cosmosDbEndpoint": {
             "value": "__cosmosDbEndpoint__"
         },
-        "cosmosDbKey": {
-            "value": "__CosmosDbKey__"
-        },
         "environmentName": {
             "value": "__ReleaseEnvironmentName__"
         },
         "functionAppNames": {
             "value": [ "__FunctionAppName__" ]
-        },
-        "serviceBusConnectionString": {
-            "value": "__ServiceBusConnectionString__"
         },
         "serviceBusQueueName": {
             "value": "__ServiceBusQueueName__"
@@ -52,6 +46,9 @@
         },
         "keyVaultName": {
           "value": "__SharedKeyVaultName__"
+        },
+        "securityKey": {
+            "value": "__SecurityKey__"
         }
     }
 }

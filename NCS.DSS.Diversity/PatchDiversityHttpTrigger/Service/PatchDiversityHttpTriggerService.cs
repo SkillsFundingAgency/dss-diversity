@@ -26,13 +26,13 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
         {
             if (string.IsNullOrEmpty(diversityJson))
             {
-                _logger.LogInformation("Can't patch diversity because input diversity json is either empty or null");
+                _logger.LogTrace("Can't patch diversity because input diversity json is either empty or null");
                 return null;
             }
 
             if (diversityPatch == null)
             {
-                _logger.LogInformation("Can't patch diversity because input diversityPatch object is null");
+                _logger.LogTrace("Can't patch diversity because input diversityPatch object is null");
                 return null;
             }
 
@@ -40,7 +40,7 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
 
             var updatedDiversity = _diversityPatchService.Patch(diversityJson, diversityPatch);
 
-            _logger.LogInformation("Completed patching diversity");
+            _logger.LogTrace("Completed patching diversity");
 
             return updatedDiversity;
         }
@@ -49,16 +49,16 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
         {
             if (string.IsNullOrEmpty(diversityJson))
             {
-                _logger.LogInformation("The diversity object provided is either null or empty.");
+                _logger.LogTrace("The diversity object provided is either null or empty.");
                 return null;
             }
 
-            _logger.LogInformation("Started updating diversity in Cosmos DB with ID: {DiversityId}", diversityId);
+            _logger.LogTrace("Started updating diversity in Cosmos DB with ID: {DiversityId}", diversityId);
             var response = await _cosmosDbProvider.UpdateDiversityDetailAsync(diversityJson, diversityId);
 
             if (response?.StatusCode == HttpStatusCode.OK)
             {
-                _logger.LogInformation("Completed updating diversity in Cosmos DB with ID: {DiversityId}", diversityId);
+                _logger.LogTrace("Completed updating diversity in Cosmos DB with ID: {DiversityId}", diversityId);
                 return response.Resource;
             }
 
@@ -75,11 +75,11 @@ namespace NCS.DSS.Diversity.PatchDiversityHttpTrigger.Service
         {
             try
             {
-                _logger.LogInformation("Sending diversity to Service Bus for customer ID: {CustomerId}.", customerId);
+                _logger.LogTrace("Sending diversity to Service Bus for customer ID: {CustomerId}.", customerId);
 
                 await _diversityServiceBusClient.SendPatchMessageAsync(diversityPatch, customerId, reqUrl);
 
-                _logger.LogInformation("Successfully sent diversity to Service Bus for customer ID: {CustomerId}.", customerId);
+                _logger.LogTrace("Successfully sent diversity to Service Bus for customer ID: {CustomerId}.", customerId);
             }
             catch (Exception ex)
             {

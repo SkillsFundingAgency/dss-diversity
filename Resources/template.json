@@ -14,17 +14,11 @@
         "CosmosDbEndpoint": {
             "type": "string"
         },
-        "cosmosDbKey": {
-            "type": "securestring"
-        },
         "environmentName": {
             "type": "string"
         },
         "functionAppNames": {
             "type": "array"
-        },
-        "serviceBusConnectionString": {
-            "type": "securestring"
         },
         "serviceBusQueueName": {
             "type": "string"
@@ -52,6 +46,9 @@
         },
         "keyVaultName": {
             "type": "string"
+        },
+        "securityKey": {
+            "type": "string"
         }
     },
     "resources": [
@@ -67,14 +64,15 @@
                 "AzureWebJobsStorage": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=SharedStorageAccountConnectionString)', parameters('keyVaultName'))]",
                 "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightsInstrumentationKey')]",
                 "CollectionId": "[parameters('cosmosDbCollectionId')]",
-                "CosmosDBConnectionString": "[concat('AccountEndpoint=', parameters('cosmosDbEndpoint'), '/;AccountKey=', parameters('cosmosDbKey'), ';')]",
                 "DatabaseId": "[parameters('cosmosDbDatabaseId')]",
                 "CustomerDatabaseId": "customers",
                 "CustomerCollectionId": "customers",
-                "ServiceBusConnectionString": "[parameters('serviceBusConnectionString')]",
+                "BlobStorageConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=SharedStorageAccountConnectionString)', parameters('keyVaultName'))]",
+                "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
                 "QueueName": "[parameters('serviceBusQueueName')]",
-                "CosmosDbEndpoint": "[parameters('cosmosDbEndpoint')]"
-            },
+                "CosmosDbEndpoint": "[parameters('cosmosDbEndpoint')]",
+                "SecurityKey": "[parameters('securityKey')]"
+                            },
             "copy": {
                 "name": "FunctionAppSettingsCopy",
                 "count": "[length(parameters('functionAppNames'))]"
