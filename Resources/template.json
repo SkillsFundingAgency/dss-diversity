@@ -46,9 +46,6 @@
         },
         "keyVaultName": {
             "type": "string"
-        },
-        "securityKey": {
-            "type": "string"
         }
     },
     "resources": [
