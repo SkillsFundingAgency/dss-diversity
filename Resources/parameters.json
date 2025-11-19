@@ -46,9 +46,6 @@
         },
         "keyVaultName": {
           "value": "__SharedKeyVaultName__"
-        },
-        "securityKey": {
-            "value": "__SecurityKey__"
         }
     }
 }
